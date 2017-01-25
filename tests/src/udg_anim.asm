@@ -1,60 +1,3 @@
-#target tap
-headerflag: equ 0
-dataflag: equ 0xff
-
-; some Basic tokens:
-tCLEAR      equ     $FD             ; token CLEAR
-tLOAD       equ     $EF             ; token LOAD
-tCODE       equ     $AF             ; token CODE
-tPRINT      equ     $F5             ; token PRINT
-tRANDOMIZE  equ     $F9             ; token RANDOMIZE
-tUSR        equ     $C0             ; token USR
-
-pixels_start    equ 0x4000      ; ZXSP screen pixels
-attr_start      equ 0x5800      ; ZXSP screen attributes
-printer_buffer  equ 0x5B00      ; ZXSP printer buffer
-code_start      equ 24000
-
-#data VARIABLES, printer_buffer, 0x100
-
-#code PROG_HEADER,0,17,headerflag
-    defb    0
-    defb    "mloader   "
-    defw    variables_end-0
-    defw    10
-    defw    program_end-0
-
-#code PROG_DATA,0,*,dataflag
-    defb 0,10
-    defb end10-($+1)
-    defb 0
-    defb tCLEAR
-    defm "23999",$0e0000bf5d00
-end10:  defb $0d
-    defb 0,20
-    defb end20-($+1)
-    defb 0
-    defb tLOAD,'"','"',tCODE
-    defb "24000",$0e0000c05d00
-end20: defb $0d
-    defb 0,30
-    defb end30-($+1)
-    defb 0
-    defb tRANDOMIZE,tUSR
-    defm "24000",$0e0000c05d00
-end30: defb $0d
-program_end:
-variables_end:
-
-#code CODE_HEADER,0,17,headerflag
-    defb 3
-    defb "mcode     "
-    defw code_end-code_start
-    defw code_start
-    defw 0
-
-#code CODE_DATA, code_start,*,dataflag
-
        ld a,14             ; yellow ink (6) on blue paper (1*8).
        ld (23693),a        ; set our screen colours.
        call 3503           ; clear the screen.
@@ -142,5 +85,3 @@ xcoord defb 31
 dir    defb 0
 udgs   defb 60,126,219,153
        defb 255,255,219,219
-
-code_end:

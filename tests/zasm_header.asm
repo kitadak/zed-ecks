@@ -73,6 +73,3 @@ variables_end:
 
 #code CODE_DATA, code_start,*,dataflag
 
-; Z80 assembler code and data
-
-code_end:
