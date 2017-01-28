@@ -15,7 +15,7 @@ $(TAPE_DIR)/%.tap: $(SRC_DIR)/%.asm
 	@mkdir -p $(dir $@)
 	@cat $(TEMPLATE_HEAD) $< $(TEMPLATE_FOOT) > $(TMP_FILENAME)
 	$(ASM) $(ASM_FLAGS) -i $(TMP_FILENAME) -o $@
-	@rm $(TMP_FILENAME)
+	@rm -f $(TMP_FILENAME)
 
 clean:
 	rm -rf $(TAPE_DIR)
