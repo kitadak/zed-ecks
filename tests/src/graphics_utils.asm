@@ -9,12 +9,32 @@
 ; Test driver for get_pixel_address and load_cell_data
 ; ------------------------------------------------------------------
     ld c,0                  ; load pixel coordinates
-    ld b,184
+    ld b,184                ; for now, use (0-255,0-191) coordinates
     ld hl,puyo_none_0       ; load pixel data addr into hl
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
+
+; ------------------------------------------------------------------
+; srl8_bc: Shift right logical 3 times on b and c separately.
+;          Can be used to convert pixel positions (0-23,0-31) to
+;          (0-255,0-191) coordinates.
+; ------------------------------------------------------------------
+srl3_bc:
+    ld a,b                  ; shift right b 3 times
+    rra                     ; rra solution: 7+3*4  +7+7=33 cycles
+    rra                     ; sra solution:   3*8+7+7+7=45 cycles
+    rra
+    and %00011111           ; mask out unwanted bits
+    ld b,a                  ; save back to b
+    ld a,c                  ; do the same to c
+    rra
+    rra
+    rra
+    and %00011111
+    ld c,a
+    ret
 
 ; ------------------------------------------------------------------
 ; get_pixel_address: Compute screen address of a byte
