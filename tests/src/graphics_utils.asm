@@ -9,8 +9,8 @@
     ld a,2                  ; 2 = upper screen.
     call 5633               ; open channel.
 
-    call test_single_cell
-    ;call test_fill_screen
+    call test_fill_screen
+    ;call test_single_cell
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
@@ -184,14 +184,9 @@ load_2x2_data_loop:
     jp z,load_2x2_data_done
 
     pop bc          ; pop param from stack
-    inc b           ; add 8 to b to move down 1 cell...
-    inc b
-    inc b
-    inc b
-    inc b
-    inc b
-    inc b
-    inc b
+    ld a,8          ; add 8 to b to move down 1 cell
+    add a,b
+    ld b,a
     call get_pixel_address
     ld bc,16
     xor a
@@ -211,47 +206,53 @@ load_2x2_data_done:
 ;       run loop_1, reload bc to 256 --> prints 2 pixel lines (???)
 ; ------------------------------------------------------------------
 fill_screen_data:
-    xor a           ; clear register a
     ld bc,3         ; push counter = 3 to stack to draw 3 thirds of screen
     push bc
+    ld de,$4000     ; start addr of top left cell
     ld bc,8         ; push counter = 8 to stack for 8 pixel rows
     push bc
-fill_screen_data_third:
-    ld de,$4000     ; start addr of top left cell
 fill_screen_data_counter:
     ld bc,256       ; draw single pixel line in one third of screen
-fill_screen_data_loop_1:
+    xor a           ; clear register a
+fill_screen_data_loop:
     ldi             ; ld (de),(hl). inc hl. inc de. dec bc.
     dec hl          ; don't want hl incremented
     cp c            ; check if c is zero by comparing to a
-    jp nz,fill_screen_data_loop_1   ; loop back while c is nonzero
+    jp nz,fill_screen_data_loop   ; loop back while c is nonzero
     inc hl
     pop bc          ; update loop counter
     dec bc
     push bc
     cp c
     jp nz,fill_screen_data_counter
-    pop bc
-
-    pop bc          ; XXX - tmp, in progress
-    ret
-
+    pop bc          ; pop counter = 8 from stack
     pop bc          ; update loop counter, draw next third of screen
     dec bc
     push bc
-    cp c
-    jp nz,fill_screen_data_third
+    ld a,c
+    cp 2
+    jp z,fill_screen_data_2
+    cp 1
+    jp z,fill_screen_data_3
+    pop bc          ; done, pop counter and return
     ret
-
-    ld bc,256
-    inc hl
-    inc hl
-fill_screen_data_loop_2:
-    ldi             ; ld (de),(hl). inc hl. inc de. dec bc.
-    dec hl          ; don't want hl incremented
-    cp c            ; check if c is zero by comparing to a
-    jp nz,fill_screen_data_loop_2   ; loop back while c is nonzero
-    ret
+fill_screen_data_2:
+    ld de,$4800
+    jp fill_screen_data_setup
+fill_screen_data_3:
+    ld de,$5000
+fill_screen_data_setup:
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    dec hl
+    ld bc,8         ; push counter = 8 to stack for 8 pixel rows
+    push bc
+    jp fill_screen_data_counter
 
 ; ------------------------------------------------------------------
 ; TODO: Fill entire screen with same attribute data
