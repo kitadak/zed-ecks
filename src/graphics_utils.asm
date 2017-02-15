@@ -1,3 +1,13 @@
+
+
+; ==================================================================
+; FILE: graphics_utils.asm
+; ------------------------------------------------------------------
+;   Contains graphics utility routines to draw sprites to screen,
+;   clear sprites, etc.
+; ==================================================================
+
+
 ; ------------------------------------------------------------------
 ; test_fill_screen: Test the following functions
 ;   fill_screen_data
@@ -13,6 +23,7 @@ test_fill_screen:
 ;   get_attr_address
 ;   load_cell_data
 ;   load_2x2_data
+;   clear_puyo_2x2
 ; ------------------------------------------------------------------
 test_single_cell:
     ld c,240                ; load pixel coordinates
@@ -24,14 +35,18 @@ test_single_cell:
 
     ld c,248                ; load pixel coordinates
     ld b,184                ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_udr  ; load pixel data addr into hl
+    ld hl,puyo_udr          ; load pixel data addr into hl
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen - NOTE: bc corrupted!
 
     ld c,192                ; load pixel coordinates
     ld b,56                 ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_d    ; load pixel data addr into hl
+    ld hl,puyo_d            ; load pixel data addr into hl
     call load_2x2_data
+
+    ld c,176                ; load pixel coordinates
+    ld b,176
+    call clear_puyo_2x2     ; clear 2x2 cells
 
     ret
 
@@ -39,6 +54,8 @@ test_single_cell:
 ; sll8_bc: Shift left logical 3 times on b and c separately.
 ;          Can be used to convert pixel positions (0-23,0-31) to
 ;          (0-255,0-191) coordinates.
+; ------------------------------------------------------------------
+; Registers polluted: a
 ; ------------------------------------------------------------------
 sll8_bc:
     ld a,b                  ; shift right b 3 times
@@ -61,6 +78,8 @@ sll8_bc:
 ; Input: b - Y (vertical) pixel position
 ;        c - X (horizontal) pixel position
 ; Output: de - screen address of top byte in cell
+; ------------------------------------------------------------------
+; Registers polluted: a
 ; ------------------------------------------------------------------
 ; Note: X values are 0-255, increment X by 8 to move right once
 ;       Y values are 0-191, increment X by 8 to move down once
@@ -101,6 +120,8 @@ get_pixel_address:
 ;        c - X (horizontal) pixel position
 ; Output: de - attribute address of cell
 ; ------------------------------------------------------------------
+; Registers polluted: a
+; ------------------------------------------------------------------
 get_attr_address:
     ld a,b          ; get Y7,Y6
     and %11000000
@@ -129,6 +150,8 @@ get_attr_address:
 ;        hl - address of pixel data, starting from first byte
 ; Output: cell pixel data copied from hl to memory address
 ; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e
+; ------------------------------------------------------------------
 load_cell_data:
     ld bc,8         ; set loop counter in bc to 8
     xor a           ; clear register a
@@ -146,6 +169,8 @@ load_cell_data_loop:
 ; Input: bc - top left cell's coordinates
 ;        hl - address of pixel data, starting from first byte
 ; Output: 2x2 pixel data copied from hl to memory address
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e
 ; ------------------------------------------------------------------
 load_2x2_data:
     push bc
@@ -180,6 +205,8 @@ load_2x2_data_done:
 ; ------------------------------------------------------------------
 ; Input: hl - address of pixel data, starting from first byte
 ; Output: cell pixel data copied from hl to entire screen
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 ; Note: weird stuff happening with the pixel addr
 ;       running loop_1 >256 times --> first pixel line overwritten
@@ -235,7 +262,7 @@ fill_screen_data_setup:
     jp fill_screen_data_counter
 
 ; ------------------------------------------------------------------
-; TODO:
+; TODO: ...might not be needed?
 ; fill_block: fill given rectangle with same cell data
 ; ------------------------------------------------------------------
 ; Input: hl - address of pixel data, starting from first byte
@@ -244,14 +271,34 @@ fill_screen_data_setup:
 fill_block:
 
 ; ------------------------------------------------------------------
-; TODO:
 ; clear_puyo_2x2: set 2x2 sprite at given coordinates to black attr
 ; ------------------------------------------------------------------
 ; Input: b - Y coordinate
 ;        c - X coordinate
 ; Output: 2x2 puyo sprite goes black
 ; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
 clear_puyo_2x2:
+    ld hl,2                 ; push loop counter
+    push hl
+clear_puyo_2x2_loop:
+    call get_attr_address   ; get attr addr of left cell
+    xor a
+    ld (de),a
+    inc de
+    ld (de),a
+    ld a,8
+    add a,b
+    ld b,a
+    pop hl
+    dec hl
+    push hl
+    xor a
+    cp l
+    jp nz,clear_puyo_2x2_loop
+    pop hl
+    ret
 
 ; ------------------------------------------------------------------
 ; Test puyo sprites
