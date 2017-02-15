@@ -3,7 +3,7 @@
 ;   fill_screen_data
 ; ------------------------------------------------------------------
 test_fill_screen:
-    ld hl,puyo_none_0
+    ld hl,puyo_udr
     call fill_screen_data
     ret
 
@@ -15,22 +15,22 @@ test_fill_screen:
 ;   load_2x2_data
 ; ------------------------------------------------------------------
 test_single_cell:
-    ld c,248                ; load pixel coordinates
-    ld b,56                 ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_none_attr    ; load attr data
+    ld c,240                ; load pixel coordinates
+    ld b,184                ; for now, use (0-255,0-191) coordinates
+    ld hl,test_puyo_none_attr   ; load attr data
     call get_attr_address   ; calculate attr addr into de
     ldi                     ; update cell attr
     inc bc                  ; don't want bc decremented!
 
     ld c,248                ; load pixel coordinates
     ld b,184                ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_none_0       ; load pixel data addr into hl
+    ld hl,puyo_udr  ; load pixel data addr into hl
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen - NOTE: bc corrupted!
 
     ld c,192                ; load pixel coordinates
     ld b,56                 ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_down         ; load pixel data addr into hl
+    ld hl,puyo_d    ; load pixel data addr into hl
     call load_2x2_data
 
     ret
@@ -42,15 +42,15 @@ test_single_cell:
 ; ------------------------------------------------------------------
 sll8_bc:
     ld a,b                  ; shift right b 3 times
-    rla                     ; rla solution: 7+3*4  +7+7=33 cycles
-    rla                     ; sla solution:   3*8+7+7+7=45 cycles
-    rla
+    rlca                    ; rla solution: 7+3*4  +7+7=33 cycles
+    rlca                    ; sla solution:   3*8+7+7+7=45 cycles
+    rlca
     and %11111000           ; mask out unwanted bits
     ld b,a                  ; save back to b
     ld a,c                  ; do the same to c
-    rla
-    rla
-    rla
+    rlca
+    rlca
+    rlca
     and %11111000
     ld c,a
     ret
@@ -71,31 +71,30 @@ sll8_bc:
 get_pixel_address:
     ld a,b          ; get Y2,Y1,Y0
     and %00000111
-    or %01000000    ; set base address of screen (3 MLBs = 010)
+    or %01000000    ; set base address of screen (3 MSBs = 010)
     ld d,a          ; store in d
     ld a,b          ; get Y7,Y6
-    rra
-    rra
-    rra
+    rrca
+    rrca
+    rrca
     and %00011000
     or d            ; combine with Y2,Y1,Y0 and store in d
     ld d,a
     ld a,b          ; get Y5,Y4,Y3
-    rla
-    rla
+    rlca
+    rlca
     and %11100000
     ld e,a          ; store in e
     ld a,c          ; get X7-X3
-    rra
-    rra
-    rra
+    rrca
+    rrca
+    rrca
     and %00011111
     or e            ; combine with Y5,Y4,Y3 and store in e
     ld e,a
     ret
 
 ; ------------------------------------------------------------------
-; TODO: fix this. currently only updates attr in top third of screen
 ; get_attr_address: Compute attribute address of a cell
 ; ------------------------------------------------------------------
 ; Input: b - Y (vertical) pixel position
@@ -103,22 +102,21 @@ get_pixel_address:
 ; Output: de - attribute address of cell
 ; ------------------------------------------------------------------
 get_attr_address:
-    ; space-saving option
-    call get_pixel_address
-    ld d,%01011000
-    ret
-
-    ; time-saving option
-    ld d,%01011000  ; base attr addr stored in d
+    ld a,b          ; get Y7,Y6
+    and %11000000
+    rlca
+    rlca
+    or %01011000    ; set base attr addr (6 MSBs = 010110)
+    ld d,a          ; store in d
     ld a,b          ; get Y5,Y4,Y3
-    rla             ; shift into position and store in e
-    rla
+    rlca            ; shift into position and store in e
+    rlca
     and %11100000
     ld e,a
     ld a,c          ; get X7-X3
-    rra             ; shift into position
-    rra
-    rra
+    rrca            ; shift into position
+    rrca
+    rrca
     and %00011111
     or e            ; combine with Y5,Y4,Y3 and store in e
     ld e,a
@@ -178,7 +176,6 @@ load_2x2_data_done:
     ret             ; finish copying 16 bytes
 
 ; ------------------------------------------------------------------
-; TODO: fill all screen (only top third currently)
 ; fill_screen_data: Fill entire screen with same cell data
 ; ------------------------------------------------------------------
 ; Input: hl - address of pixel data, starting from first byte
@@ -238,25 +235,26 @@ fill_screen_data_setup:
     jp fill_screen_data_counter
 
 ; ------------------------------------------------------------------
-; TODO: Fill entire screen with same attribute data
+; TODO:
+; fill_block: fill given rectangle with same cell data
 ; ------------------------------------------------------------------
+; Input: hl - address of pixel data, starting from first byte
+; Output: cell pixel data copied from hl to entire screen
+; ------------------------------------------------------------------
+fill_block:
 
 ; ------------------------------------------------------------------
-; Test puyo sprites (2x2 cells)
+; TODO:
+; clear_puyo_2x2: set 2x2 sprite at given coordinates to black attr
 ; ------------------------------------------------------------------
-puyo_none_0:
-    defb 222,222,254,254,252,248,224,  0
-    defb 222,222,254,254,252,248,224,  0
+; Input: b - Y coordinate
+;        c - X coordinate
+; Output: 2x2 puyo sprite goes black
+; ------------------------------------------------------------------
+clear_puyo_2x2:
 
-    defb 0,1,3,15,31,63,123,123
-    defb 0,128,192,224,240,248,220,222
-    defb 123,123,127,127, 63, 31,  7,  0
-    defb 222,222,254,254,252,248,224,  0
-
-puyo_down:
-	defb	  0,  0,  1,192,  3,224,  7,240
-	defb	 15,248, 31,196, 49,186,110,186
-	defb	110,170,106,198,113,254,127,252
-	defb	 63,248, 31,224, 15,128,  7,  0
-puyo_none_attr:
+; ------------------------------------------------------------------
+; Test puyo sprites
+; ------------------------------------------------------------------
+test_puyo_none_attr:
 	defb 66, 66, 66, 66

@@ -10,7 +10,7 @@
     call 5633               ; open channel.
 
     call test_fill_screen
-    ;call test_single_cell
+    call test_single_cell
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
