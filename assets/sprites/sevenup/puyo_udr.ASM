@@ -9,7 +9,7 @@
 ;Interleave:      Sprite
 ;Mask:            No
 
-puyo_udl:
+puyo_udr:
 	DEFB	  3,192,  3,224,  7,240, 15,248
 	DEFB	 31,252, 63,226, 56,221, 55, 85
 	DEFB	 53, 93, 55, 99, 56,254, 63,254
