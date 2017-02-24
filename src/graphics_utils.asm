@@ -9,15 +9,6 @@
 
 
 ; ------------------------------------------------------------------
-; test_fill_screen: Test the following functions
-;   fill_screen_data
-; ------------------------------------------------------------------
-test_fill_screen:
-    ld hl,puyo_udr
-    call fill_screen_data
-    ret
-
-; ------------------------------------------------------------------
 ; test_single_cell: Test the following functions
 ;   get_pixel_address
 ;   get_attr_address
@@ -260,15 +251,6 @@ fill_screen_data_setup:
     ld bc,8         ; push counter = 8 to stack for 8 pixel rows
     push bc
     jp fill_screen_data_counter
-
-; ------------------------------------------------------------------
-; TODO: ...might not be needed?
-; fill_block: fill given rectangle with same cell data
-; ------------------------------------------------------------------
-; Input: hl - address of pixel data, starting from first byte
-; Output: cell pixel data copied from hl to entire screen
-; ------------------------------------------------------------------
-fill_block:
 
 ; ------------------------------------------------------------------
 ; clear_puyo_2x2: set 2x2 sprite at given coordinates to black attr
