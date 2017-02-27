@@ -8,7 +8,7 @@
 
 
 ; ------------------------------------------------------------------
-; init_background: Draw initial background.
+; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
 ; Output:
@@ -16,8 +16,6 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_background:
-    ld hl,background_data
-    call fill_screen_data
     ld b,16
     ld c,24
 init_background_clear:
@@ -44,6 +42,8 @@ init_background_clear_row_loop:
     cp l
     jp nz,init_background_clear_loop
     pop hl
+    ld hl,background_data   ; fill entire screen with background
+    call fill_screen_data
     ret
 
 ; ------------------------------------------------------------------
