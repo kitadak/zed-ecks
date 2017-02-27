@@ -78,7 +78,7 @@ settle_puyos:
     ld hl, player_board
     ld bc, 65                       ; start at last puyo
     add hl, bc
-    ld d, 0
+    ld d, 0                         ; checks if nothing can be done
 
     ld b, 6                         ; check 6 columns
 settle_puyos_column_loop:
@@ -109,4 +109,22 @@ settle_puyos_loop_end:
     jp nz, settle_puyos_column_loop
 
     ld a, d                         ; has the board been updated?
+    ret
+
+; ------------------------------------------------------------
+; clear_board: Empties the board
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+
+clear_board:
+    ld bc, 66
+    ld a, 0
+    ld hl, player_board
+clear_board_loop:
+    ld (hl), a
+    inc hl
+    dec bc
+    jp nz
     ret
