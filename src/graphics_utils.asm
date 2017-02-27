@@ -17,12 +17,10 @@
 ;   clear_puyo_2x2
 ; ------------------------------------------------------------------
 test_single_cell:
-    ld c,240                ; load pixel coordinates
-    ld b,184                ; for now, use (0-255,0-191) coordinates
+    ld c,232                ; load pixel coordinates
+    ld b,176                ; for now, use (0-255,0-191) coordinates
     ld hl,test_puyo_none_attr   ; load attr data
-    call get_attr_address   ; calculate attr addr into de
-    ldi                     ; update cell attr
-    inc bc                  ; don't want bc decremented!
+    call load_2x2_attr
 
     ld c,248                ; load pixel coordinates
     ld b,184                ; for now, use (0-255,0-191) coordinates
@@ -190,6 +188,32 @@ load_2x2_data_loop:
     jp load_2x2_data_loop   ; draw bottom 2 cells
 load_2x2_data_done:
     ret             ; finish copying 16 bytes
+
+; ------------------------------------------------------------------
+; TODO
+; load_2x2_attr: Set 2x2 square attribute
+; ------------------------------------------------------------------
+; Input: bc - top left cell's coordinates
+;        hl - address of attribute byte
+; Output: 2x2 attribute copied to attribute address of 2x2 square
+; ------------------------------------------------------------------
+; Registers polluted: a, b, d, e
+; ------------------------------------------------------------------
+load_2x2_attr:
+    call get_attr_address   ; get top left cell attr addr
+    ld a,(hl)               ; load a with attr byte
+    ld (de),a               ; load top 2 cells
+    inc de
+    ld (de),a
+    ld a,8
+    add a,b                 ; get bottom 2 cells' attr addr
+    ld b,a
+    call get_attr_address
+    ld a,(hl)               ; load bottom 2 cells
+    ld (de),a
+    inc de
+    ld (de),a
+    ret
 
 ; ------------------------------------------------------------------
 ; fill_screen_data: Fill entire screen with same cell data
