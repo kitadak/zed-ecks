@@ -29,10 +29,14 @@ rand8:
 spawn_puyos:
     call rand8
     and 0x0C                    ; 0b00001100 - isolates color bits
-    ld (next_puyos), a
+    ld bc, (next_puyo)
+    ld (bc), a
     call rand8
     and 0x0C
-    ld (next_puyos+1), a
+    ld bc, (next_puyo)
+    inc bc
+    ld (bc), a
+
     ret
 
 next_puyos:
@@ -45,7 +49,9 @@ next_puyos:
 ; Output: a - 0x01 if gameover, otherwise 0x00
 ; ------------------------------------------------------------
 detect_gameover:
-    ld a, (player_board+23)
+    ld a, (player_board)
+    ld b, 23                    ; represents 3rd column, top visible row
+    add b
     and 0x03                    ; Isolate status bits
     cp 0x01                     ; Check if puyo exists
     jp z, gameover
@@ -75,7 +81,7 @@ gameover:
 ; anything above it downwards.
 ; ------------------------------------------------------------
 settle_puyos:
-    ld hl, player_board
+    ld hl, (player_board)
     ld bc, 65                       ; start at last puyo
     add hl, bc
     ld d, 0                         ; checks if nothing can be done
@@ -121,7 +127,7 @@ settle_puyos_loop_end:
 clear_board:
     ld bc, 66
     ld a, 0
-    ld hl, player_board
+    ld hl, (player_board)
 clear_board_loop:
     ld (hl), a
     inc hl
