@@ -126,5 +126,15 @@ clear_board_loop:
     ld (hl), a
     inc hl
     dec bc
-    jp nz
+    jp nz, clear_board_loop
     ret
+
+; ------------------------------------------------------------
+; update_score: Updates the score
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+
+update_score:
+

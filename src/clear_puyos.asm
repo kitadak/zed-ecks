@@ -1,4 +1,5 @@
 ;--------------------------------------------------------------------
+; NOT WORKING DO NOT USE
 ; clear_puyos: Erases 4+ matched puyos,
 ;              Returns: B - the number of puyos destroyed
 ;                       C - the colors erased
@@ -26,7 +27,7 @@
 ;--------------------------------------------------------------------
 clear_puyos:
     ; initialize routine
-    ld hl, player_board             ; copy player_board to tmp_board
+    ld hl, (player_board)           ; copy player_board to tmp_board
     ld de, tmp_board
     ld bc, 60
     ldir
@@ -146,6 +147,6 @@ tmp_board:
 
 ; Actual board used by game to represent game state
 ; represented 1 row at a time, starting from the bottom
-player_board:
-    defs 0, 60
+;player_board:
+;    defs 0, 60
 
