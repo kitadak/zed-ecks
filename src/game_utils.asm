@@ -138,8 +138,11 @@ clear_board_loop:
 ; ------------------------------------------------------------
 ; update_score: Updates the score
 ; ------------------------------------------------------------
-; Input: None
-; Output: None
+; Input: a - puyos cleared
+;        b - chain count
+;        c - color bonus
+;        d - group bonus
+; Output: player_score - updated
 ; ------------------------------------------------------------
 
 update_score:
