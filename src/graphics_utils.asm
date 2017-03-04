@@ -28,8 +28,8 @@ test_single_cell:
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen - NOTE: bc corrupted!
 
-    ld c,192                ; load pixel coordinates
-    ld b,56                 ; for now, use (0-255,0-191) coordinates
+    ld c,0                  ; load pixel coordinates
+    ld b,72                 ; for now, use (0-255,0-191) coordinates
     ld hl,puyo_d            ; load pixel data addr into hl
     call load_2x2_data
 
@@ -164,7 +164,7 @@ load_cell_data_loop:
 load_2x2_data:
     push bc
     call get_pixel_address
-    ld bc,32        ; set loop counter in bc to 8
+    ld bc,32        ; set loop counter in bc to 32
     ld a,16         ; set a to 16 to load top 2 cells
 load_2x2_data_loop:
     ldi             ; ld (de),(hl). inc hl. inc de. dec bc.
@@ -190,7 +190,6 @@ load_2x2_data_done:
     ret             ; finish copying 16 bytes
 
 ; ------------------------------------------------------------------
-; TODO
 ; load_2x2_attr: Set 2x2 square attribute
 ; ------------------------------------------------------------------
 ; Input: bc - top left cell's coordinates
@@ -305,6 +304,59 @@ clear_puyo_2x2_loop:
     jp nz,clear_puyo_2x2_loop
     pop hl
     ret
+
+; ------------------------------------------------------------------
+; populate_coord_tab: Populate boardmap to coordinate table
+; ------------------------------------------------------------------
+; Input: None
+; Output: board_to_coord_tab populated
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+populate_coord_tab:
+    ld bc,TOPLEFT_HIDDEN
+    ld hl,board_to_coord_tab
+    ld de,6                 ; push column counter to stack
+    push de
+populate_coord_tab_column:
+    ld de,10                ; push row counter to stack
+    push de
+populate_coord_tab_row:
+    ld (hl),bc              ; write to table
+    inc hl                  ; point hl to next table entry (2 bytes each)
+    inc hl
+    ld a,16                 ; move down 2 char lines by adding 16 to b
+    add a,b
+    ld b,a
+    pop de                  ; check row counter to see if we reached bottom row
+    dec de
+    push de
+    xor a
+    cp e
+    jp nz,populate_coord_tab_row
+    pop de                  ; check if we finished last column
+    pop de
+    dec de
+    cp e
+    jp z,populate_coord_tab_done
+    push de
+    ld bc,TOPLEFT_HIDDEN
+    ld a,6                  ; add 8*(6-e) to c
+    sub e
+    sla a
+    sla a
+    sla a
+    add c
+    ld c,a
+    jp populate_coord_tab_column
+populate_coord_tab_done:
+    ret
+
+; ------------------------------------------------------------------
+; Tables
+; ------------------------------------------------------------------
+board_to_coord_tab:
+    defs 120,0xfb
 
 ; ------------------------------------------------------------------
 ; Test puyo sprites

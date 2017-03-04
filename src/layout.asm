@@ -8,6 +8,12 @@
 
 
 ; ------------------------------------------------------------------
+; Macros
+; ------------------------------------------------------------------
+TOPLEFT_VISIBLE equ 0x1818
+TOPLEFT_HIDDEN  equ 0x1018
+
+; ------------------------------------------------------------------
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -16,10 +22,10 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_background:
-    ld b,16
-    ld c,24
+    call populate_coord_tab
+    ld bc,TOPLEFT_VISIBLE
 init_background_clear:
-    ld hl,20                ; push loop counter
+    ld hl,18                ; push loop counter = rows*2
     push hl
 init_background_clear_loop:
     call get_attr_address   ; get attr addr of left cell
@@ -57,11 +63,28 @@ init_background_clear_row_loop:
 
 
 ; ------------------------------------------------------------------
-; TODO: update gameplay area from board map
+; TODO: update pixel data of gameplay area from board map
 ; ------------------------------------------------------------------
 ; Input:
 ; Output:
 ; ------------------------------------------------------------------
 ; Registers polluted:
 ; ------------------------------------------------------------------
-update_board:
+update_pixel:
+    ; push stack end marker
+    ; Check bits 1-0 for existence
+    ; if exists, check state of sprite, push to stack
+    ; translate coordinates, push to stack (NO TABLE, 3KB IS TOO MUCH)
+    ; repeat til end of boardmap
+
+
+; ------------------------------------------------------------------
+; TODO: update attributes of gameplay area from board map
+; ------------------------------------------------------------------
+; Input:
+; Output:
+; ------------------------------------------------------------------
+; Registers polluted:
+; ------------------------------------------------------------------
+update_attribute:
+
