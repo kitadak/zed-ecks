@@ -1,6 +1,9 @@
-; Macros
+; Constants
 BOARD_SIZE: equ 60
+
 KILL_LOCATION: equ 23
+
+; Variables
 
 player_board: defs 66,0
 next_puyo: defs 2,0
@@ -10,10 +13,14 @@ player_score: defs 4,0
 high_score: defs 4,0
 
 puyos_cleared: defb 0
+
 next_puyos: defb 0, 0
+
 drop_timer: defb 0
+
 current_speed: defb 0
 
+curr_puyo: defs 1,0x77
 
 ; Chain power table
 ; Used for scoring

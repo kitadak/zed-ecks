@@ -13,7 +13,6 @@
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
 
-
 ; ------------------------------------------------------------------
 ; Main Game Loop
 ; ------------------------------------------------------------------
@@ -48,17 +47,5 @@ play_clear_loop:            ; start clearing chain
     jp nz, play_clear_loop
     jp play_main_loop
 
-
-
-
-
-
-
-
-
-
-
-
 reset_game:
     ret
-
