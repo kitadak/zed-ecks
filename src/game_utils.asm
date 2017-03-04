@@ -1,57 +1,54 @@
 ; ------------------------------------------------------------
-; rand8: gets a random value based on the R register
+; <routine>: <description>
 ; ------------------------------------------------------------
 ; Input: None
-; Output: a - a random 8-bit number
+; Output: None
 ; ------------------------------------------------------------
-; Based on: www.z80.info/pseudo-random.txt
-; Note: might want to try replacing
-; add a,b -> add a,r
-; and removing ld b,a
+
+; -------------------------------------------------------------
+; check_next_row: checks if next row of either active puyo
+; is occupied by another nonactive puyo
+; -------------------------------------------------------------
+; Input: None
+; Output: a - 0 if nothing, else something exists
 ; ------------------------------------------------------------
-rand8:
-    ld a, r
-    ld b, a
-    rrca
-    rrca
-    rrca
-    xor 0x1f
-    add a, b
-    sbc a, 255
+check_next_row:
     ret
 
 ; ------------------------------------------------------------
-; spawn_puyos: spawns two randomly colored puyos
+; clear_board: Empties the board
 ; ------------------------------------------------------------
 ; Input: None
-; Output: next_puyos: two randomly colored puyos
+; Output: None
 ; ------------------------------------------------------------
-spawn_puyos:
-    call rand8
-    and 0x0C                    ; 0b00001100 - isolates color bits
-    ld (next_puyo), a
-    call rand8
-    and 0x0C
-    ld (next_puyo+1), a
-    ret
 
-next_puyos:
-    defb 0, 0
-
-; ------------------------------------------------------------
-; detect_gameover: checks for a gameover
-; ------------------------------------------------------------
-; Input: None
-; Output: a - 0x01 if gameover, otherwise 0x00
-; ------------------------------------------------------------
-detect_gameover:
+clear_board:
+    ld bc, BOARD_SIZE
+    ld a, 0
     ld hl, player_board
-    ld bc, KILL_LOCATION        ; represents 3rd column, top visible row
-    add hl, bc
-    ld a, (hl)
-    and 0x03                    ; Isolate status bits
-    cp 0x01                     ; Check if puyo exists
-    jp z, gameover
+clear_board_loop:
+    ld (hl), a
+    inc hl
+    dec bc
+    jp nz, clear_board_loop
+    ret
+
+; ------------------------------------------------------------
+; drop_active_puyos: drops the columns of the active puyos
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+drop_active_puyos:
+    ret
+
+; ------------------------------------------------------------
+; drop_column: drops any floating puyos in the given column
+; ------------------------------------------------------------
+; Input: a - index of column (0, 10, 20, 30, 40, 50)
+; Output: player_board updated to drop all puyos in a column
+; ------------------------------------------------------------
+drop_column:
     ret
 
 ; ------------------------------------------------------------
@@ -62,6 +59,73 @@ detect_gameover:
 ; ------------------------------------------------------------
 gameover:
     ret
+
+; ------------------------------------------------------------
+; gameover_detect : checks for a gameover
+; ------------------------------------------------------------
+; Input: None
+; Output: a - 0x01 if gameover, otherwise 0x00
+; ------------------------------------------------------------
+; Note: this does not directly jump to the gameover sequence
+; Main loop will call jump to avoid overflowing call stack
+; ------------------------------------------------------------
+gameover_detect:
+    ld hl, player_board
+    ld bc, KILL_LOCATION        ; represents 3rd column, top visible row
+    add hl, bc
+    ld a, (hl)
+    and 0x03                    ; Isolate status bits
+    cp 0x01                     ; Check if puyo exists
+    ret
+
+
+; ------------------------------------------------------------
+; gen_puyos: generate two randomly colored puyos
+; ------------------------------------------------------------
+; Input: None
+; Output: next_puyos: two randomly colored puyos
+; ------------------------------------------------------------
+gen_puyos:
+    call rand8
+    and 0x0C                    ; 0b00001100 - isolates color bits
+    ld (next_puyo), a
+    call rand8
+    and 0x0C
+    ld (next_puyo+1), a
+    ret
+
+; ------------------------------------------------------------
+; play_check_input: processes input in play loop, moves puyos
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+play_check_input:
+    ret
+
+; ------------------------------------------------------------
+; process_clears: clears 4+ connected puyos
+; ------------------------------------------------------------
+; Input: None
+; Output: 0 if no clears occured, else clears occured
+; ------------------------------------------------------------
+process_clears
+    ret
+
+; ------------------------------------------------------------
+; reset_drop_timer: Resets the timer to the current speed
+; ------------------------------------------------------------
+; Input: None
+; Output: drop_timer - time till next drop
+; ------------------------------------------------------------
+
+reset_drop_timer:
+    ld bc, current_speed
+    ld hl, drop_table
+    add hl, bc
+    ld (drop_timer), hl
+    ret
+
 
 ; ------------------------------------------------------------
 ; settle_puyos: Drops any floating puyos to the ground
@@ -111,22 +175,40 @@ settle_puyos_loop_end:
     ld a, d                         ; has the board been updated?
     ret
 
+
 ; ------------------------------------------------------------
-; clear_board: Empties the board
+; spawn_puyos: puts puyos onto the field
+; ------------------------------------------------------------
+; Input: next_puyos: two randomly colored puyos
+; Output: player_board: updated with new puyos
+;         active_puyos: the puyos that are being controlled
+; ------------------------------------------------------------
+spawn_puyos:
+    call gen_puyos              ; generate new puyos after
+    ret
+
+
+
+; ------------------------------------------------------------
+; rand8: gets a random value based on the R register
 ; ------------------------------------------------------------
 ; Input: None
-; Output: None
+; Output: a - a random 8-bit number
 ; ------------------------------------------------------------
-
-clear_board:
-    ld bc, BOARD_SIZE
-    ld a, 0
-    ld hl, player_board
-clear_board_loop:
-    ld (hl), a
-    inc hl
-    dec bc
-    jp nz, clear_board_loop
+; Based on: www.z80.info/pseudo-random.txt
+; Note: might want to try replacing
+; add a,b -> add a,r
+; and removing ld b,a
+; ------------------------------------------------------------
+rand8:
+    ld a, r
+    ld b, a
+    rrca
+    rrca
+    rrca
+    xor 0x1f
+    add a, b
+    sbc a, 255
     ret
 
 ; ------------------------------------------------------------
@@ -136,8 +218,11 @@ clear_board_loop:
 ;        b - chain count
 ;        c - color bonus
 ;        d - group bonus
-; Output: player_score - updated
+; Output: a - 0 if score was not updated, otherwise 1
+;        player_score - updated
+;
 ; ------------------------------------------------------------
 
 update_score:
+    ret
 
