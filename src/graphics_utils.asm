@@ -19,7 +19,7 @@
 test_single_cell:
     ld c,232                ; load pixel coordinates
     ld b,176                ; for now, use (0-255,0-191) coordinates
-    ld hl,test_puyo_none_attr   ; load attr data
+    ld l,puyo_green         ; load attr data
     call load_2x2_attr
 
     ld c,248                ; load pixel coordinates
@@ -193,14 +193,14 @@ load_2x2_data_done:
 ; load_2x2_attr: Set 2x2 square attribute
 ; ------------------------------------------------------------------
 ; Input: bc - top left cell's coordinates
-;        hl - address of attribute byte
+;        l  - attribute byte
 ; Output: 2x2 attribute copied to attribute address of 2x2 square
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, d, e
 ; ------------------------------------------------------------------
 load_2x2_attr:
     call get_attr_address   ; get top left cell attr addr
-    ld a,(hl)               ; load a with attr byte
+    ld a,l                  ; load a with attr byte
     ld (de),a               ; load top 2 cells
     inc de
     ld (de),a
@@ -208,7 +208,7 @@ load_2x2_attr:
     add a,b                 ; get bottom 2 cells' attr addr
     ld b,a
     call get_attr_address
-    ld a,(hl)               ; load bottom 2 cells
+    ld a,l                  ; load bottom 2 cells
     ld (de),a
     inc de
     ld (de),a
@@ -357,9 +357,3 @@ populate_coord_tab_done:
 ; ------------------------------------------------------------------
 board_to_coord_tab:
     defs 120,0xfb
-
-; ------------------------------------------------------------------
-; Test puyo sprites
-; ------------------------------------------------------------------
-test_puyo_none_attr:
-	defb 66, 66, 66, 66
