@@ -9,7 +9,7 @@
     ld a,2                  ; 2 = upper screen.
     call 5633               ; open channel.
 
-    call test_fill_screen
+    ;call test_fill_screen
     ;call test_single_cell
 
 inf_loop:                   ; infinite loop to not exit program

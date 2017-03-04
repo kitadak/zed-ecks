@@ -139,11 +139,13 @@ current_color:
 ; Stack to represent connected puyos
 ; stack is 120 bytes, as push operations are all 2 bytes long
 puyo_stack:
-    defs 0, 120
+    defb 0
+;    defs 0, 120
 
 ; Board used to determine clears
 tmp_board:
-    defs 0, 60
+    defb 0
+;    defs 0, 60
 
 ; Actual board used by game to represent game state
 ; represented 1 row at a time, starting from the bottom
