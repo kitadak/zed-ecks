@@ -12,4 +12,3 @@
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
-

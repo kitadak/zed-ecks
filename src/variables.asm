@@ -5,6 +5,7 @@ next_puyo: defs 2,0
 player_score: defs 4,0
 high_score: defs 4,0
 puyos_cleared: defb 0
+curr_puyo: defs 1,0x77
 
 ; labels
 BOARD_SIZE: equ 60
