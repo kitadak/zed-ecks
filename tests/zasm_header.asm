@@ -16,7 +16,7 @@ tUSR		equ     $C0             ; token USR
 pixels_start	equ	0x4000		; ZXSP screen pixels
 attr_start	equ	0x5800		; ZXSP screen attributes
 printer_buffer	equ	0x5B00		; ZXSP printer buffer
-code_start	equ	24000
+code_start	equ	32768           ; org 32768
 
 ; ---------------------------------------------------
 ;		a Basic Loader:
