@@ -353,6 +353,24 @@ populate_coord_tab_done:
     ret
 
 ; ------------------------------------------------------------------
+; TODO:
+; get_board_to_coord: Translate given board position to coordinates
+; ------------------------------------------------------------------
+; Input: bc - board position number (0-59)
+; Output: coordinates in bc
+; ------------------------------------------------------------------
+; Registers polluted: h, l
+; ------------------------------------------------------------------
+get_board_to_coord:
+    ld hl,board_to_coord_tab
+    add hl,bc
+    ld b,(hl)
+    inc hl
+    ld c,(hl)
+get_board_to_coord_done:
+    ret
+
+; ------------------------------------------------------------------
 ; Tables
 ; ------------------------------------------------------------------
 board_to_coord_tab:
