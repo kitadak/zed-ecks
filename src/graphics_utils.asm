@@ -346,6 +346,7 @@ populate_coord_tab_row:
     sla a
     sla a
     sla a
+    sla a
     add c
     ld c,a
     jp populate_coord_tab_column
@@ -353,7 +354,6 @@ populate_coord_tab_done:
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
 ; get_board_to_coord: Translate given board position to coordinates
 ; ------------------------------------------------------------------
 ; Input: bc - board position number (0-59)
@@ -364,9 +364,10 @@ populate_coord_tab_done:
 get_board_to_coord:
     ld hl,board_to_coord_tab
     add hl,bc
-    ld b,(hl)
-    inc hl
+    add hl,bc
     ld c,(hl)
+    inc hl
+    ld b,(hl)
 get_board_to_coord_done:
     ret
 
