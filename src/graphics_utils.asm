@@ -19,7 +19,7 @@
 test_single_cell:
     ld c,232                ; load pixel coordinates
     ld b,176                ; for now, use (0-255,0-191) coordinates
-    ld l,puyo_green         ; load attr data
+    ld l,PUYO_GREEN         ; load attr data
     call load_2x2_attr
 
     ld c,248                ; load pixel coordinates

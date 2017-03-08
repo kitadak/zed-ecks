@@ -9,7 +9,7 @@ TOTAL_CELLS     equ 60
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
-    ld a,background_attr    ; black ink on purple paper, no bright, no flash
+    ld a,BACKGROUND_ATTR    ; black ink on purple paper, no bright, no flash
     ld (23693),a            ; set our screen colours.
     call 3503               ; clear the screen.
     ld a,2                  ; 2 = upper screen.
@@ -17,7 +17,7 @@ TOTAL_CELLS     equ 60
 
     call populate_coord_tab
     call init_background
-    call update_board_pixel ; test
+    call update_board       ; test
     call test_single_cell
 
 inf_loop:                   ; infinite loop to not exit program
