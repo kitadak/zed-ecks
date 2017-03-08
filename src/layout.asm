@@ -54,17 +54,26 @@ init_background_clear_row_loop:
 ; Registers polluted:
 ; ------------------------------------------------------------------
 
+; ------------------------------------------------------------------
+; TODO:
+; draw_curr_pair: Update current airborne puyo pair on the screen
+; ------------------------------------------------------------------
+; Input:
+; Output:
+; ------------------------------------------------------------------
+; Registers polluted:
+; ------------------------------------------------------------------
+
 
 ; ------------------------------------------------------------------
-; TODO
-; update_board: update play area from board map
+; refresh_board: update play area from board map
 ; ------------------------------------------------------------------
 ; Input: None
 ; Output: all cell pixel data & attr in play area updated
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
-update_board:
+refresh_board:
     ld bc,TOPLEFT_VISIBLE   ; clear play area
     call init_background_clear
 
@@ -74,16 +83,16 @@ update_board:
     ld b,1                  ; row counter -- to ignore hidden row
     ld e,0                  ; position index
     ld hl,sample_boardmap
-update_board_write:         ; read all cell values, push existing ones to stack
+refresh_board_write:         ; read all cell values, push existing ones to stack
     xor a                   ; clear a for comparison
     dec b                   ; decrement row counter, check for hidden row
     cp b
-    jp z,update_board_hidden    ; if hidden row, do not push, refresh b
+    jp z,refresh_board_hidden    ; if hidden row, do not push, refresh b
     ld d,(hl)               ; load current map cell
     ld a,d
     and 0x01
-    jp z,update_board_next  ; if cell empty, do not push
-update_board_push:
+    jp z,refresh_board_next ; if cell empty, do not push
+refresh_board_push:
     push de                 ; push: cell value (d) & position number (e)
     ld a,d                  ; push: 2 -bit attr indicator (d) & position (e)
     and %00001100
@@ -91,23 +100,23 @@ update_board_push:
     srl a
     ld d,a
     push de
-    jp update_board_next
-update_board_hidden:
+    jp refresh_board_next
+refresh_board_hidden:
     ld b,10
-update_board_next:
+refresh_board_next:
     inc hl                  ; increment pointer to cell in boardmap
     inc e                   ; increment position index
     xor a
     dec c                   ; decrement cell counter, check if reached last cell
     cp c
-    jp nz,update_board_write
+    jp nz,refresh_board_write
 
-update_board_read:
+refresh_board_read:
     pop de                  ; pop values, compare to 0xff
     ld a,0xff
     cp e
-    jp z,update_board_done
-update_board_draw:
+    jp z,refresh_board_done
+refresh_board_draw:
     ld b,0                  ; put coordinates in bc
     ld c,e
     call get_board_to_coord
@@ -130,7 +139,14 @@ update_board_draw:
     ld hl,puyo_none
     add hl,de
     call load_2x2_data      ; draw puyo
-    jp update_board_read    ; repeat until stack marker reached
-update_board_done:
+    jp refresh_board_read    ; repeat until stack marker reached
+refresh_board_done:
     ret
+
+; ------------------------------------------------------------------
+; Test variables
+; ------------------------------------------------------------------
+curr_pair: defs 1,0x77
+old_pair: defs 1,0x77
+color_pair: defs 1,0xa8
 

@@ -17,7 +17,7 @@ TOTAL_CELLS     equ 60
 
     call populate_coord_tab
     call init_background
-    call update_board       ; test
+    call refresh_board      ; test
     call test_single_cell
 
 inf_loop:                   ; infinite loop to not exit program
