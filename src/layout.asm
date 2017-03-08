@@ -79,10 +79,10 @@ refresh_board:
 
     ld de,0xffff            ; push stack end marker
     push de
-    ld c,TOTAL_CELLS        ; setup initial counter and values
+    ld c,BOARD_SIZE        ; setup initial counter and values
     ld b,1                  ; row counter -- to ignore hidden row
     ld e,0                  ; position index
-    ld hl,sample_boardmap
+    ld hl,player_board
 refresh_board_write:         ; read all cell values, push existing ones to stack
     xor a                   ; clear a for comparison
     dec b                   ; decrement row counter, check for hidden row
@@ -142,11 +142,4 @@ refresh_board_draw:
     jp refresh_board_read    ; repeat until stack marker reached
 refresh_board_done:
     ret
-
-; ------------------------------------------------------------------
-; Test variables
-; ------------------------------------------------------------------
-curr_pair: defs 1,0x77
-old_pair: defs 1,0x77
-color_pair: defs 1,0xa8
 
