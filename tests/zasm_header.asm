@@ -16,7 +16,7 @@ tUSR		equ     $C0             ; token USR
 pixels_start	equ	0x4000		; ZXSP screen pixels
 attr_start	equ	0x5800		; ZXSP screen attributes
 printer_buffer	equ	0x5B00		; ZXSP printer buffer
-code_start	equ	24000
+code_start	equ	32768           ; org 32768
 
 ; ---------------------------------------------------
 ;		a Basic Loader:
@@ -31,28 +31,28 @@ code_start	equ	24000
 
 #code PROG_DATA,0,*,dataflag
 
-; 10 CLEAR 23999
+; 10 CLEAR 32767
         defb    0,10                    ; line number
         defb    end10-($+1)             ; line length
         defb    0                       ; statement number
         defb    tCLEAR                  ; token CLEAR
-        defm    "23999",$0e0000bf5d00   ; number 23999, ascii & internal format
+        defm    "32767",$0e0000ff7f00   ; number 32767, ascii & internal format
 end10:  defb    $0d                     ; line end marker
 
-; 20 LOAD "" CODE 24000
+; 20 LOAD "" CODE 32768
         defb    0,20                    ; line number
         defb    end20-($+1)             ; line length
         defb    0                       ; statement number
         defb    tLOAD,'"','"',tCODE     ; token LOAD, 2 quotes, token CODE
-        defm    "24000",$0e0000c05d00   ; number 24000, ascii & internal format
+        defm    "32768",$0e0000008000   ; number 32768, ascii & internal format
 end20:  defb    $0d                     ; line end marker
 
-; 30 RANDOMIZE USR 24000
+; 30 RANDOMIZE USR 32768
         defb    0,30                    ; line number
         defb    end30-($+1)             ; line length
         defb    0                       ; statement number
         defb    tRANDOMIZE,tUSR         ; token RANDOMIZE, token USR
-        defm    "24000",$0e0000c05d00   ; number 24000, ascii & internal format
+        defm    "32768",$0e0000008000   ; number 32768, ascii & internal format
 end30:  defb    $0d                     ; line end marker
 
 program_end:
