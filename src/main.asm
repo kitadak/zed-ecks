@@ -12,6 +12,7 @@
     call init_background
     call refresh_board      ; test
     call test_single_cell
+    call draw_curr_pair     ; test
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop

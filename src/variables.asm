@@ -39,10 +39,9 @@ drop_timer: defb 0
 current_speed: defb 0
 
 ; Active airborne puyo pair
-; Must stay in this order for drawing purpose
-prev_pair: defb 0x99    ; previous position of current pair
-curr_puyo: defb 0x77    ; current pair position
-pair_color: defb 0x06   ; color of current pair (unused[4]|pivot[2]|other[2])
+curr_puyo: defb %01100000   ; current pair position
+prev_pair: defb %01011111   ; previous position of current pair
+pair_color: defb 0x06       ; color of current pair
 
 ; Chain power table
 ; Used for scoring

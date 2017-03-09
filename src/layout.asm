@@ -58,12 +58,113 @@ init_background_clear_row_loop:
 ; TODO:
 ; draw_curr_pair: Update current airborne puyo pair on the screen
 ; ------------------------------------------------------------------
-; Input:
-; Output:
+; Input: None
+; Output: Erase previous position, draw new position of puyo pair
 ; ------------------------------------------------------------------
-; Registers polluted:
+; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
+draw_curr_pair:
+    ld de,0xffff
+    ld c,64
+    xor a
+test_push:
+    push de
+    dec c
+    cp c
+    jp nz,test_push
 
+    ; push coordinates: curr pivot, curr 2nd, prev pivot, prev 2nd
+    ld d,2
+    ld hl,curr_puyo         ; get current position info
+draw_curr_pair_calc:
+    ld a,(hl)
+    ld c,a                  ; calculate coord of pivot & push
+    srl c
+    srl c
+    ld b,0
+    call get_board_to_coord
+    push bc
+    and %00000011           ; calculate coord of 2nd
+    ld e,a
+    ld a,0x03
+    cp e
+    jp z,draw_curr_pair_left
+    dec a
+    cp e
+    jp z,draw_curr_pair_down
+    dec a
+    cp e
+    jp z,draw_curr_pair_right
+draw_curr_pair_up:          ; b-16
+    ld a,b
+    ld e,16
+    sub e
+    ld b,a
+    jp draw_curr_pair_push
+draw_curr_pair_right:       ; c+16
+    ld a,16
+    add a,c
+    ld c,a
+    jp draw_curr_pair_push
+draw_curr_pair_down:        ; b+16
+    ld a,16
+    add a,b
+    ld b,a
+    jp draw_curr_pair_push
+draw_curr_pair_left:        ; c-16
+    ld a,c
+    ld e,16
+    sub e
+    ld c,a
+draw_curr_pair_push:
+    push bc
+    ld hl,prev_pair
+    xor a
+    dec d
+    cp d
+    jp nz,draw_curr_pair_calc
+
+    ; finished pushing, pop to erase and draw next
+    pop bc                  ; erase previous position first
+    call erase_puyo_2x2
+    pop bc
+    call erase_puyo_2x2
+    ld hl,pair_color        ; draw curr 2nd puyo
+    ld a,(hl)
+    ex af,af'               ; store a copy of color byte in a'
+    ld a,(hl)
+    ex af,af'
+    and %00000011
+    ld d,0
+    ld e,a
+    ld hl,val_puyo_blue
+    add hl,de
+    ld l,(hl)
+    pop bc
+    push bc
+    call load_2x2_attr
+    pop bc
+    ld hl,puyo_none
+    call load_2x2_data
+    ex af,af'               ; draw curr pivot puyo
+    and %00001100
+    srl a
+    srl a
+    ex af,af'
+    ld d,0
+    ld e,a
+    ld hl,val_puyo_blue
+    add hl,de
+    ld l,(hl)
+    pop bc
+    push bc
+    call load_2x2_attr
+    pop bc
+    ld hl,puyo_none
+    call load_2x2_data
+
+    call inf_loop
+    ret
 
 ; ------------------------------------------------------------------
 ; refresh_board: update play area from board map

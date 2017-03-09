@@ -14,7 +14,7 @@
 ;   get_attr_address
 ;   load_cell_data
 ;   load_2x2_data
-;   clear_puyo_2x2
+;   erase_puyo_2x2
 ; ------------------------------------------------------------------
 test_single_cell:
     ld c,232                ; load pixel coordinates
@@ -33,9 +33,9 @@ test_single_cell:
     ld hl,puyo_d            ; load pixel data addr into hl
     call load_2x2_data
 
-    ld c,176                ; load pixel coordinates
-    ld b,176
-    call clear_puyo_2x2     ; clear 2x2 cells
+    ld c,24                 ; load pixel coordinates
+    ld b,24
+    call erase_puyo_2x2     ; clear 2x2 cells
 
     ret
 
@@ -276,7 +276,7 @@ fill_screen_data_setup:
     jp fill_screen_data_counter
 
 ; ------------------------------------------------------------------
-; clear_puyo_2x2: set 2x2 sprite at given coordinates to black attr
+; erase_puyo_2x2: set 2x2 sprite at given coordinates to black attr
 ; ------------------------------------------------------------------
 ; Input: b - Y coordinate
 ;        c - X coordinate
@@ -284,10 +284,10 @@ fill_screen_data_setup:
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
-clear_puyo_2x2:
+erase_puyo_2x2:
     ld hl,2                 ; push loop counter
     push hl
-clear_puyo_2x2_loop:
+erase_puyo_2x2_loop:
     call get_attr_address   ; get attr addr of left cell
     xor a
     ld (de),a
@@ -301,7 +301,7 @@ clear_puyo_2x2_loop:
     push hl
     xor a
     cp l
-    jp nz,clear_puyo_2x2_loop
+    jp nz,erase_puyo_2x2_loop
     pop hl
     ret
 
