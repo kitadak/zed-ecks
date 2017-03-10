@@ -1,4 +1,4 @@
-; curr_puyo
+; curr_pair
 ; 6b = position. 0d to 59d
 ; 2b = orientation. 00b=up, 01b=right, 10b=down, 11b=left
 
@@ -9,18 +9,18 @@
 ; Output: None
 ; ------------------------------------------------------------------
 ; special cases:
-; 1. curr_puyo in last column with up orientation 	 ---(50..59)---00
-; 2. curr_puyo in first column with down orientation ---(0..9)---10
-; 3. curr_puyo in last row with right orientation 	 ---(9,19,29,39,49,59)---01
+; 1. curr_pair in last column with up orientation 	 ---(50..59)---00
+; 2. curr_pair in first column with down orientation ---(0..9)---10
+; 3. curr_pair in last row with right orientation 	 ---(9,19,29,39,49,59)---01
 ; ------------------------------------------------------------------
 rotate_clockwise:
-	ld a, (curr_puyo)
+	ld a, (curr_pair)
 	ld b, a 			; make copy of original
 
 	and 0x03			; extract orientation
 rotate_clockwise_1:
 	jr nz,rotate_clockwise_2
-	
+
 	; check position
 	ld a,b
 	and 0xfc
@@ -114,7 +114,7 @@ end_rotate_clockwise:
 	ld a, b
 	and 0xfc
 	or c
-	ld (curr_puyo), a
+	ld (curr_pair), a
 
 	ret
 
@@ -125,18 +125,18 @@ end_rotate_clockwise:
 ; Output: None
 ; ------------------------------------------------------------------
 ; special cases:
-; 1. curr_puyo in first column with up orientation	 ---(0..9)---00
-; 2. curr_puyo in last column with down orientation	 ---(50...59)---10
-; 3. curr_puyo in last row with left orientation	 ---(9,19,29,39,49,59)---11
+; 1. curr_pair in first column with up orientation	 ---(0..9)---00
+; 2. curr_pair in last column with down orientation	 ---(50...59)---10
+; 3. curr_pair in last row with left orientation	 ---(9,19,29,39,49,59)---11
 ; ------------------------------------------------------------------
 rotate_anticlockwise:
-	ld a, (curr_puyo)
+	ld a, (curr_pair)
 	ld b, a 			; make copy of original
 
 	and 0x03			; extract orientation
 rotate_anticlockwise_1:
 	jr nz,rotate_anticlockwise_2
-	
+
 	; check position
 	ld a,b
 	and 0xfc
@@ -229,6 +229,6 @@ end_rotate_anticlockwise:
 	ld a, b
 	and 0xfc
 	or c
-	ld (curr_puyo), a
+	ld (curr_pair), a
 
 	ret

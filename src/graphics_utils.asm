@@ -33,32 +33,10 @@ test_single_cell:
     ld hl,puyo_d            ; load pixel data addr into hl
     call load_2x2_data
 
-    ld c,24                 ; load pixel coordinates
-    ld b,24
+    ld c,0                  ; load pixel coordinates
+    ld b,0
     call erase_puyo_2x2     ; clear 2x2 cells
 
-    ret
-
-; ------------------------------------------------------------------
-; sll8_bc: Shift left logical 3 times on b and c separately.
-;          Can be used to convert pixel positions (0-23,0-31) to
-;          (0-255,0-191) coordinates.
-; ------------------------------------------------------------------
-; Registers polluted: a
-; ------------------------------------------------------------------
-sll8_bc:
-    ld a,b                  ; shift right b 3 times
-    rlca                    ; rla solution: 7+3*4  +7+7=33 cycles
-    rlca                    ; sla solution:   3*8+7+7+7=45 cycles
-    rlca
-    and %11111000           ; mask out unwanted bits
-    ld b,a                  ; save back to b
-    ld a,c                  ; do the same to c
-    rlca
-    rlca
-    rlca
-    and %11111000
-    ld c,a
     ret
 
 ; ------------------------------------------------------------------
@@ -316,10 +294,10 @@ erase_puyo_2x2_loop:
 populate_coord_tab:
     ld bc,TOPLEFT_HIDDEN
     ld hl,board_to_coord_tab
-    ld de,6                 ; push column counter to stack
+    ld de,TOTAL_COLUMNS     ; push column counter to stack
     push de
 populate_coord_tab_column:
-    ld de,10                ; push row counter to stack
+    ld de,TOTAL_ROWS        ; push row counter to stack
     push de
 populate_coord_tab_row:
     ld (hl),bc              ; write to table
@@ -341,7 +319,7 @@ populate_coord_tab_row:
     jp z,populate_coord_tab_done
     push de
     ld bc,TOPLEFT_HIDDEN
-    ld a,6                  ; add 8*(6-e) to c
+    ld a,TOTAL_COLUMNS      ; add 8*(6-e) to c
     sub e
     sla a
     sla a
@@ -356,7 +334,7 @@ populate_coord_tab_done:
 ; ------------------------------------------------------------------
 ; get_board_to_coord: Translate given board position to coordinates
 ; ------------------------------------------------------------------
-; Input: bc - board position number (0-59)
+; Input: bc - board position number (0-95)
 ; Output: coordinates in bc
 ; ------------------------------------------------------------------
 ; Registers polluted: h, l

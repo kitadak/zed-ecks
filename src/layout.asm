@@ -20,11 +20,11 @@ init_background:
     call fill_screen_data
     ld bc,TOPLEFT_VISIBLE
 init_background_clear:
-    ld hl,18                ; push loop counter = rows*2
+    ld hl,TOTAL_ROWS+TOTAL_ROWS-4   ; push loop counter = (visible rows)*2
     push hl
 init_background_clear_loop:
     call get_attr_address   ; get attr addr of left cell
-    ld h,11
+    ld h,TOTAL_COLUMNS+TOTAL_COLUMNS-5  ; column counter = (visible cols)*2-1
     xor a
     ld (de),a
 init_background_clear_row_loop:
@@ -75,15 +75,20 @@ test_push:
 
     ; push coordinates: curr pivot, curr 2nd, prev pivot, prev 2nd
     ld d,2
-    ld hl,curr_puyo         ; get current position info
+    ld hl,curr_pair+1       ; get current position info
+    ld a,(hl)
+    push af
+    dec hl
 draw_curr_pair_calc:
     ld a,(hl)
     ld c,a                  ; calculate coord of pivot & push
-    srl c
-    srl c
     ld b,0
     call get_board_to_coord
+
+    pop af
     push bc
+    ;ld hl,curr_pair+1
+    ;ld a,(hl)
     and %00000011           ; calculate coord of 2nd
     ld e,a
     ld a,0x03
@@ -118,11 +123,16 @@ draw_curr_pair_left:        ; c-16
     ld c,a
 draw_curr_pair_push:
     push bc
-    ld hl,prev_pair
+    ld hl,prev_pair+1
+    ld a,(hl)
+    push af
+    dec hl
+
     xor a
     dec d
     cp d
     jp nz,draw_curr_pair_calc
+    pop af
 
     ; finished pushing, pop to erase and draw next
     pop bc                  ; erase previous position first
@@ -180,32 +190,34 @@ refresh_board:
 
     ld de,0xffff            ; push stack end marker
     push de
-    ld c,BOARD_SIZE        ; setup initial counter and values
-    ld b,1                  ; row counter -- to ignore hidden row
+    ld c,BOARD_SIZE         ; setup initial counter and values
+    ld b,13                 ; row counter -- to ignore hidden row
     ld e,0                  ; position index
     ld hl,player_board
-refresh_board_write:         ; read all cell values, push existing ones to stack
+refresh_board_write:        ; read all cell values, push existing ones to stack
     xor a                   ; clear a for comparison
     dec b                   ; decrement row counter, check for hidden row
     cp b
-    jp z,refresh_board_hidden    ; if hidden row, do not push, refresh b
+    jp z,refresh_board_hidden   ; if hidden row, do not push, refresh b
     ld d,(hl)               ; load current map cell
     ld a,d
-    and 0x01
+    and 0x07
     jp z,refresh_board_next ; if cell empty, do not push
+    xor 0x07
+    jp z,refresh_board_next ; if cell is wall, do not push
 refresh_board_push:
     push de                 ; push: cell value (d) & position number (e)
-    ld a,d                  ; push: 2 -bit attr indicator (d) & position (e)
-    and %00001100
-    srl a
-    srl a
+    ld a,d                  ; push: attribute (d) & position (e)
+    and 0x07                ; color
+    or 0x40                 ; set to bright
     ld d,a
     push de
     jp refresh_board_next
 refresh_board_hidden:
-    ld b,10
+    ld b,12
 refresh_board_next:
     inc hl                  ; increment pointer to cell in boardmap
+    inc hl
     inc e                   ; increment position index
     xor a
     dec c                   ; decrement cell counter, check if reached last cell
@@ -222,14 +234,10 @@ refresh_board_draw:
     ld c,e
     call get_board_to_coord
     push bc
-    ld hl,val_puyo_blue     ; load attribute value
-    ld e,d
-    ld d,0
-    add hl,de
-    ld l,(hl)
+    ld l,d
     call load_2x2_attr
-    pop bc                  ; calculate sprite address
-    pop de
+    pop bc
+    pop de                  ; calculate sprite address
     ld a,0xf0               ; should be puyo_none + orientation*32
     and a,d
     sla a
@@ -240,7 +248,7 @@ refresh_board_draw:
     ld hl,puyo_none
     add hl,de
     call load_2x2_data      ; draw puyo
-    jp refresh_board_read    ; repeat until stack marker reached
+    jp refresh_board_read   ; repeat until stack marker reached
 refresh_board_done:
     ret
 
