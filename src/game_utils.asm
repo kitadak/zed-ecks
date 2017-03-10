@@ -16,21 +16,60 @@ check_next_row:
     ret
 
 ; ------------------------------------------------------------
-; clear_board: Empties the board
+; reset_board: Resets the board to empty
 ; ------------------------------------------------------------
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------
+; Registers used: abcdefhl
+; ------------------------------------------------------------
 
-clear_board:
+reset_board:
     ld bc, BOARD_SIZE
     ld a, 0
     ld hl, player_board
-clear_board_loop:
-    ld (hl), a
+reset_board_loop:
+    ld (hl), a                  ; fills board with 0s, inc walls
     inc hl
     dec bc
-    jp nz, clear_board_loop
+    jp nz, reset_board_loop
+; reset left wall
+    ld hl, player_board
+    ld a, 7
+    ld bc, 12                   ; Length of vertical walls
+reset_board_left:
+    ld (hl), a
+    inc hl
+    inc hl
+    dec bc
+    jp nz, reset_board_left
+; reset right wall
+    ld hl, player_board
+    ld bc, 168                  ; byte pos of right wall
+    add hl, bc
+    ld bc, 12
+reset_board_right:
+    ld (hl), a
+    inc hl
+    inc hl
+    dec bc
+    jp nz, reset_board_right
+; reset the bottom wall
+    ld hl, player_board
+    ld bc, 46                   ; move to the last row, second block from the left
+    add hl, bc
+    ld de, 24                   ; jump by 24 to move horizontally
+    ld (hl), a                  ; fill 6 blocks
+    add hl, bc
+    ld (hl), a
+    add hl, bc
+    ld (hl), a
+    add hl, bc
+    ld (hl), a
+    add hl, bc
+    ld (hl), a
+    add hl, bc
+    ld (hl), a
     ret
 
 ; ------------------------------------------------------------
@@ -64,7 +103,7 @@ gameover:
 ; gameover_detect : checks for a gameover
 ; ------------------------------------------------------------
 ; Input: None
-; Output: a - 0x01 if gameover, otherwise 0x00
+; Output: a - nonzero if gameover, otherwise returns 0
 ; ------------------------------------------------------------
 ; Note: this does not directly jump to the gameover sequence
 ; Main loop will call jump to avoid overflowing call stack
@@ -74,10 +113,10 @@ gameover_detect:
     ld bc, KILL_LOCATION        ; represents 3rd column, top visible row
     add hl, bc
     ld a, (hl)
-    and 0x03                    ; Isolate status bits
-    cp 0x01                     ; Check if puyo exists
-    ret
-
+    and 0x07                    ; Isolate color bits
+    ret                         ; If empty, reg a should now be 0x00
+                                ; This will fail if KILL_LOCATION
+                                ; points to a wall
 
 ; ------------------------------------------------------------
 ; gen_puyos: generate two randomly colored puyos
@@ -85,12 +124,19 @@ gameover_detect:
 ; Input: None
 ; Output: next_puyos: two randomly colored puyos
 ; ------------------------------------------------------------
+; Registers Used: abchl
+; ------------------------------------------------------------
 gen_puyos:
-    call rand8
-    and 0x0C                    ; 0b00001100 - isolates color bits
+    call rand8                  ; a <- random value
+    and 0x0F                    ; Get a range from [0,15]
+    ld hl, PUYO_PAIRS           ; Go to our list of pairs
+    ld b, 0
+    ld c, a                     ; load the offset
+    add hl, bc
+    ld bc, (hl)                 ; Grab the values of the two puyos
+    ld a, b
     ld (next_puyo), a
-    call rand8
-    and 0x0C
+    ld a, c
     ld (next_puyo+1), a
     ret
 

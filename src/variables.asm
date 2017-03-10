@@ -1,5 +1,3 @@
-
-
 ; ==================================================================
 ; FILE: variables.asm
 ; ------------------------------------------------------------------
@@ -12,8 +10,20 @@
 
 TOPLEFT_VISIBLE equ 0x1818
 TOPLEFT_HIDDEN  equ 0x0818
-BOARD_SIZE      equ 60
-KILL_LOCATION   equ 23
+BOARD_SIZE      equ 192
+KILL_LOCATION   equ 74  ; Based on byte representation
+
+
+; Puyo Pairs
+; In order:
+; BB,BR,BG,BY,RB,RR,RG,RY,GB,GR,GG,GY,YB,YR,YG,YY
+; Note: These pairs are stored in little endian
+; which means they will be reversed when stored
+PUYO_PAIRS:
+    defw 0x0101, 0x0102, 0x0104, 0x0106
+    defw 0x0201, 0x0202, 0x0204, 0x0206
+    defw 0x0401, 0x0402, 0x0404, 0x0406
+    defw 0x0601, 0x0602, 0x0604, 0x0606
 
 ; ------------------------------------------------------------------
 ; Variables/Tables
@@ -57,4 +67,5 @@ drop_table:
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
     defs 120,0xfb
+
 
