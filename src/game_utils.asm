@@ -138,6 +138,60 @@ gen_puyos:
     ret
 
 ; ------------------------------------------------------------
+; get_input: returns a byte indicating which buttons are pressed
+; ------------------------------------------------------------
+; Input: None
+; Output: c - byte representation of pressed buttons
+; ------------------------------------------------------------
+; Note: Input will be returned in the following format:
+; 76543210
+; PW HJASD
+; 0 -> Not pressed
+; 1 -> Pressed
+; bit 5 will is unused and will not be taken into account
+; ------------------------------------------------------------
+; Registers Used: a,c
+; ------------------------------------------------------------
+; With help from:
+; Advanced Spectrum Machine Language
+; http://www.animatez.co.uk/computers/zx-spectrum/keyboard/
+; ------------------------------------------------------------
+get_input:
+    ld a, 0xFB                  ; load qwert row
+    in a, (0xFE)
+    cpl                         ; invert input
+    and 0x02                    ; isolate W (bit 1)
+    rrca                        ; move W to bit 6
+    rrca
+    rrca
+    ld c, a                     ; store in C
+
+    ld a, 0xFB                  ; load asdfg row
+    in a, (0xFE)
+    cpl
+    and 0x07                    ; isolate ASD (bits 012)
+                                ; ASD is already in place!
+    or c                        ; combine previous results
+    ld c, a
+    ld a, 0xBF                  ; load hjklenter row
+    in a, (0xFE)
+    cpl
+    and 0x24                    ; isolate JH (bits 34)
+                                ; JH is already in place
+    or c
+    ld c, a
+
+    ld a, 0xDF                  ; load yuiop row
+    in a, (0xFE)
+    cpl
+    and 0x01                    ; isolate P (bit 0)
+    rrca                        ; move P to bit 7
+    or c
+    ld c, a                     ; store result in c
+    ret
+
+
+; ------------------------------------------------------------
 ; play_check_input: processes input in play loop, moves puyos
 ; ------------------------------------------------------------
 ; Input: None
