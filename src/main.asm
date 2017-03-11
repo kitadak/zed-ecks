@@ -26,7 +26,8 @@ play_init:
 
 play_main_loop:
     call gameover_detect
-    jp z, gameover
+    cp 0
+    jp nz, gameover
     call spawn_puyos
     call reset_drop_timer
 
@@ -37,7 +38,9 @@ play_drop_loop:
     ld hl, (drop_timer)     ; update timer
     dec hl
     ld (drop_timer), hl
+    cp 0
     call z, check_next_row  ; check if next row is occupied
+    cp 0
     jp z, play_drop_loop    ; puyo hasn't moved down a row yet
 
 
@@ -47,6 +50,7 @@ play_drop_loop:
 
 play_clear_loop:            ; start clearing chain
     call process_clears
+    cp 0
     jp nz, play_clear_loop
     jp play_main_loop
 

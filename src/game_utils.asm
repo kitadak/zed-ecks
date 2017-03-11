@@ -84,7 +84,7 @@ drop_active_puyos:
 ; ------------------------------------------------------------
 ; drop_column: drops any floating puyos in the given column
 ; ------------------------------------------------------------
-; Input: a - index of column (0, 10, 20, 30, 40, 50)
+; Input: a - index of column (0, 12, 24, 36, 58, 60, 72)
 ; Output: player_board updated to drop all puyos in a column
 ; ------------------------------------------------------------
 drop_column:
