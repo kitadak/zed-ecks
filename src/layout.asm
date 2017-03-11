@@ -55,7 +55,6 @@ init_background_clear_row_loop:
 ; ------------------------------------------------------------------
 
 ; ------------------------------------------------------------------
-; TODO:
 ; draw_curr_pair: Update current airborne puyo pair on the screen
 ; ------------------------------------------------------------------
 ; Input: None
@@ -63,16 +62,10 @@ init_background_clear_row_loop:
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
+; Note: This routine assumes that the puyo positions are valid,
+;       although it will check for hidden row.
+; ------------------------------------------------------------------
 draw_curr_pair:
-    ld de,0xffff
-    ld c,64
-    xor a
-test_push:
-    push de
-    dec c
-    cp c
-    jp nz,test_push
-
     ; push coordinates: curr pivot, curr 2nd, prev pivot, prev 2nd
     ld d,2
     ld hl,curr_pair+1       ; get current position info
@@ -84,11 +77,13 @@ draw_curr_pair_calc:
     ld c,a                  ; calculate coord of pivot & push
     ld b,0
     call get_board_to_coord
-
+    call is_wall_hidden            ; check if pivot is wall
+    cp e
+    jp z,draw_curr_pair_push_1  ; if not wall, push normally, else push 0xffff
+    ld bc,0xffff
+draw_curr_pair_push_1:
     pop af
     push bc
-    ;ld hl,curr_pair+1
-    ;ld a,(hl)
     and %00000011           ; calculate coord of 2nd
     ld e,a
     ld a,0x03
@@ -105,29 +100,34 @@ draw_curr_pair_up:          ; b-16
     ld e,16
     sub e
     ld b,a
-    jp draw_curr_pair_push
+    jp draw_curr_pair_wall_check
 draw_curr_pair_right:       ; c+16
     ld a,16
     add a,c
     ld c,a
-    jp draw_curr_pair_push
+    jp draw_curr_pair_wall_check
 draw_curr_pair_down:        ; b+16
     ld a,16
     add a,b
     ld b,a
-    jp draw_curr_pair_push
+    jp draw_curr_pair_wall_check
 draw_curr_pair_left:        ; c-16
     ld a,c
     ld e,16
     sub e
     ld c,a
-draw_curr_pair_push:
+
+draw_curr_pair_wall_check:  ; if current cell is wall or hidden, push 0xffff
+    call is_wall_hidden
+    cp e
+    jp z,draw_curr_pair_push_2  ; if not wall, push normally, else push 0xffff
+    ld bc,0xffff
+draw_curr_pair_push_2:
     push bc
     ld hl,prev_pair+1
     ld a,(hl)
     push af
     dec hl
-
     xor a
     dec d
     cp d
@@ -136,44 +136,47 @@ draw_curr_pair_push:
 
     ; finished pushing, pop to erase and draw next
     pop bc                  ; erase previous position first
+    ld a,0xff
+    cp b
+    jp z,draw_curr_pair_erase_skip_1   ; if wall, ignore
     call erase_puyo_2x2
+draw_curr_pair_erase_skip_1:
     pop bc
+    ld a,0xff
+    cp b
+    jp z,draw_curr_pair_erase_skip_2   ; if wall, ignore
     call erase_puyo_2x2
-    ld hl,pair_color        ; draw curr 2nd puyo
-    ld a,(hl)
-    ex af,af'               ; store a copy of color byte in a'
-    ld a,(hl)
-    ex af,af'
-    and %00000011
-    ld d,0
-    ld e,a
-    ld hl,val_puyo_blue
-    add hl,de
-    ld l,(hl)
+draw_curr_pair_erase_skip_2:
     pop bc
+    ld a,0xff
+    cp b
+    jp z,draw_curr_pair_draw_skip_1
+    ld a,(pair_color)       ; draw curr 2nd puyo
+    and 0x07
+    or %01000000
+    ld l,a
     push bc
     call load_2x2_attr
     pop bc
     ld hl,puyo_none
     call load_2x2_data
-    ex af,af'               ; draw curr pivot puyo
-    and %00001100
-    srl a
-    srl a
-    ex af,af'
-    ld d,0
-    ld e,a
-    ld hl,val_puyo_blue
-    add hl,de
-    ld l,(hl)
+draw_curr_pair_draw_skip_1:
     pop bc
+    ld a,0xff
+    cp b
+    jp z,draw_curr_pair_draw_skip_2
+    ld a,(pair_color)       ; draw curr pivot puyo
+    srl a
+    srl a
+    srl a
+    or %01000000
+    ld l,a
     push bc
     call load_2x2_attr
     pop bc
     ld hl,puyo_none
     call load_2x2_data
-
-    call inf_loop
+draw_curr_pair_draw_skip_2:
     ret
 
 ; ------------------------------------------------------------------
@@ -251,4 +254,42 @@ refresh_board_draw:
     jp refresh_board_read   ; repeat until stack marker reached
 refresh_board_done:
     ret
+
+; ------------------------------------------------------------------
+; is_wall_hidden: check if given board coordinates are wall/hidden
+; ------------------------------------------------------------------
+; Input: bc - coordinates (as given by get_board_to_coord)
+; Output: e - zero if not wall/hidden, 0xff otherwise
+; ------------------------------------------------------------------
+; Registers polluted: a, e
+; ------------------------------------------------------------------
+is_wall_hidden:
+    ld a,WALL_LEFT
+    cp c
+    jp z,is_wall_hidden_true
+    ld a,WALL_RIGHT
+    cp c
+    jp z,is_wall_hidden_true
+    ld a,WALL_BOTTOM
+    cp b
+    jp z,is_wall_hidden_true
+    ld a,HIDDEN_ROW
+    cp b
+    jp z,is_wall_hidden_true
+    ld e,0
+    ret
+is_wall_hidden_true:
+    ld e,0xff
+    ret
+
+; ------------------------------------------------------------------
+; TODO
+; drop_floating_puyo: drop all floating puyo down
+; ------------------------------------------------------------------
+; Input: None
+; Output: puyo dropped with animation (delay),
+;         player_board updated with all puyos settled
+; ------------------------------------------------------------------
+; Registers polluted: a
+; ------------------------------------------------------------------
 

@@ -15,7 +15,28 @@ TOPLEFT_VISIBLE equ 0x1018
 TOTAL_ROWS      equ 12
 TOTAL_COLUMNS   equ 8
 BOARD_SIZE      equ 96
+
+WALL_LEFT       equ 0x08    ; cp c
+WALL_RIGHT      equ 0x78    ; cp c
+WALL_BOTTOM     equ 0xB0    ; cp b
+HIDDEN_ROW      equ 0x00    ; cp b
+
 KILL_LOCATION   equ 37
+
+; ------------------------------------------------------------------
+; Graphics Attributes
+; ------------------------------------------------------------------
+
+BACKGROUND_ATTR     equ 3
+PUYO_BLUE           equ 65
+PUYO_RED            equ 66
+PUYO_GREEN          equ 68
+PUYO_YELLOW         equ 70
+
+val_puyo_blue:      defb 65
+val_puyo_red:       defb 66
+val_puyo_green:     defb 68
+val_puyo_yellow:    defb 70
 
 ; ------------------------------------------------------------------
 ; Variables/Tables
@@ -58,9 +79,9 @@ drop_timer: defb 0
 current_speed: defb 0
 
 ; Active airborne puyo pair
-curr_pair: defb 14,%00000010    ; current pair position
+curr_pair: defb 14,%00000000    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
-pair_color: defb %00000010
+pair_color: defb %00100001
 
 ; Chain power table
 ; Used for scoring
