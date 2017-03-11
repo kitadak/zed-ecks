@@ -17,13 +17,13 @@ KILL_LOCATION   equ 74  ; Based on byte representation
 ; Puyo Pairs
 ; In order:
 ; BB,BR,BG,BY,RB,RR,RG,RY,GB,GR,GG,GY,YB,YR,YG,YY
-; Note: These pairs are stored in little endian
-; which means they will be reversed when stored
+; Storage Format:
+; 00AAABBB -> A is first color, B is second color
 PUYO_PAIRS:
-    defw 0x0101, 0x0102, 0x0104, 0x0106
-    defw 0x0201, 0x0202, 0x0204, 0x0206
-    defw 0x0401, 0x0402, 0x0404, 0x0406
-    defw 0x0601, 0x0602, 0x0604, 0x0606
+    defb 0x09, 0x0A, 0x0C, 0x0E
+    defb 0x11, 0x12, 0x14, 0x16
+    defb 0x21, 0x22, 0x24, 0x26
+    defb 0x31, 0x32, 0x34, 0x36
 
 ; ------------------------------------------------------------------
 ; Variables/Tables
@@ -34,7 +34,7 @@ player_board:
     defs 30,%11111101   ; sample board map for testing purpose
     defs 30,%10110101
 
-next_puyo: defs 2,0
+next_pair: defs 2,0
 
 player_score: defs 4,0
 
@@ -50,9 +50,9 @@ current_speed: defb 0
 
 ; Active airborne puyo pair
 ; Must stay in this order for drawing purpose
-prev_pair: defb 0x99    ; previous position of current pair
-curr_puyo: defb 0x77    ; current pair position
-pair_color: defb 0x06   ; color of current pair (unused[4]|pivot[2]|other[2])
+prev_pair: defb 14,%00000010    ; previous position of current pair
+curr_pair: defb 82,%00000011    ; current pair position
+pair_color: defb %00000010      ; color of current pair (unused[4]|pivot[2]|other[2])
 
 ; Chain power table
 ; Used for scoring

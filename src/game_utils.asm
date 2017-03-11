@@ -122,7 +122,7 @@ gameover_detect:
 ; gen_puyos: generate two randomly colored puyos
 ; ------------------------------------------------------------
 ; Input: None
-; Output: next_puyos: two randomly colored puyos
+; Output: next_pair: two randomly colored puyos
 ; ------------------------------------------------------------
 ; Registers Used: abchl
 ; ------------------------------------------------------------
@@ -133,11 +133,8 @@ gen_puyos:
     ld b, 0
     ld c, a                     ; load the offset
     add hl, bc
-    ld bc, (hl)                 ; Grab the values of the two puyos
-    ld a, b
-    ld (next_puyo), a
-    ld a, c
-    ld (next_puyo+1), a
+    ld a, (hl)                  ; Grab the next colors
+    ld (next_pair), a           ; Store the colors
     ret
 
 ; ------------------------------------------------------------
@@ -163,6 +160,8 @@ process_clears
 ; ------------------------------------------------------------
 ; Input: None
 ; Output: drop_timer - time till next drop
+; ------------------------------------------------------------
+; Registers Used: bc, hl
 ; ------------------------------------------------------------
 
 reset_drop_timer:
@@ -227,9 +226,18 @@ settle_puyos_loop_end:
 ; ------------------------------------------------------------
 ; Input: next_puyos: two randomly colored puyos
 ; Output: player_board: updated with new puyos
-;         active_puyos: the puyos that are being controlled
+;         curr_pair: the current pair position
+;         prev_puyo: the previous pair position
 ; ------------------------------------------------------------
 spawn_puyos:
+    ld a, 37                    ; spawns begin at 37i,36i
+    ld (curr_pair), a           ; reset initial positions
+    ld (prev_pair), a
+    ld a, 0
+    ld (curr_pair+1), a
+    ld hl, next_pair
+    ld a, (next_pair)
+    ld (pair_color), a
     call gen_puyos              ; generate new puyos after
     ret
 
