@@ -6,13 +6,73 @@
 ; ------------------------------------------------------------
 
 ; -------------------------------------------------------------
-; check_next_row: checks if next row of either active puyo
-; is occupied by another nonactive puyo
+; check_active_below: checks if next row of either active puyo
+; is occupied by another nonactive puyo or the floor
+; This assumes that the active puyos are not on the board
+; until they are settled
 ; -------------------------------------------------------------
 ; Input: None
-; Output: a - 0 if nothing, else something exists
+; Output: a = 0 -> nothing,
+;           = nonzero -> something exists
 ; ------------------------------------------------------------
-check_next_row:
+; NOTE: If the pivot puyo is at the walls (which shouldn't happen),
+; expect undefined behavior
+; ------------------------------------------------------------
+check_active_below:
+    ld hl, curr_pair
+    ld c, (hl)                      ; get position of pivot [0-94]
+    inc c                           ; get the spot below
+    call get_puyo
+    cp 0                            ; is there a puyo here?
+    jp nz, check_active_below_end       ; yes-> jump to end
+
+    ; check second puyo
+    ld hl, curr_pair                ; get the original position again
+    inc hl                          ; now get the orientation
+    ld a, (hl)
+    cp 0x00                         ; check if second puyo is on top
+    jp z, check_active_below_end    ; if so, we're done checking
+    cp 0x02                         ; check if on bottom
+    jp nz, check_active_below_r
+    ; second puyo on bottom
+    dec hl
+    ld c, (hl)                      ; load the pivot position
+    inc c                           ; point to second puyo
+    inc c                           ; point to spot below second puyo
+    call get_puyo
+    ret                             ; return result (either 0 or puyo)
+check_active_below_r:
+    cp 0x01                         ; check if on right
+    jp nz, check_active_below_l
+    ; second puyo on the right
+    ld hl, curr_pair
+    ld a, (hl)
+    add a, 13                       ; right is +12, below that is +13
+    ld c, a
+    call get_puyo
+    ret
+check_active_below_l:
+    ; second puyo on the left
+    ld hl, curr_pair
+    ld a, (hl)
+    sub 11                          ; left is -12, below that is -11
+    ld c, a
+    call get_puyo
+check_active_below_end:
+    ret
+; ------------------------------------------------------------
+; get_puyo: given index, returns the puyo at that spot
+; ------------------------------------------------------------
+; Input: c - index of puyo [0-95]
+; Output: a - returns the puyo at that location
+; ------------------------------------------------------------
+
+get_puyo:
+    ld hl, player_board
+    ld b, 0
+    sla c                           ; translate index to byte location
+    add hl, bc                      ; point to spot
+    ld a, (hl)                      ; load puyo
     ret
 
 ; ------------------------------------------------------------
@@ -190,7 +250,6 @@ get_input:
     ld c, a                     ; store result in c
     ret
 
-
 ; ------------------------------------------------------------
 ; play_check_input: processes input in play loop, moves puyos
 ; ------------------------------------------------------------
@@ -237,42 +296,42 @@ reset_drop_timer:
 ; This routine first looks for an empty space and moves
 ; anything above it downwards.
 ; ------------------------------------------------------------
-settle_puyos:
-    ld hl, player_board
-    ld bc, BOARD_SIZE-1             ; start at last puyo
-    add hl, bc
-    ld d, 0                         ; checks if nothing can be done
-
-    ld b, 6                         ; check 6 columns
-settle_puyos_column_loop:
-    ld c, 10                        ; check 10 rows (all but last)
-
-settle_puyos_row_loop:
-    ld a, (hl)                      ; grab a puyo
-    dec hl                          ; point to next
-    cp 0x01                         ; check if empty
-    jp z, settle_puyos_loop_end     ; if not empty, go to next
-
-    ld a, (hl)                      ; grab puyo above
-    cp 0x01
-    jp nz, settle_puyos_loop_end    ; if empty, go to next puyo
-
-    ld (hl), 0                      ; clear above
-    inc hl                          ; point to below
-    ld (hl), a                      ; update with puyo
-    dec hl                          ; return to original position
-
-    ld d, 1                         ; a drop has been made
-
-settle_puyos_loop_end:
-    dec c                           ; repeat this 10 times
-    jp nz, settle_puyos_row_loop
-    dec hl                          ; skip the top row
-    dec b
-    jp nz, settle_puyos_column_loop
-
-    ld a, d                         ; has the board been updated?
-    ret
+;;settle_puyos:
+;;    ld hl, player_board
+;;    ld bc, BOARD_SIZE-1             ; start at last puyo
+;;    add hl, bc
+;;    ld d, 0                         ; checks if nothing can be done
+;;
+;;    ld b, 6                         ; check 6 columns
+;;settle_puyos_column_loop:
+;;    ld c, 10                        ; check 10 rows (all but last)
+;;
+;;settle_puyos_row_loop:
+;;    ld a, (hl)                      ; grab a puyo
+;;    dec hl                          ; point to next
+;;    cp 0x01                         ; check if empty
+;;    jp z, settle_puyos_loop_end     ; if not empty, go to next
+;;
+;;    ld a, (hl)                      ; grab puyo above
+;;    cp 0x01
+;;    jp nz, settle_puyos_loop_end    ; if empty, go to next puyo
+;;
+;;    ld (hl), 0                      ; clear above
+;;    inc hl                          ; point to below
+;;    ld (hl), a                      ; update with puyo
+;;    dec hl                          ; return to original position
+;;
+;;    ld d, 1                         ; a drop has been made
+;;
+;;settle_puyos_loop_end:
+;;    dec c                           ; repeat this 10 times
+;;    jp nz, settle_puyos_row_loop
+;;    dec hl                          ; skip the top row
+;;    dec b
+;;    jp nz, settle_puyos_column_loop
+;;
+;;    ld a, d                         ; has the board been updated?
+;;    ret
 
 
 ; ------------------------------------------------------------
