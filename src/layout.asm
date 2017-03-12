@@ -368,7 +368,7 @@ drop_floats_erase:
     ld c,a
     add hl,bc
     ld (hl),e                   ; update new cell position
-    jp drop_floats_settle
+    jp drop_floats_erase
 
 drop_floats_done:
     call refresh_board

@@ -37,19 +37,22 @@ play_init:
 
 play_main_loop:
     call gameover_detect
-    jp z, gameover
+    cp 0
+    jp nz, gameover
     call spawn_puyos
     call reset_drop_timer
 
 play_drop_loop:
-    ;call redraw_board      ; update the board with the new puyos
-    call play_check_input   ; move or rotate the puyo if required
+    ;call redraw_board          ; update the board with the new puyos
+    call play_check_input       ; move or rotate the puyo if required
 
-    ld hl, (drop_timer)     ; update timer
+    ld hl, (drop_timer)         ; update timer
     dec hl
     ld (drop_timer), hl
-    call z, check_next_row  ; check if next row is occupied
-    jp z, play_drop_loop    ; puyo hasn't moved down a row yet
+    cp 0
+    call z, check_active_below  ; check if next row is occupied
+    cp 0
+    jp z, play_drop_loop        ; puyo hasn't moved down a row yet
 
 
     ; puyo has stopped
@@ -58,6 +61,7 @@ play_drop_loop:
 
 play_clear_loop:            ; start clearing chain
     call process_clears
+    cp 0
     jp nz, play_clear_loop
     jp play_main_loop
 
