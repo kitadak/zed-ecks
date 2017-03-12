@@ -81,55 +81,14 @@ get_puyo:
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------
-; Registers used: abcdefhl
+; Registers used: bcdehl
 ; ------------------------------------------------------------
 
 reset_board:
     ld bc, BOARD_SIZE
-    ld a, 0
-    ld hl, player_board
-reset_board_loop:
-    ld (hl), a                  ; fills board with 0s, inc walls
-    inc hl
-    dec bc
-    jp nz, reset_board_loop
-; reset left wall
-    ld hl, player_board
-    ld a, 7
-    ld bc, 12                   ; Length of vertical walls
-reset_board_left:
-    ld (hl), a
-    inc hl
-    inc hl
-    dec bc
-    jp nz, reset_board_left
-; reset right wall
-    ld hl, player_board
-    ld bc, 168                  ; byte pos of right wall
-    add hl, bc
-    ld bc, 12
-reset_board_right:
-    ld (hl), a
-    inc hl
-    inc hl
-    dec bc
-    jp nz, reset_board_right
-; reset the bottom wall
-    ld hl, player_board
-    ld bc, 46                   ; move to the last row, second block from the left
-    add hl, bc
-    ld de, 24                   ; jump by 24 to move horizontally
-    ld (hl), a                  ; fill 6 blocks
-    add hl, bc
-    ld (hl), a
-    add hl, bc
-    ld (hl), a
-    add hl, bc
-    ld (hl), a
-    add hl, bc
-    ld (hl), a
-    add hl, bc
-    ld (hl), a
+    ld de, player_board
+    ld hl, EMPTY_BOARD
+    ldir
     ret
 
 ; ------------------------------------------------------------
