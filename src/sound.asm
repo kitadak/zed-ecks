@@ -85,13 +85,13 @@ puyoclear_se:
 	di
 
 	; initial pitches
-	ld c,100
-	ld e,80
+	ld c,70
+	ld e,50
 	ld b,c
 	ld d,e
 
 puyoclear_se_sloop_low:
-	ld hl,0x1200
+	ld hl,0x500
 puyoclear_se_pitchloop_low:
 	xor a
 	dec b
@@ -121,7 +121,7 @@ puyoclear_se_pitchup:
 	sub 40
 	ld e,a
 puyoclear_se_sloop_high:
-	ld hl,0x1000
+	ld hl,0x500
 puyoclear_se_pitchloop_high:
 	xor a
 	dec b
@@ -147,6 +147,11 @@ puyoclear_se_pitchdown:
 	ld a,c
 	add 50
 	ld c,a
+
+	ld a,120
+	cp c
+	jr c, puyoclear_se_cleanup
+
 	ld a,e
 	add 50
 	ld e,a
@@ -243,8 +248,8 @@ gameover_se:
 	di
 
 	; initial pitches
-	ld c,100
-	ld e,80
+	ld c,50
+	ld e,30
 	ld b,c
 	ld d,e
 
@@ -304,13 +309,48 @@ gameover_se_high_sk2:
 gameover_se_pitchdown:
 	ld a,c
 	add 50
-	jr c,gameover_se_cleanup
+	jr c,gameover_se_closing
 	ld c,a
 	ld a,e
 	add 50
 	ld e,a
 
 	jr gameover_se_sloop_low
+
+gameover_se_closing:
+	ld c,240
+	ld e,220
+
+	ld hl,0x2500
+gameover_se_closingloop:
+	xor a
+	dec b
+	jr nz, gameover_se_closing_sk1
+	ld b,c
+	ld a,$10
+gameover_se_closing_sk1:
+	out ($fe),a
+
+	xor a
+	dec d
+	jr nz, gameover_se_closing_sk2
+	ld d,e
+	ld a,$10
+gameover_se_closing_sk2:
+	out ($fe),a
+
+	dec hl
+	ld a,l
+	or h
+	jr nz,gameover_se_closingloop
+
 gameover_se_cleanup:
 	ei
+	ret
+	ld b,c
+	ld d,e
+
+
+sound_test:
+	call puyoclear_se
 	ret
