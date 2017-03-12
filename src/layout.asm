@@ -312,7 +312,7 @@ drop_floats_read:
     dec e                       ; check if finished column
     xor a
     cp e
-    jp z,drop_floats_wall
+    jp z,drop_floats_read_wall
     ld a,(hl)                   ; read current cell
     and 0x07
     ld d,a
@@ -329,10 +329,10 @@ drop_floats_occupied:
     ld a,b                      ; mark # of spaces to drop on boardmap
     and 0x0f
     inc hl
-    ld (hl),a
+    ;ld (hl),a
     dec hl
     jp drop_floats_read
-drop_floats_wall:
+drop_floats_read_wall:
     ld e,TOTAL_ROWS
     ld b,0
     jp drop_floats_read
@@ -349,11 +349,10 @@ drop_floats_animate:
 
 drop_floats_erase:
     ; pop cell index & space counts, erase it on board
-    ; push updated cell: value (b), index (c)
     pop de
     ld a,0xff
     cp d
-    jr z,drop_floats_done       ; if reached stack sentinel, we're done
+    jr z,drop_floats_write      ; if reached stack sentinel, we're done
     ld hl,player_board          ; get original cell
     ld b,0
     ld c,e
@@ -363,12 +362,48 @@ drop_floats_erase:
     and 0x07
     ld e,a
     ld (hl),b                   ; clear original cell on boardmap
-    ld a,d                      ; get updated cell address
+    ld a,d                      ; get updated cell address (2nd byte)
     sla a
     ld c,a
+    inc c
     add hl,bc
-    ld (hl),e                   ; update new cell position
+    ld (hl),e                   ; store new cell value in 2nd byte
     jp drop_floats_erase
+drop_floats_write:
+    ; if second byte is nonzero, move 2nd byte to 1st byte
+    ; hl - address in boardmap
+    ; d - cell index
+    ; e - cell 2nd byte
+    ; b - row counter
+    ld hl,player_board+12+12+1
+    ld d,12
+    ld b,TOTAL_ROWS-1
+drop_floats_write_loop:
+    ld a,82                     ; check if reached bottom right cell
+    cp d
+    jr z,drop_floats_done
+    inc d                       ; check if finished column
+    inc hl
+    inc hl
+    dec b
+    xor a
+    cp b
+    jr z,drop_floats_write_wall
+    ld e,(hl)                   ; load cell 2nd byte
+    cp e
+    jp z,drop_floats_write_loop ; if 2nd byte is zero, skip
+    ld (hl),a                   ; else move 2nd byte to 1st byte
+    dec hl
+    ld (hl),e
+    inc hl
+    jp drop_floats_write_loop
+drop_floats_write_wall:
+
+    ld b,TOTAL_ROWS-1
+    inc hl                      ; skip hidden row & wall
+    inc hl
+    inc d
+    jp drop_floats_write_loop
 
 drop_floats_done:
     call refresh_board
