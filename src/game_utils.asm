@@ -364,6 +364,7 @@ rotate_clockwise_u:
     jp z, end_rotate_clockwise      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
     ld a, (hl)
+    ld (prev_pair), a               ; update previous pair with old value
     ld c, 12
     sub c
     ld (hl), a
@@ -377,6 +378,7 @@ rotate_clockwise_r:
 
     ; check if puyo exists below
     ld a, (hl)
+    ld (prev_pair), a               ; update previous pair with old value
     inc a                           ; get index of below
     ld c, a
     call get_puyo
@@ -394,6 +396,7 @@ rotate_clockwise_d:
     call get_puyo
     jp z, end_rotate_clockwise
     ld a, (hl)
+    ld (prev_pair), a               ; update previous pair with old value
     ld c, 12
     add a,c
     ld (hl), a
@@ -402,9 +405,11 @@ end_rotate_clockwise:
 	; 00->01->10->11->00
 	; increment last two bits
     inc hl                          ; hl now points to orientation byte
-	inc (hl)                        ; we only care about the first 2 bits
-                                    ; because we're using AND, the other bits
-                                    ; should not matter
+    ld a, (hl)
+    ld (prev_pair+1), a             ; store old orientation
+    inc a
+    and 0x03
+    ld (hl), a
 	ret
 
 
