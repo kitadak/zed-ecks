@@ -11,10 +11,21 @@
     call populate_coord_tab
     call init_background
     call refresh_board      ; test
-    call test_single_cell
+    ;call draw_curr_pair     ; test
+    call test_single_cell   ; test
+    call drop_floats        ; test
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
+
+; ------------------------------------------------------------------
+; Test drop loop (no user input, new board representation)
+; ------------------------------------------------------------------
+test_init:
+    ld a,25
+    ld (drop_timer),a
+test_play_drop_loop:
+
 
 ; ------------------------------------------------------------------
 ; Main Game Loop
