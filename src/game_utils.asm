@@ -347,24 +347,26 @@ rand8:
 ;
 ; ------------------------------------------------------------------
 rotate_clockwise:
-    ld hl, curr_pair
+    ld a, (curr_pair)               ; store curr location into previous
+    ld (prev_pair), a
     ld a, (curr_pair+1)             ; get orientation
-    and 0x03                         ; if left, no checks needed
+    cp 0x03                         ; if left, no checks needed
     jp z, end_rotate_clockwise
-    and 0x00
+    cp 0x00
 rotate_clockwise_u:
 	jp nz,rotate_clockwise_r
 
 	; check if puyo exists to the right
-    ld a, (hl)
+    ld a, (curr_pair)
     ld c, 12
     add a, c
     ld c, a
     call get_puyo
+    cp 0
     jp z, end_rotate_clockwise      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
+    ld hl, curr_pair
     ld a, (hl)
-    ld (prev_pair), a               ; update previous pair with old value
     ld c, 12
     sub c
     ld (hl), a
@@ -372,38 +374,39 @@ rotate_clockwise_u:
 	jp end_rotate_clockwise
 
 rotate_clockwise_r:
-    ld a, (curr_pair+1)
-	and 0x01
-	jr nz,rotate_clockwise_d
+	cp 0x01
+	jp nz,rotate_clockwise_d
 
     ; check if puyo exists below
-    ld a, (hl)
-    ld (prev_pair), a               ; update previous pair with old value
+    ld a, (curr_pair)
     inc a                           ; get index of below
     ld c, a
     call get_puyo
+    cp 0
     jp z, end_rotate_clockwise      ; if nothing, rotation is fine
     ; something exists, need to shift puyo upward
     ; NOTE: This means players can keep rotating upward
     ; May cause strange issues unless we reset the drop timer
+    ld hl, curr_pair
     dec (hl)
     jp end_rotate_clockwise
 rotate_clockwise_d:
-    ld a, (hl)
-    ld c, 12
+    ld a, (curr_pair)
+    ld c, 12                        ; need to check left
     sub c
     ld c, a
     call get_puyo
+    cp 0
     jp z, end_rotate_clockwise
+    ld hl, curr_pair                ; something exists, move right
     ld a, (hl)
-    ld (prev_pair), a               ; update previous pair with old value
     ld c, 12
-    add a,c
+    add a, c
     ld (hl), a
-
 end_rotate_clockwise:
 	; 00->01->10->11->00
 	; increment last two bits
+    ld hl, curr_pair
     inc hl                          ; hl now points to orientation byte
     ld a, (hl)
     ld (prev_pair+1), a             ; store old orientation

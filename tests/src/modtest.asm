@@ -1,4 +1,3 @@
-	org	32687
 	call	$0daf		; clear screen
 	ld	bc, 10		; push 10 to calc stack
 	call	$2d2b
