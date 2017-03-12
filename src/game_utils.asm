@@ -338,23 +338,27 @@ rand8:
     add a, b
     sbc a, 255
     ret
+
+
+
+
 ; ------------------------------------------------------------------
-; rotate_clockwise: Rotate current puyo pair clockwise
+; rotate_cw: Rotate current puyo pair clockwise
 ; ------------------------------------------------------------------
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------------
 ;
 ; ------------------------------------------------------------------
-rotate_clockwise:
+rotate_cw:
     ld a, (curr_pair)               ; store curr location into previous
     ld (prev_pair), a
     ld a, (curr_pair+1)             ; get orientation
     cp 0x03                         ; if left, no checks needed
-    jp z, end_rotate_clockwise
+    jp z, rotate_cw_end
     cp 0x00
-rotate_clockwise_u:
-	jp nz,rotate_clockwise_r
+rotate_cw_u:
+	jp nz,rotate_cw_r
 
 	; check if puyo exists to the right
     ld a, (curr_pair)
@@ -363,7 +367,7 @@ rotate_clockwise_u:
     ld c, a
     call get_puyo
     cp 0
-    jp z, end_rotate_clockwise      ; if nothing, rotation is fine
+    jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
     ld hl, curr_pair
     ld a, (hl)
@@ -371,11 +375,11 @@ rotate_clockwise_u:
     sub c
     ld (hl), a
 
-	jp end_rotate_clockwise
+	jp rotate_cw_end
 
-rotate_clockwise_r:
-	cp 0x01
-	jp nz,rotate_clockwise_d
+rotate_cw_r:
+	cp 0x03
+	jp nz,rotate_cw_d
 
     ; check if puyo exists below
     ld a, (curr_pair)
@@ -383,38 +387,114 @@ rotate_clockwise_r:
     ld c, a
     call get_puyo
     cp 0
-    jp z, end_rotate_clockwise      ; if nothing, rotation is fine
+    jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift puyo upward
     ; NOTE: This means players can keep rotating upward
     ; May cause strange issues unless we reset the drop timer
     ld hl, curr_pair
     dec (hl)
-    jp end_rotate_clockwise
-rotate_clockwise_d:
+    jp rotate_cw_end
+rotate_cw_d:
     ld a, (curr_pair)
     ld c, 12                        ; need to check left
     sub c
     ld c, a
     call get_puyo
     cp 0
-    jp z, end_rotate_clockwise
+    jp z, rotate_cw_end
     ld hl, curr_pair                ; something exists, move right
     ld a, (hl)
     ld c, 12
     add a, c
     ld (hl), a
-end_rotate_clockwise:
+rotate_cw_end:
 	; 00->01->10->11->00
 	; increment last two bits
     ld hl, curr_pair
     inc hl                          ; hl now points to orientation byte
     ld a, (hl)
     ld (prev_pair+1), a             ; store old orientation
-    inc a
+    inc a                           ; update orientation
     and 0x03
     ld (hl), a
 	ret
 
+; ------------------------------------------------------------------
+; rotate_ccw: Rotate current puyo pair counterclockwise
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+;
+; ------------------------------------------------------------------
+rotate_ccw:
+    ld a, (curr_pair)               ; store curr location into previous
+    ld (prev_pair), a
+    ld a, (curr_pair+1)             ; get orientation
+    cp 0x01                         ; if right, no checks needed
+    jp z, rotate_ccw_end
+    cp 0x00
+rotate_ccw_u:
+	jp nz,rotate_ccw_l
+    ld a, (curr_pair)
+    ld c, 12                        ; need to check left
+    sub c
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end
+    ld hl, curr_pair                ; something exists, move right
+    ld a, (hl)
+    ld c, 12
+    add a, c
+    ld (hl), a
+
+	jp rotate_ccw_end
+
+rotate_ccw_l:
+	cp 0x01
+	jp nz,rotate_ccw_d
+
+    ; check if puyo exists below
+    ld a, (curr_pair)
+    inc a                           ; get index of below
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end      ; if nothing, rotation is fine
+    ; something exists, need to shift puyo upward
+    ; NOTE: This means players can keep rotating upward
+    ; May cause strange issues unless we reset the drop timer
+    ld hl, curr_pair
+    dec (hl)
+    jp rotate_ccw_end
+rotate_ccw_d:
+	; check if puyo exists to the right
+    ld a, (curr_pair)
+    ld c, 12
+    add a, c
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end      ; if nothing, rotation is fine
+    ; something exists, need to shift curr_pair left
+    ld hl, curr_pair
+    ld a, (hl)
+    ld c, 12
+    sub c
+    ld (hl), a
+
+rotate_ccw_end:
+	; 11->10->01->00->11
+	; decrement last two bits
+    ld hl, curr_pair
+    inc hl                          ; hl now points to orientation byte
+    ld a, (hl)
+    ld (prev_pair+1), a             ; store old orientation
+    dec a                           ; update orientation
+    and 0x03
+    ld (hl), a
+	ret
 
 ; ------------------------------------------------------------
 ; update_score: Updates the score
