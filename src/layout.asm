@@ -290,14 +290,10 @@ is_wall_hidden_true:
 ; Output: puyo dropped with animation (delay),
 ;         player_board updated with all puyos settled
 ; ------------------------------------------------------------------
-; Registers polluted: a
+; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 drop_floats:
     ; read the boardmap from bottom right visible cell, push & mark on boardmap
-    ld bc,0xffff                ; push stack sentinel
-    push bc
-    push bc
-    push bc
     ld hl,player_board+83+83
     ld c,83
     ld b,0
@@ -325,11 +321,10 @@ drop_floats_occupied:
     xor a
     cp b
     jp z,drop_floats_read       ; if already settled, skip
-    push bc                     ; push original cell: space count (b), index (c)
     ld a,b                      ; mark # of spaces to drop on boardmap
     and 0x0f
     inc hl
-    ;ld (hl),a
+    ld (hl),a
     dec hl
     jp drop_floats_read
 drop_floats_read_wall:
@@ -338,75 +333,109 @@ drop_floats_read_wall:
     jp drop_floats_read
 
 drop_floats_animate:
-    jp drop_floats_erase
-
     ; finish reading all board, start animation
-    ld bc,0xfbfb
+    ; hl - cell address in boardmap
+    ; bc - cell coordinates
+    ; de - floating cell count
+    ; d - space count (cell 2nd byte)
+    ld de,0xffff                ; push marker to indicate first run
+    push de
+    ld hl,player_board+22+22+1  ; start animation from bottom row
+    ld bc,0xa018
+drop_floats_animate_loop:
+    ld a,0x78                   ; check if finished row
+    cp c
+    jp z,drop_floats_animate_wall_right
+    ld d,(hl)                   ; load space count
+    xor a
+    cp d
+    jp z,drop_floats_animate_next_cell  ; if zero, skip
+    pop de                      ; check floating cell count
+    ld a,0xff
+    cp e
+    jp z,drop_floats_animate_reset_count
+drop_floats_animate_inc_count:  ; if not sentinel, increment
+    inc de
+    ld a,0xfa
+    jp drop_floats_animate_process
+drop_floats_animate_reset_count:    ; if sentinel, set to 1
+    ld de,1
+    ld a,0xfb
+drop_floats_animate_process:
+    push de                     ; push floating cell count
+    push bc                     ; push current cell coordinates
+    push hl                     ; push current cell 2nd byte addr
+    push hl                     ; push current cell 2nd byte addr
+    xor a                       ; check if hidden row
+    cp b
+    jp z,drop_floats_animate_draw   ; if is, don't erase
     push bc
-    push bc
-    push bc
-    call inf_loop
-
-drop_floats_erase:
-    ; pop cell index & space counts, erase it on board
+    call erase_puyo_2x2         ; else erase position
+    pop bc
+drop_floats_animate_draw:
+    pop hl                      ; pop current cell 2nd byte addr
+    dec hl                      ; get cell color, load attr at bottom cell
+    ld a,(hl)
+    and 0x07
+    or %01000000
+    ld l,a
+    ld a,16
+    add a,b
+    ld b,a
+    push bc                     ; push bottom cell coordinates
+    call load_2x2_attr
+    pop bc                      ; pop bottom cell coordinates to draw puyo
+    ld hl,puyo_none
+    call load_2x2_data
+    pop hl                      ; pop current cell 2nd byte addr
+    dec hl                      ; load current cell color
+    ld a,(hl)
+    and 0x07
+    ld (hl),0                   ; clear current cell color
+    inc hl                      ; get space count of current byte
+    ld d,(hl)
+    inc hl                      ; store current color into bottom cell
+    ld (hl),a
+    inc hl
+    dec d                       ; dec space count, write to bottom cell
+    ld (hl),d
+    dec hl
+    dec hl
+    ld (hl),0                   ; clear space count of this cell
+    pop bc                      ; pop current cell coordinates
+drop_floats_animate_next_cell:
+    ld a,16                     ; go to next cell on the right
+    add a,c
+    ld c,a
+    ld de,TOTAL_ROWS+TOTAL_ROWS
+    add hl,de
+    jp drop_floats_animate_loop
+drop_floats_animate_wall_right:
+    xor a                       ; check if finished hidden row
+    cp b
+    jp z,drop_floats_animate_loopback
+    ; delay
+    push bc                     ; push current cell coordinates
+    ld b,DROP_FLOATS_DELAY
+    xor a
+drop_floats_animate_delay:
+    dec b
+    cp b
+    jp nz,drop_floats_animate_delay
+    pop bc                      ; pop current cell coordinates
+    ; end delay
+    ld a,b                      ; move bc to beginning of next row
+    ld b,16
+    sub b
+    ld b,a
+    ld c,0x18
+    ld de,73+73                 ; distance b/t right wall cell & first visible
+    sbc hl,de                   ;   cell on the next row
+    jp drop_floats_animate_loop
+drop_floats_animate_loopback:
     pop de
     ld a,0xff
-    cp d
-    jr z,drop_floats_write      ; if reached stack sentinel, we're done
-    ld hl,player_board          ; get original cell
-    ld b,0
-    ld c,e
-    sla c
-    add hl,bc
-    ld a,(hl)                   ; store cell color in e
-    and 0x07
-    ld e,a
-    ld (hl),b                   ; clear original cell on boardmap
-    ld a,d                      ; get updated cell address (2nd byte)
-    sla a
-    ld c,a
-    inc c
-    add hl,bc
-    ld (hl),e                   ; store new cell value in 2nd byte
-    jp drop_floats_erase
-drop_floats_write:
-    ; if second byte is nonzero, move 2nd byte to 1st byte
-    ; hl - address in boardmap
-    ; d - cell index
-    ; e - cell 2nd byte
-    ; b - row counter
-    ld hl,player_board+12+12+1
-    ld d,12
-    ld b,TOTAL_ROWS-1
-drop_floats_write_loop:
-    ld a,82                     ; check if reached bottom right cell
-    cp d
-    jr z,drop_floats_done
-    inc d                       ; check if finished column
-    inc hl
-    inc hl
-    dec b
-    xor a
-    cp b
-    jr z,drop_floats_write_wall
-    ld e,(hl)                   ; load cell 2nd byte
     cp e
-    jp z,drop_floats_write_loop ; if 2nd byte is zero, skip
-    ld (hl),a                   ; else move 2nd byte to 1st byte
-    dec hl
-    ld (hl),e
-    inc hl
-    jp drop_floats_write_loop
-drop_floats_write_wall:
-
-    ld b,TOTAL_ROWS-1
-    inc hl                      ; skip hidden row & wall
-    inc hl
-    inc d
-    jp drop_floats_write_loop
-
-drop_floats_done:
-    call refresh_board
-    call inf_loop
+    jp nz,drop_floats_animate   ; loopback if not done
     ret
 
