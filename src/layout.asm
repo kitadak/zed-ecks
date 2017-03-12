@@ -217,7 +217,7 @@ refresh_board_push:
     push de
     jp refresh_board_next
 refresh_board_hidden:
-    ld b,12
+    ld b,TOTAL_ROWS
 refresh_board_next:
     inc hl                  ; increment pointer to cell in boardmap
     inc hl
@@ -284,7 +284,7 @@ is_wall_hidden_true:
 
 ; ------------------------------------------------------------------
 ; TODO
-; drop_floating_puyo: drop all floating puyo down
+; drop_floats: drop all floating puyo down
 ; ------------------------------------------------------------------
 ; Input: None
 ; Output: puyo dropped with animation (delay),
@@ -292,4 +292,86 @@ is_wall_hidden_true:
 ; ------------------------------------------------------------------
 ; Registers polluted: a
 ; ------------------------------------------------------------------
+drop_floats:
+    ; read the boardmap from bottom right visible cell, push & mark on boardmap
+    ld bc,0xffff                ; push stack sentinel
+    push bc
+    push bc
+    push bc
+    ld hl,player_board+83+83
+    ld c,83
+    ld b,0
+    ld e,TOTAL_ROWS
+drop_floats_read:
+    ld a,11                     ; check if finished top left cell
+    cp c
+    jp z,drop_floats_animate
+    dec c
+    dec hl
+    dec hl
+    dec e                       ; check if finished column
+    xor a
+    cp e
+    jp z,drop_floats_wall
+    ld a,(hl)                   ; read current cell
+    and 0x07
+    ld d,a
+    xor a
+    cp d
+    jp nz,drop_floats_occupied  ; if cell occupied, don't inc space counter
+    inc b                       ; if space, inc space count, go to next cell
+    jp drop_floats_read
+drop_floats_occupied:
+    xor a
+    cp b
+    jp z,drop_floats_read       ; if already settled, skip
+    push bc                     ; push original cell: space count (b), index (c)
+    ld a,b                      ; mark # of spaces to drop on boardmap
+    and 0x0f
+    inc hl
+    ld (hl),a
+    dec hl
+    jp drop_floats_read
+drop_floats_wall:
+    ld e,TOTAL_ROWS
+    ld b,0
+    jp drop_floats_read
+
+drop_floats_animate:
+    jp drop_floats_erase
+
+    ; finish reading all board, start animation
+    ld bc,0xfbfb
+    push bc
+    push bc
+    push bc
+    call inf_loop
+
+drop_floats_erase:
+    ; pop cell index & space counts, erase it on board
+    ; push updated cell: value (b), index (c)
+    pop de
+    ld a,0xff
+    cp d
+    jr z,drop_floats_done       ; if reached stack sentinel, we're done
+    ld hl,player_board          ; get original cell
+    ld b,0
+    ld c,e
+    sla c
+    add hl,bc
+    ld a,(hl)                   ; store cell color in e
+    and 0x07
+    ld e,a
+    ld (hl),b                   ; clear original cell on boardmap
+    ld a,d                      ; get updated cell address
+    sla a
+    ld c,a
+    add hl,bc
+    ld (hl),e                   ; update new cell position
+    jp drop_floats_settle
+
+drop_floats_done:
+    call refresh_board
+    call inf_loop
+    ret
 
