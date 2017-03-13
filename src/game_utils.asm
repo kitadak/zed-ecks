@@ -139,6 +139,95 @@ check_active_below_l:
     call get_puyo
 check_active_below_end:
     ret
+; -------------------------------------------------------------
+; check_active_left: checks if something exists to the left
+; of either puyo
+; -------------------------------------------------------------
+; Input: None
+; Output: a = 0 -> nothing,
+;           = nonzero -> something exists
+; ------------------------------------------------------------
+
+check_active_left:
+    ld hl, curr_pair
+    ld a, (hl)
+    sub 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz                          ; there exists a puyo to the left
+; check second puyo
+    ld hl, curr_pair
+    inc hl
+    ld a, (hl)
+    cp 0x02                         ; check down orientation
+    jp nz, check_active_left_l
+; second puyo is on bottom
+    ld hl, curr_pair
+    ld a, (hl)
+    sub 11                          ; check left down
+    ld c, a
+    call get_puyo
+    ret
+check_active_left_l:
+    cp 0x03
+    jp nz, check_active_left_end
+; second puyo is on left
+    ld hl, curr_pair
+    ld a, (hl)
+    sub 24                          ; check left left
+    ld c, a
+    call get_puyo
+    ret
+check_active_left_end:
+    xor a                           ; no need to check up or right
+    ret
+
+; -------------------------------------------------------------
+; check_active_right: checks if something exists to the right
+; of either puyo
+; -------------------------------------------------------------
+; Input: None
+; Output: a = 0 -> nothing,
+;           = nonzero -> something exists
+; ------------------------------------------------------------
+
+check_active_right:
+    ld hl, curr_pair
+    ld a, (hl)
+    add a, 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz                          ; there exists a puyo to the right
+    ; check second puyo
+    ld hl, curr_pair
+    inc hl
+    ld a, (hl)
+    cp 0x02                         ; only need to check down orientation
+    jp nz, check_active_right_r
+; second puyo is on bottom
+    dec hl                          ; ld hl, curr_pair
+    ld a, (hl)
+    add a, 13                       ; check right down
+    ld c, a
+    call get_puyo
+    ret
+check_active_right_r:
+    cp 0x01
+    jp nz, check_active_right_end
+; second puyo is on right
+    dec hl
+    ld hl, curr_pair
+    ld a, (hl)
+    add a, 24                       ; check right right
+    ld c, a
+    call get_puyo
+    ret
+check_active_right_end:
+    xor a
+    ret
+
 ; ------------------------------------------------------------
 ; get_puyo: given index, returns the puyo at that spot
 ; ------------------------------------------------------------
@@ -296,7 +385,41 @@ get_input:
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------
+; Variables required:
+; LR_timer
+; UD_timer
+; rotate_timer
+; prev_input
+; ------------------------------------------------------------
 play_check_input:
+    call get_input              ; get input data in c
+    ; check a
+
+
+
+input_move_left:
+
+    ; move puyo left
+
+
+
+
+
+    ; check d
+input_move_right:
+    ; check s
+
+input_move_down:
+
+    ; check j
+input_rotate_cw:
+
+    ; check h
+input_rotate_ccw:
+
+    ; check p
+input_pause:
+
     ret
 
 ; ------------------------------------------------------------
@@ -377,10 +500,10 @@ reset_drop_timer:
 ; ------------------------------------------------------------
 ; spawn_puyos: puts puyos onto the field
 ; ------------------------------------------------------------
-; Input: next_puyos: two randomly colored puyos
+; Input: next_pair: two randomly colored puyos
 ; Output: player_board: updated with new puyos
 ;         curr_pair: the current pair position
-;         prev_puyo: the previous pair position
+;         prev_pair: the previous pair position
 ; ------------------------------------------------------------
 spawn_puyos:
     ld a, 37                    ; spawns begin at 37i,36i
@@ -393,8 +516,6 @@ spawn_puyos:
     ld (pair_color), a
     call gen_puyos              ; generate new puyos after
     ret
-
-
 
 ; ------------------------------------------------------------
 ; rand8: gets a random value based on the R register

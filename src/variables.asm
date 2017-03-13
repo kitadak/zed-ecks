@@ -97,15 +97,13 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-next_pair: defs 2,0
+next_pair: defb 0
 
 player_score: defs 4,0
 
 high_score: defs 4,0
 
 puyos_cleared: defb 0
-
-next_puyos: defb 0, 0
 
 drop_timer: defb 0
 
@@ -115,6 +113,9 @@ current_speed: defb 0
 curr_pair: defb 43,%00000010    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
 pair_color: defb %00100001
+
+;
+
 
 ; Chain power table
 ; Used for scoring
