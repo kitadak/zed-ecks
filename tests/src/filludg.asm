@@ -1,5 +1,3 @@
-	org 32687
-
 	ld a,49         ; blue ink (1) on yellow paper (6*8).
 	ld (23693),a    ; set our screen colours.
 	call 3503       ; clear the screen.

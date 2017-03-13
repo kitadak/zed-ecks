@@ -5,6 +5,85 @@
 ; Output: None
 ; ------------------------------------------------------------
 
+; ------------------------------------------------------------
+; connect_puyos: Sets the connect bits on all puyos
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+connect_puyos:
+    ld e, 11                        ; start at index-1
+connect_puyos_loop:
+    inc e                           ; update index
+    ld c, e
+    call get_puyo                   ; grab current color
+    and 0x7                         ; isolate color
+    cp 0                            ; if empty, skip this puyo
+    jp z, connect_puyos_loop_end
+    cp 0x7                          ; if wall, skip this puyo
+    jp z, connect_puyos_loop_end
+    ld d, a                         ; store current color in d
+    push af                         ; store results on to stack
+
+    ; check up
+    ld c, e                         ; reload index
+    dec c
+    call get_puyo
+    and 0x7
+    cp d                            ; does this match?
+    jp nz, connect_puyos_r
+    pop af
+    or 0x80                         ; set bit 7
+    push af                         ; store it
+
+connect_puyos_r:
+    ld a, e
+    add a, 12                       ; get right index
+    ld c, a
+    call get_puyo
+    and 0x7
+    cp d
+    jp nz, connect_puyos_d
+    pop af                          ; set bit 6
+    or 0x40                         ; combine previous results
+    push af
+connect_puyos_d:
+    ld c, e
+    inc c
+    call get_puyo
+    and 0x7
+    cp d
+    jp nz, connect_puyos_l
+    pop af
+    or 0x20
+    push af
+connect_puyos_l:
+    ld a, e
+    sub 12
+    ld c, a
+    call get_puyo
+    and 0x7
+    cp d
+    jp nz, connect_puyos_store
+    pop af
+    or 0x10
+    push af
+
+connect_puyos_store:
+    ld hl, player_board
+    ld b, 0
+    ld c, e
+    sla c
+    add hl, bc
+    pop af                          ; get our result
+    ld (hl), a
+
+connect_puyos_loop_end:
+    ld a, e                         ; are we at the end?
+    cp 83                           ; 82 is last index
+    jp c, connect_puyos_loop        ; jump if c < 83
+    ret
+
 ; -------------------------------------------------------------
 ; check_active_below: checks if next row of either active puyo
 ; is occupied by another nonactive puyo or the floor
@@ -68,12 +147,12 @@ check_active_below_end:
 ; ------------------------------------------------------------
 
 get_puyo:
-    ld hl, player_board
-    ld b, 0
-    sla c                           ; translate index to byte location
-    add hl, bc                      ; point to spot
-    ld a, (hl)                      ; load puyo
-    ret
+    ld hl, player_board             ; 10
+    ld b, 0                         ; 7
+    sla c                           ; 8 translate index to byte location
+    add hl, bc                      ; 11 point to spot
+    ld a, (hl)                      ; 7 load puyo
+    ret                             ; 10
 
 ; ------------------------------------------------------------
 ; reset_board: Resets the board to empty
@@ -338,75 +417,163 @@ rand8:
     add a, b
     sbc a, 255
     ret
+
+
+
+
 ; ------------------------------------------------------------------
-; rotate_clockwise: Rotate current puyo pair clockwise
+; rotate_cw: Rotate current puyo pair clockwise
 ; ------------------------------------------------------------------
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------------
 ;
 ; ------------------------------------------------------------------
-rotate_clockwise:
-    ld hl, curr_pair
+rotate_cw:
+    ld a, (curr_pair)               ; store curr location into previous
+    ld (prev_pair), a
     ld a, (curr_pair+1)             ; get orientation
-    and 0x03                         ; if left, no checks needed
-    jp z, end_rotate_clockwise
-    and 0x00
-rotate_clockwise_u:
-	jp nz,rotate_clockwise_r
+    cp 0x03                         ; if left, no checks needed
+    jp z, rotate_cw_end
+    cp 0x00
+rotate_cw_u:
+	jp nz,rotate_cw_r
 
 	; check if puyo exists to the right
-    ld a, (hl)
+    ld a, (curr_pair)
     ld c, 12
     add a, c
     ld c, a
     call get_puyo
-    jp z, end_rotate_clockwise      ; if nothing, rotation is fine
+    cp 0
+    jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
+    ld hl, curr_pair
     ld a, (hl)
     ld c, 12
     sub c
     ld (hl), a
 
-	jp end_rotate_clockwise
+	jp rotate_cw_end
 
-rotate_clockwise_r:
-    ld a, (curr_pair+1)
-	and 0x01
-	jr nz,rotate_clockwise_d
+rotate_cw_r:
+	cp 0x03
+	jp nz,rotate_cw_d
 
     ; check if puyo exists below
-    ld a, (hl)
+    ld a, (curr_pair)
     inc a                           ; get index of below
     ld c, a
     call get_puyo
-    jp z, end_rotate_clockwise      ; if nothing, rotation is fine
+    cp 0
+    jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift puyo upward
     ; NOTE: This means players can keep rotating upward
     ; May cause strange issues unless we reset the drop timer
+    ld hl, curr_pair
     dec (hl)
-    jp end_rotate_clockwise
-rotate_clockwise_d:
-    ld a, (hl)
-    ld c, 12
+    jp rotate_cw_end
+rotate_cw_d:
+    ld a, (curr_pair)
+    ld c, 12                        ; need to check left
     sub c
     ld c, a
     call get_puyo
-    jp z, end_rotate_clockwise
+    cp 0
+    jp z, rotate_cw_end
+    ld hl, curr_pair                ; something exists, move right
     ld a, (hl)
     ld c, 12
-    add a,c
+    add a, c
     ld (hl), a
-
-end_rotate_clockwise:
+rotate_cw_end:
 	; 00->01->10->11->00
 	; increment last two bits
+    ld hl, curr_pair
     inc hl                          ; hl now points to orientation byte
-	inc (hl)                        ; we only care about the first 2 bits
-                                    ; because we're using AND, the other bits
-                                    ; should not matter
+    ld a, (hl)
+    ld (prev_pair+1), a             ; store old orientation
+    inc a                           ; update orientation
+    and 0x03
+    ld (hl), a
 	ret
 
+; ------------------------------------------------------------------
+; rotate_ccw: Rotate current puyo pair counterclockwise
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+;
+; ------------------------------------------------------------------
+rotate_ccw:
+    ld a, (curr_pair)               ; store curr location into previous
+    ld (prev_pair), a
+    ld a, (curr_pair+1)             ; get orientation
+    cp 0x01                         ; if right, no checks needed
+    jp z, rotate_ccw_end
+    cp 0x00
+rotate_ccw_u:
+	jp nz,rotate_ccw_l
+    ld a, (curr_pair)
+    ld c, 12                        ; need to check left
+    sub c
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end
+    ld hl, curr_pair                ; something exists, move right
+    ld a, (hl)
+    ld c, 12
+    add a, c
+    ld (hl), a
+
+	jp rotate_ccw_end
+
+rotate_ccw_l:
+	cp 0x01
+	jp nz,rotate_ccw_d
+
+    ; check if puyo exists below
+    ld a, (curr_pair)
+    inc a                           ; get index of below
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end      ; if nothing, rotation is fine
+    ; something exists, need to shift puyo upward
+    ; NOTE: This means players can keep rotating upward
+    ; May cause strange issues unless we reset the drop timer
+    ld hl, curr_pair
+    dec (hl)
+    jp rotate_ccw_end
+rotate_ccw_d:
+	; check if puyo exists to the right
+    ld a, (curr_pair)
+    ld c, 12
+    add a, c
+    ld c, a
+    call get_puyo
+    cp 0
+    jp z, rotate_ccw_end      ; if nothing, rotation is fine
+    ; something exists, need to shift curr_pair left
+    ld hl, curr_pair
+    ld a, (hl)
+    ld c, 12
+    sub c
+    ld (hl), a
+
+rotate_ccw_end:
+	; 11->10->01->00->11
+	; decrement last two bits
+    ld hl, curr_pair
+    inc hl                          ; hl now points to orientation byte
+    ld a, (hl)
+    ld (prev_pair+1), a             ; store old orientation
+    dec a                           ; update orientation
+    and 0x03
+    ld (hl), a
+	ret
 
 ; ------------------------------------------------------------
 ; update_score: Updates the score

@@ -1,5 +1,3 @@
-	org	32687
-
 begin:
 	call	$0daf			; clear the screen.
 	ld	hl,title_graphic	; load title graphic data

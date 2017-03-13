@@ -9,34 +9,40 @@ check_active_below_test_1:
     jp z, test_fail
 ; orientation: left, curr_puyo at 45, second puyo is blocked
 check_active_below_test_2:
+    ld a, 3                         ; test_2 = magenta
+    call 8859
+
     ld a, 45
     ld (curr_pair), a
     ld a, 3
     ld (curr_pair+1), a
-    ld a, 3                         ; test_2 = magenta
-    call 8859
+
     call check_active_below
     cp 0
     jp z, test_fail
 ; orientation: right, curr_pair at 45, neither are blocked
 check_active_below_test_3:
+    ld a, 5                         ; test_3 = cyan
+    call 8859
+
     ld a, 45
     ld (curr_pair), a
     ld a, 1
     ld (curr_pair+1), a
-    ld a, 5                         ; test_5 = cyan
-    call 8859
+
     call check_active_below
     cp 0
     jp nz, test_fail                ; expect nothing
 ; orientation: top, curr_pair at 70, pivot is blocked
 check_active_below_test_4:
+    ld a, 6                         ; test_4 = yellow
+    call 8859
+
     ld a, 45
     ld (curr_pair), a
     xor a
     ld (curr_pair+1), a
-    ld a, 6                         ; test_5 = yellow
-    call 8859
+
     call check_active_below
     cp 0
     jp nz, test_fail
