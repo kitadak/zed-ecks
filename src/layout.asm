@@ -16,14 +16,24 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_background:
-    ld hl,background_data   ; fill entire screen with background
+    ld hl,background_data           ; fill entire screen with background
     call fill_screen_data
-    ld bc,TOPLEFT_VISIBLE
+    ld bc,PREVIEW_COORDS_TOP        ; clear preview area
+    call erase_puyo_2x2
+    ld bc,PREVIEW_COORDS_TOP
+    ld hl,puyo_none
+    call load_2x2_data
+    ld bc,PREVIEW_COORDS_BOTTOM
+    call erase_puyo_2x2
+    ld bc,PREVIEW_COORDS_BOTTOM
+    ld hl,puyo_none
+    call load_2x2_data
+    ld bc,TOPLEFT_VISIBLE           ; clear play area
 init_background_clear:
     ld hl,TOTAL_ROWS+TOTAL_ROWS-4   ; push loop counter = (visible rows)*2
     push hl
 init_background_clear_loop:
-    call get_attr_address   ; get attr addr of left cell
+    call get_attr_address           ; get attr addr of left cell
     ld h,TOTAL_COLUMNS+TOTAL_COLUMNS-5  ; column counter = (visible cols)*2-1
     xor a
     ld (de),a
@@ -78,7 +88,7 @@ draw_curr_pair_calc:
     ld b,0
     call get_board_to_coord
     call is_wall_hidden            ; check if pivot is wall
-    cp e
+    cp 0
     jp z,draw_curr_pair_push_1  ; if not wall, push normally, else push 0xffff
     ld bc,0xffff
 draw_curr_pair_push_1:
@@ -119,7 +129,7 @@ draw_curr_pair_left:        ; c-16
 
 draw_curr_pair_wall_check:  ; if current cell is wall or hidden, push 0xffff
     call is_wall_hidden
-    cp e
+    cp 0
     jp z,draw_curr_pair_push_2  ; if not wall, push normally, else push 0xffff
     ld bc,0xffff
 draw_curr_pair_push_2:
@@ -261,7 +271,7 @@ refresh_board_done:
 ; Input: bc - coordinates (as given by get_board_to_coord)
 ; Output: e - zero if not wall/hidden, 0xff otherwise
 ; ------------------------------------------------------------------
-; Registers polluted: a, e
+; Registers polluted: a
 ; ------------------------------------------------------------------
 is_wall_hidden:
     ld a,WALL_LEFT
@@ -276,14 +286,13 @@ is_wall_hidden:
     ld a,HIDDEN_ROW
     cp b
     jp z,is_wall_hidden_true
-    ld e,0
+    ld a,0
     ret
 is_wall_hidden_true:
-    ld e,0xff
+    ld a,0xff
     ret
 
 ; ------------------------------------------------------------------
-; TODO
 ; drop_floats: drop all floating puyo down
 ; ------------------------------------------------------------------
 ; Input: None
@@ -437,5 +446,34 @@ drop_floats_animate_loopback:
     ld a,0xff
     cp e
     jp nz,drop_floats_animate   ; loopback if not done
+    ret
+
+; ------------------------------------------------------------------
+; draw_preview: display preview of next puyo pair
+; ------------------------------------------------------------------
+; Input: None
+; Output: Next pair color displayed next to play area.
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+draw_preview:
+    ld hl,next_pair             ; get colors
+    ld a,(hl)
+    srl a
+    srl a
+    srl a
+    and 0x07
+    or 0x40
+    push af
+    ld a,(hl)
+    and 0x07
+    or 0x40
+    ld l,a
+    ld bc,PREVIEW_COORDS_TOP
+    call load_2x2_attr
+    pop af
+    ld l,a
+    ld bc,PREVIEW_COORDS_BOTTOM
+    call load_2x2_attr
     ret
 

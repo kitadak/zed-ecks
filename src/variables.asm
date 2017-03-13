@@ -21,7 +21,10 @@ HIDDEN_ROW      equ 0x00    ; cp b
 
 KILL_LOCATION   equ 74  ; Based on byte representation
 
-DROP_FLOATS_DELAY   equ 191
+DROP_FLOATS_DELAY   equ 255
+
+PREVIEW_COORDS_TOP      equ 0x1088
+PREVIEW_COORDS_BOTTOM   equ 0x2088
 
 ; Puyo Pairs
 ; In order:
@@ -101,7 +104,8 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-next_pair: defs 2,0
+;next_pair: defs 2,0
+next_pair: defb %00100001
 
 player_score: defs 4,0
 
