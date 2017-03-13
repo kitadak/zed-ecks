@@ -1047,9 +1047,26 @@ theme_music_data:
 	defb 40,66,67
 	defb 40,55,56
 	defb 40,43,44
-	defb 160,49,50
 	defb 80,49,50
-	defb 40,55,56
+	defb 30,49,50
+	defb 5,49,50
+	defb 254,5,5
+	defb 20,49,50
+	defb 30,49,50
+	defb 5,49,50
+	defb 254,5,5
+	defb 20,49,50
+	defb 30,49,50
+	defb 5,49,50
+	defb 254,5,5
+	defb 20,55,56
+	defb 30,55,56
+	defb 5,55,56
+	defb 254,5,5
+	defb 20,55,56
+	defb 30,55,56
+	defb 5,55,56
+	defb 254,5,5
 	defb 40,49,50
 	defb 160,49,50
 	defb 40,83,84
@@ -1061,5 +1078,6 @@ theme_music_data:
 	defb 160,49,50
 	defb 160,49,50
 	defb 40,49,50
+
 
 	defb 255
