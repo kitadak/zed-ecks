@@ -346,5 +346,6 @@ gameover_se_cleanup:
 
 
 sound_test:
-	call gameover_se
+	ld ix,theme_music_data
+	call play_theme_music
 	ret
