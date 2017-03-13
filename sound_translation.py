@@ -5,7 +5,8 @@ import os.path
 
 OUTFILE="sound_out"
 
-QUARTERBEAT=60
+QUARTERBEAT=80
+REST="R"
 
 # W->Whole Note
 # H->Half Note
@@ -67,15 +68,20 @@ for line in f:
 	if len(tokens) == 0:
 		continue
 
-	time = int(TIMETABLE[tokens[0]])
-	note = int(NOTETABLE[tokens[1]])
-	octave = 0
+	if tokens[0] == REST:
+		time = int(TIMETABLE[tokens[1]])
+		o.write("\tdefb " + "254," +
+			str(time) + "," + str(time) + "\n")
+	else:
+		time = int(TIMETABLE[tokens[0]])
+		note = int(NOTETABLE[tokens[1]])
+		octave = 0
 
-	# check if there is octave adjustment
-	if len(tokens) == 3:
-		octave = int(tokens[2]) * 2
-		note = note / octave
+		# check if there is octave adjustment
+		if len(tokens) == 3:
+			octave = int(tokens[2]) * 2
+			note = note / octave
 
-	o.write("\tdefb " + str(time) + "," +
-		str(note) + "," + str(note+1) + "\n")
+		o.write("\tdefb " + str(time) + "," +
+			str(note) + "," + str(note+1) + "\n")
 
