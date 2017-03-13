@@ -28,9 +28,9 @@ test_single_cell:
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen - NOTE: bc corrupted!
 
-    ld c,0                  ; load pixel coordinates
-    ld b,72                 ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_d            ; load pixel data addr into hl
+    ld c,16                 ; load pixel coordinates
+    ld b,0                  ; for now, use (0-255,0-191) coordinates
+    ld hl,puyo_dl           ; load pixel data addr into hl
     call load_2x2_data
 
     ld c,0                  ; load pixel coordinates

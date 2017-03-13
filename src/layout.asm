@@ -251,13 +251,17 @@ refresh_board_draw:
     call load_2x2_attr
     pop bc
     pop de                  ; calculate sprite address
-    ld a,0xf0               ; should be puyo_none + orientation*32
-    and a,d
+    ld a,d                  ; should be puyo_none + orientation*32
+    and 0xf0
     sla a
     ld e,a
-    xor a
-    adc a,a
-    ld d,a
+    ld a,d
+    ld d,0
+    and 0x80
+    cp 0
+    jp z,refresh_board_calc
+    ld d,1
+refresh_board_calc:
     ld hl,puyo_none
     add hl,de
     call load_2x2_data      ; draw puyo

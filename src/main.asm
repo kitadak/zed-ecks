@@ -10,11 +10,12 @@
 
     call populate_coord_tab
     call init_background
-    call connect_puyos
     call refresh_board      ; test
     call draw_preview
     call drop_floats        ; test
-    call draw_curr_pair     ; test
+    call connect_puyos
+    call refresh_board      ; test
+    ;call draw_curr_pair     ; test
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
