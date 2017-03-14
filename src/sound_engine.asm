@@ -30,9 +30,12 @@ play_theme_music_skip2:
 	dec c
 	jr nz,play_theme_music_produce_note
 
-	; TODO: check keyboard input here to stop music
-	; call check_menu_key
-	; ret nz
+	; check keyboard input here to stop music
+	ld a, 0xBF
+    in a, (0xFE)
+    cpl
+    and 0x1
+	ret nz
 
 	inc ix
 	inc ix
@@ -62,9 +65,12 @@ play_theme_music_skip2_rest:
 	dec c
 	jr nz,play_theme_music_produce_note_rest
 
-	; TODO: check keyboard input here to stop music
-	; call check_menu_key
-	; ret nz
+	; check keyboard input here to stop music
+	ld a, 0xBF
+    in a, (0xFE)
+    cpl
+    and 0x1
+	ret nz
 
 	inc ix
 	inc ix
