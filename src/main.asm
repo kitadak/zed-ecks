@@ -2,15 +2,13 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
-    ld a,BACKGROUND_ATTR    ; black ink on purple paper, no bright, no flash
-    ld (23693),a            ; set our screen colours.
-    call 3503               ; clear the screen.
-    ld a,2                  ; 2 = upper screen.
-    call 5633               ; open channel.
+    call init_title
+    call inf_loop
 
     call populate_coord_tab
     call init_background
     call refresh_board      ; test
+    call gen_puyos
     call draw_preview
     call drop_floats        ; test
     call connect_puyos

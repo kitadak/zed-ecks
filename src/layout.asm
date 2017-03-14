@@ -8,6 +8,27 @@
 
 
 ; ------------------------------------------------------------------
+; init_title: Show title screen, play theme music.
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+init_title:
+	call $0daf			    ; clear the screen.
+	ld hl,title_graphic	    ; load title graphic data (top 2/3)
+	ld de,16384             ; MAGIC - 0x4000
+	ld bc,4096              ; copy 4096 bytes graphic data to screen
+	ldir
+	ld hl,title_attribute   ; load title attr
+	ld	de,22528		    ; MAGIC
+	ld bc,512			    ; copy 512 bytes of attr only
+	ldir
+    ;call sound_test
+    ret
+
+; ------------------------------------------------------------------
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -16,6 +37,11 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_background:
+    ld a,BACKGROUND_ATTR            ; load gameplay background attribute
+    ld (23693),a                    ; set our screen colours.
+    call 3503                       ; clear the screen.
+    ld a,2                          ; 2 = upper screen.
+    call 5633                       ; open channel.
     ld hl,background_data           ; fill entire screen with background
     call fill_screen_data
     ld bc,PREVIEW_COORDS_TOP        ; clear preview area

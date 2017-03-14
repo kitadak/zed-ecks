@@ -103,8 +103,8 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-;next_pair: defs 2,0
-next_pair: defb %00100001
+next_pair: defb 0
+;next_pair: defb %00100001
 
 player_score: defs 4,0
 
