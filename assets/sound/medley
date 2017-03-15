@@ -1,18 +1,5 @@
 TEMPO 80
 R H
-R H
-
-TEMPO 120
-Q D 1
-Q F 1
-Q E 1
-E D 1
-
-TEMPO 115
-H C 1
-E A 1
-Q E 1
-Q C 1
 
 TEMPO 110
 Q D 1
@@ -20,14 +7,24 @@ Q F 1
 Q E 1
 E D 1
 
+H C 1
+E A 1
+Q E 1
+Q C 1
+
 TEMPO 105
+Q D 1
+Q F 1
+Q E 1
+E D 1
+
+TEMPO 100
 H C 1
 Q A 1
 Q E 1
 E C 1
 E C# 1
 
-TEMPO 100
 # M5
 Q D 1
 Q F 1
