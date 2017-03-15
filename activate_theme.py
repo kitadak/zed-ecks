@@ -3,7 +3,8 @@
 import sys
 import os.path
 
-OUTFILE="sound_out"
+SOUND_PATH="assets/sound/"
+OUTFILE=SOUND_PATH + "theme.asm"
 
 QUARTERBEAT=80
 REST="R"
@@ -79,11 +80,15 @@ def redo_timetable(newtempo):
 	})
 
 if len(sys.argv) != 2:
-	print "Usage: ./sound_translation.py [input file]"
+	print "Usage: ./activate_theme.py [theme name]"
 	exit(-1)
 
+INFILE = SOUND_PATH + sys.argv[1]
+
 o = open(OUTFILE, 'w')
-f = open(sys.argv[1], 'r')
+f = open(INFILE, 'r')
+
+o.write("\ntheme_music_data:\n")
 
 for line in f:
 	if line[0] == "#":
@@ -153,3 +158,5 @@ for line in f:
 
 		o.write("\tdefb " + str(time) + "," +
 			str(note) + "," + str(note+1) + "\n")
+
+o.write("\tdefb 255\n")
