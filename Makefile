@@ -1,5 +1,5 @@
 SRC_DIR 	:= src
-OTHER_DIRS	:= assets/sprites
+OTHER_DIRS	:= assets/sprites assets/sound
 BIN_DIR 	:= bin
 DEMO_NAME	:= hovav_god
 TMP_FILENAME	:= $(BIN_DIR)/assembleme
