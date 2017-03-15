@@ -24,7 +24,7 @@ TEMPO="TEMPO"
 TIMETABLE={
 	"W"  : QUARTERBEAT*4,
 	"H"  : QUARTERBEAT*2,
-	"HD" : QUARTERBEAT*1.5,
+	"HD" : QUARTERBEAT*2*1.5,
 	"HT" : QUARTERBEAT*2*0.33,
 	"Q"  : QUARTERBEAT,
 	"QD" : QUARTERBEAT*1.5,
@@ -42,15 +42,20 @@ TIMETABLE={
 NOTETABLE={
 	"C"	 : 234,
 	"C#" : 222,
+	"Db" : 222,
 	"D"	 : 208,
 	"D#" : 196,
+	"Eb" : 196,
 	"E"  : 185,
 	"F"  : 175,
 	"F#" : 166,
+	"Gb" : 166,
 	"G"  : 157,
 	"G#" : 148,
+	"Ab" : 148,
 	"A"  : 139,
 	"A#" : 132,
+	"Bb" : 132,
 	"B"  : 124
 }
 
@@ -58,7 +63,7 @@ def redo_timetable(newtempo):
 	TIMETABLE.update({
 	"W"  : newtempo*4,
 	"H"  : newtempo*2,
-	"HD" : newtempo*1.5,
+	"HD" : newtempo*2*1.5,
 	"HT" : newtempo*2*0.33,
 	"Q"  : newtempo,
 	"QD" : newtempo*1.5,
