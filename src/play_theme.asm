@@ -1,6 +1,8 @@
 ; ------------------------------------------------------------------
 ; Adapted from MM disassembly
 ; ------------------------------------------------------------------
+start_theme_music:
+	ld ix,theme_music_data
 play_theme_music:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255

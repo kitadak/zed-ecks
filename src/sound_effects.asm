@@ -343,9 +343,3 @@ gameover_se_cleanup:
 	ret
 	ld b,c
 	ld d,e
-
-
-sound_test:
-	ld ix,theme_music_data
-	call play_theme_music
-	ret
