@@ -25,7 +25,6 @@ init_title:
 	ld	de,22528		    ; MAGIC
 	ld bc,512			    ; copy 512 bytes of attr only
 	ldir
-    ;call sound_test
     ret
 
 ; ------------------------------------------------------------------

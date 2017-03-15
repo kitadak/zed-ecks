@@ -2,18 +2,19 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
-    call init_title
-    call inf_loop
+    call populate_coord_tab ; begin game setup
+    call init_title         ; load title screen
+    call sound_test         ; play title music
+    call init_background    ; load play area layout
 
-    call populate_coord_tab
-    call init_background
-    call refresh_board      ; test
+    ; tests
+    call refresh_board
     call gen_puyos
     call draw_preview
-    call drop_floats        ; test
+    call drop_floats
     call connect_puyos
-    call refresh_board      ; test
-    ;call draw_curr_pair     ; test
+    call refresh_board
+    ;call draw_curr_pair
 
 inf_loop:                   ; infinite loop to not exit program
     jp inf_loop
