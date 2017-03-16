@@ -330,14 +330,14 @@ gen_puyos:
 ; get_input: returns a byte indicating which buttons are pressed
 ; ------------------------------------------------------------
 ; Input: None
-; Output: c - byte representation of pressed buttons
+; Output: a - byte representation of pressed buttons
 ; ------------------------------------------------------------
 ; Note: Input will be returned in the following format:
 ; 76543210
-; PW HJASD
+; P  HJASD
 ; 0 -> Not pressed
 ; 1 -> Pressed
-; bit 5 will is unused and will not be taken into account
+; bits 5 and 6 are unused
 ; ------------------------------------------------------------
 ; Registers Used: a,c
 ; ------------------------------------------------------------
@@ -346,28 +346,18 @@ gen_puyos:
 ; http://www.animatez.co.uk/computers/zx-spectrum/keyboard/
 ; ------------------------------------------------------------
 get_input:
-    ld a, 0xFB                  ; load qwert row
-    in a, (0xFE)
-    cpl                         ; invert input
-    and 0x02                    ; isolate W (bit 1)
-    rrca                        ; move W to bit 6
-    rrca
-    rrca
-    ld c, a                     ; store in C
-
-    ld a, 0xFB                  ; load asdfg row
+    ld a, 0xFD                  ; load asdfg row
     in a, (0xFE)
     cpl
     and 0x07                    ; isolate ASD (bits 012)
                                 ; ASD is already in place!
-    or c                        ; combine previous results
     ld c, a
     ld a, 0xBF                  ; load hjklenter row
     in a, (0xFE)
     cpl
-    and 0x24                    ; isolate JH (bits 34)
+    and 0x18                    ; isolate JH (bits 34)
                                 ; JH is already in place
-    or c
+    or c                        ; combine results
     ld c, a
 
     ld a, 0xDF                  ; load yuiop row
@@ -376,7 +366,7 @@ get_input:
     and 0x01                    ; isolate P (bit 0)
     rrca                        ; move P to bit 7
     or c
-    ld c, a                     ; store result in c
+    ld (curr_input), a          ; store result into curr_input
     ret
 
 ; ------------------------------------------------------------
@@ -387,39 +377,186 @@ get_input:
 ; ------------------------------------------------------------
 ; Variables required:
 ; LR_timer
-; UD_timer
+; D_timer
 ; rotate_timer
 ; prev_input
 ; ------------------------------------------------------------
+; Routine:
+; Get Button <---Update prev_input------------------------+
+;    |                ^                                   |
+;    V                |                                   |
+; Is curr pressed?--N-+                                   |
+;    |                                                    |
+;    Y                                                    |
+;    V                                                    |
+; Is prev pressed?--N->Execute Action->Set long timer-----+
+;    |                                                    |
+;    Y                                                    |
+;    V                                                    |
+; Decrement Timer                                         |
+;    |                                                    |
+;    V                                                    |
+; Is Zero?--N---------------------------------------------+
+;    |                                                    |
+;    +--Y->Execute Action->Set Short Timer->--------------+
+;
+; ------------------------------------------------------------
 play_check_input:
-    call get_input              ; get input data in c
-    ; check a
+    call get_input              ; get input data in a and curr_input
 
+    ld a, (curr_input)
+    bit BIT_A, a
+    call nz, play_check_a
+
+    ld a, (curr_input)
+    bit BIT_S, a                ; is it currently pressed?
+    call nz, play_check_s
+
+    ld a, (curr_input)
+    bit BIT_D, a
+    call nz, play_check_d
+
+    ld a, (curr_input)
+    bit BIT_H, a
+    call nz, play_check_h
+
+    ld a, (curr_input)
+    bit BIT_J, a
+    call nz, play_check_j
+
+    ld a, (curr_input)
+    bit BIT_P, a
+    call nz, play_check_p
+
+    ld a, (curr_input)          ; update previous input
+    ld (prev_input), a
+    ret
+
+    ; check a
+play_check_a:
+    ld a, (prev_input)
+    bit BIT_A, a                ; has this been pressed before
+    jp nz, play_check_a_short   ; if so, do nothing
+
+play_check_a_long:
+    ld a, INPUT_LONG_DELAY
+    ld (LR_timer), a
+    call input_move_left
+    ret
+
+play_check_a_short:
+    ld hl, LR_timer
+    dec (hl)
+    ret nz
+    ld a, INPUT_SHORT_DELAY
+    ld (LR_timer), a
+    call input_move_left
+    ret
+
+    ; check d
+play_check_d:
+    ld a, (prev_input)
+    bit BIT_D, a
+    jp nz, play_check_d_short
+
+play_check_d_long:
+    ld a, INPUT_LONG_DELAY
+    ld (LR_timer), a
+    call input_move_right
+    ret
+
+play_check_d_short:
+    ld hl, LR_timer
+    dec (hl)
+    ret nz
+    ld a, INPUT_SHORT_DELAY
+    ld (LR_timer), a
+    call input_move_right
+    ret
+
+    ; check s
+play_check_s:                   ; s repeats immediately
+    ld a, (prev_input)
+    bit BIT_S, a
+    jp nz, play_check_s_short
+
+play_check_s_long:
+    ld a, INPUT_SHORT_DELAY
+    ld (D_timer), a
+    call input_move_down
+    ret
+
+play_check_s_short:
+    ld hl, D_timer
+    dec (hl)
+    ret nz
+    ld a, INPUT_SHORT_DELAY
+    ld (D_timer), a
+    call input_move_down
+    ret
+
+    ; check h
+play_check_h:                   ; rotations can't be repeated
+    ld a, (prev_input)
+    bit BIT_H, a
+    call z, rotate_ccw
+    ret
+
+    ; check j
+play_check_j:
+    ld a, (prev_input)
+    bit BIT_J, a
+    call z, rotate_cw
+    ret
+
+    ; check p
+play_check_p:
+    ld a, (prev_input)
+    bit BIT_P, a
+    ret nz
+    ld a, (is_paused)           ; flip paused state
+    cpl
+    ld (is_paused), a
+    ret
 
 
 input_move_left:
-
+    call check_active_left
+    cp 0
+    ret nz
     ; move puyo left
-
-
-
-
+    ld a, (curr_pair)           ; update previous location
+    ld (prev_pair), a
+    sub 12                      ; move to the left
+    ld (curr_pair), a
+    ld a, (curr_pair+1)
+    ld (prev_pair+1), a
+    ret
 
     ; check d
 input_move_right:
+    call check_active_right
+    cp 0
+    ret nz
+    ld a, (curr_pair)
+    ld (prev_pair), a
+    add a, 12
+    ld (curr_pair), a
+    ld a, (curr_pair+1)
+    ld (prev_pair+1), a
+    ret
+
     ; check s
-
 input_move_down:
-
-    ; check j
-input_rotate_cw:
-
-    ; check h
-input_rotate_ccw:
-
-    ; check p
-input_pause:
-
+    call check_active_below
+    cp 0
+    ret nz
+    ld a, (curr_pair)
+    ld (prev_pair), a
+    inc a
+    ld (curr_pair), a
+    ld a, (curr_pair+1)
+    ld (prev_pair+1), a
     ret
 
 ; ------------------------------------------------------------
@@ -554,7 +691,7 @@ rotate_cw:
     ld a, (curr_pair)               ; store curr location into previous
     ld (prev_pair), a
     ld a, (curr_pair+1)             ; get orientation
-    cp 0x03                         ; if left, no checks needed
+    cp 0x3                          ; if left, no checks needed
     jp z, rotate_cw_end
     cp 0x00
 rotate_cw_u:
@@ -578,7 +715,7 @@ rotate_cw_u:
 	jp rotate_cw_end
 
 rotate_cw_r:
-	cp 0x03
+	cp 0x1
 	jp nz,rotate_cw_d
 
     ; check if puyo exists below
@@ -631,9 +768,9 @@ rotate_ccw:
     ld a, (curr_pair)               ; store curr location into previous
     ld (prev_pair), a
     ld a, (curr_pair+1)             ; get orientation
-    cp 0x01                         ; if right, no checks needed
+    cp 0x1                          ; if right, no checks needed
     jp z, rotate_ccw_end
-    cp 0x00
+    cp 0
 rotate_ccw_u:
 	jp nz,rotate_ccw_l
     ld a, (curr_pair)
@@ -652,7 +789,7 @@ rotate_ccw_u:
 	jp rotate_ccw_end
 
 rotate_ccw_l:
-	cp 0x01
+	cp 0x3
 	jp nz,rotate_ccw_d
 
     ; check if puyo exists below

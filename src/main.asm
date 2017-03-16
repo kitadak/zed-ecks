@@ -9,14 +9,16 @@
     call 5633               ; open channel.
 
     call populate_coord_tab
+    call reset_board
     call init_background
     call connect_puyos
     call refresh_board      ; test
-    ;call draw_curr_pair     ; test
     call test_single_cell   ; test
     ;call drop_floats        ; test
 
 inf_loop:                   ; infinite loop to not exit program
+    call play_check_input
+    call draw_curr_pair     ; test
     jp inf_loop
 
 ; ------------------------------------------------------------------
