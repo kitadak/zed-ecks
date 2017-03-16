@@ -4,7 +4,6 @@ import sys
 import os.path
 
 SOUND_PATH="assets/sound/"
-OUTFILE=SOUND_PATH + "theme.asm"
 
 QUARTERBEAT=80
 REST="R"
@@ -79,18 +78,8 @@ def redo_timetable(newtempo):
 	"SF" : newtempo*0.0625
 	})
 
-if len(sys.argv) != 2:
-	print "Usage: ./activate_theme.py [theme name]"
-	exit(-1)
-
-INFILE = SOUND_PATH + sys.argv[1]
-
-o = open(OUTFILE, 'w')
-f = open(INFILE, 'r')
-
-o.write("\ntheme_music_data:\n")
-
-for line in f:
+def write_music(f,o):
+    for line in f:
 	if line[0] == "#":
 		continue
 
@@ -159,4 +148,22 @@ for line in f:
 		o.write("\tdefb " + str(time) + "," +
 			str(note) + "," + str(note+1) + "\n")
 
+
+# Main
+if len(sys.argv) != 2:
+    print "Usage: ./compile_sound.py [theme name]"
+    exit(-1)
+INFILE = SOUND_PATH + sys.argv[1]
+OUTFILE = SOUND_PATH + sys.argv[1] + ".asm"
+f = open(INFILE, 'r')
+o = open(OUTFILE, 'w')
+
+print "Reading from " + INFILE + "."
+print "Writing music data to " + OUTFILE + "."
+
+label = sys.argv[1]+"_music_data:\n"
+print "...with asm label " + label
+
+o.write("\n" + label)
+write_music(f,o)
 o.write("\tdefb 255\n")
