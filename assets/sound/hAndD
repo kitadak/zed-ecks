@@ -1016,6 +1016,7 @@ S D# 2
 S C# 2
 Q B 1
 
+TEMPO 66
 Q F# 1
 Q B 1
 E C# 2
@@ -1034,23 +1035,29 @@ Q B 1
 Q C# 2
 Q B 1
 
+TEMPO 68
 E F# 1
 E B 1
 R E
+TEMPO 70
 Q C# 2
 S D# 2
 S C# 2
 Q B 1
 
+TEMPO 72
 Q F# 1
 Q B 1
+TEMPO 74
 E B 2
 Q A# 2
 
+TEMPO 76
 Q F# 2
 E D# 2
 E C# 2
 Q B 1
+TEMPO 78
 E C# 2
 E B 1
 E F# 1
