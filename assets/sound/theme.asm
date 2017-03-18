@@ -1,7 +1,6 @@
 
 theme_music_data:
 	defb 254,160,160
-	defb 254,160,160
 	defb 110,104,105
 	defb 110,87,88
 	defb 110,92,93
@@ -15,8 +14,8 @@ theme_music_data:
 	defb 105,92,93
 	defb 52,104,105
 	defb 200,117,118
-	defb 100,69,70
-	defb 100,92,93
+	defb 50,69,70
+	defb 50,92,93
 	defb 50,117,118
 	defb 50,111,112
 	defb 100,104,105
@@ -552,17 +551,22 @@ theme_music_data:
 	defb 80,92,93
 	defb 40,117,118
 	defb 40,111,112
-	defb 80,104,105
-	defb 80,87,88
-	defb 80,92,93
+	defb 40,104,105
+	defb 254,40,40
+	defb 40,87,88
+	defb 254,40,40
+	defb 40,92,93
+	defb 254,40,40
 	defb 40,104,105
 	defb 120,117,118
 	defb 80,69,70
 	defb 80,92,93
 	defb 40,117,118
 	defb 40,111,112
-	defb 80,104,105
-	defb 80,87,88
+	defb 40,104,105
+	defb 254,40,40
+	defb 40,87,88
+	defb 254,40,40
 	defb 80,92,93
 	defb 40,87,88
 	defb 80,78,79
@@ -604,44 +608,60 @@ theme_music_data:
 	defb 80,78,79
 	defb 80,66,67
 	defb 40,69,70
-	defb 12,234,235
-	defb 12,208,209
-	defb 12,185,186
-	defb 12,175,176
-	defb 12,157,158
-	defb 12,139,140
-	defb 12,124,125
-	defb 12,117,118
-	defb 12,104,105
-	defb 12,92,93
+	defb 7,234,235
+	defb 7,208,209
+	defb 7,185,186
+	defb 7,175,176
+	defb 7,157,158
+	defb 7,139,140
+	defb 7,124,125
+	defb 7,117,118
+	defb 7,104,105
+	defb 7,92,93
+	defb 7,87,88
+	defb 7,78,79
+	defb 7,69,70
+	defb 7,62,63
+	defb 7,58,59
+	defb 7,52,53
+	defb 7,46,47
 	defb 40,139,140
-	defb 10,124,125
-	defb 10,117,118
-	defb 10,104,105
-	defb 10,92,93
-	defb 10,87,88
-	defb 10,78,79
-	defb 10,69,70
-	defb 10,62,63
-	defb 10,58,59
-	defb 10,52,53
-	defb 10,46,47
+	defb 7,124,125
+	defb 7,117,118
+	defb 7,104,105
+	defb 7,92,93
+	defb 7,87,88
+	defb 7,78,79
+	defb 7,69,70
+	defb 7,62,63
+	defb 7,58,59
+	defb 7,52,53
+	defb 7,46,47
+	defb 7,43,44
+	defb 7,39,40
+	defb 7,34,35
+	defb 7,31,32
+	defb 7,29,30
 	defb 40,34,35
-	defb 8,39,40
-	defb 8,43,44
-	defb 8,46,47
-	defb 8,52,53
-	defb 8,58,59
-	defb 8,62,63
-	defb 8,69,70
-	defb 8,78,79
-	defb 8,87,88
-	defb 8,92,93
-	defb 8,104,105
-	defb 8,117,118
-	defb 8,124,125
-	defb 8,139,140
-	defb 8,157,158
+	defb 6,39,40
+	defb 6,43,44
+	defb 6,46,47
+	defb 6,52,53
+	defb 6,58,59
+	defb 6,62,63
+	defb 6,69,70
+	defb 6,78,79
+	defb 6,87,88
+	defb 6,92,93
+	defb 6,104,105
+	defb 6,117,118
+	defb 6,124,125
+	defb 6,139,140
+	defb 6,157,158
+	defb 6,175,176
+	defb 6,185,186
+	defb 6,208,209
+	defb 6,234,235
 	defb 254,40,40
 	defb 40,208,209
 	defb 40,185,186
