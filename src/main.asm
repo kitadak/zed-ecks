@@ -9,16 +9,17 @@
     call 5633               ; open channel.
 
     call populate_coord_tab
-    call reset_board
+    ;call reset_board
     call init_background
     call connect_puyos
+    call check_clears
     call refresh_board      ; test
     call test_single_cell   ; test
-    ;call drop_floats        ; test
+    ;call drop_floats       ; test
 
 inf_loop:                   ; infinite loop to not exit program
-    call play_check_input
-    call draw_curr_pair     ; test
+    ;call play_check_input
+    ;call draw_curr_pair     ; test
     jp inf_loop
 
 ; ------------------------------------------------------------------
@@ -60,7 +61,6 @@ play_drop_loop:
 
     ; puyo has stopped
     ; drop remaining floating puyos
-    call drop_active_puyos
 
 play_clear_loop:            ; start clearing chain
     call process_clears
