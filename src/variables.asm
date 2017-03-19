@@ -16,10 +16,36 @@ TOTAL_ROWS      equ 12
 TOTAL_COLUMNS   equ 8
 BOARD_SIZE      equ 96
 
+BIT_VISIT       equ 3
+BIT_DELETE      equ 7
+NUM_TO_CLEAR    equ 4
+DELETE_COLOR    equ 5
+EMPTY_COLOR     equ 0
+WALL_COLOR      equ 7
+COLOR_BITS      equ 7
+VISIBLE_END     equ 84
+
+
 WALL_LEFT       equ 0x08    ; cp c
 WALL_RIGHT      equ 0x78    ; cp c
 WALL_BOTTOM     equ 0xB0    ; cp b
 HIDDEN_ROW      equ 0x00    ; cp b
+
+BIT_P equ 7
+BIT_H equ 4
+BIT_J equ 3
+BIT_D equ 2
+BIT_S equ 1
+BIT_A equ 0
+
+BIT_UP      equ 7
+BIT_RIGHT   equ 6
+BIT_DOWN    equ 5
+BIT_LEFT    equ 4
+
+INPUT_LONG_DELAY equ 128
+INPUT_SHORT_DELAY equ 16
+
 
 KILL_LOCATION   equ 74  ; Based on byte representation
 
@@ -105,8 +131,8 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-next_pair: defb 0
 ;next_pair: defb %00100001
+next_pair: defb 0
 
 player_score: defs 4,0
 
@@ -114,16 +140,39 @@ high_score: defs 4,0
 
 puyos_cleared: defb 0
 
-next_puyos: defb 0, 0
-
 drop_timer: defb 0
 
 current_speed: defb 0
+
+is_paused: defb 0
 
 ; Active airborne puyo pair
 curr_pair: defb 43,%00000010    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
 pair_color: defb %00100001
+
+; Input Variables
+curr_input: defb 0
+prev_input: defb 0              ; no buttons pressed at beginning
+LR_timer: defb 0
+D_timer: defb 0
+rotate_timer: defb 0
+
+
+; Clearing Variables
+old_stack: defs 2, 0
+curr_idx: defb 0
+curr_addr: defs 2, 0
+board_idx: defb 0
+prev_matches: defs 4,0
+
+clear_stack_space: defs 256,0   ; space for stack, as stack goes upwards
+clear_stack: defs 2, 0
+
+; Scoring Variables
+cleared_colors: defb 0
+cleared_count: defb 0
+chain_count: defb 0
 
 ; Chain power table
 ; Used for scoring

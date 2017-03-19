@@ -7,16 +7,19 @@
     call sound_test         ; play title music
     call init_background    ; load play area layout
 
-    ; tests
-    call refresh_board
+    ;call reset_board
     call gen_puyos
     call draw_preview
     call drop_floats
     call connect_puyos
+    call check_clears
     call refresh_board
+    call test_single_cell
     ;call draw_curr_pair
 
 inf_loop:                   ; infinite loop to not exit program
+    ;call play_check_input
+    ;call draw_curr_pair     ; test
     jp inf_loop
 
 ; ------------------------------------------------------------------
