@@ -106,6 +106,7 @@ val_puyo_yellow:    defb 70
 ; Variables/Tables
 ; ------------------------------------------------------------------
 
+    defm "Hai PLAYER_BOARD desu"
 player_board:
     ;defs 192,0
     defs 24,0xff

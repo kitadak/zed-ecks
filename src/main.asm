@@ -4,7 +4,7 @@
 ; ------------------------------------------------------------------
     call populate_coord_tab ; begin game setup
     call init_title         ; load title screen
-    call sound_test         ; play title music
+    call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
     ;call reset_board
