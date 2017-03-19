@@ -8,6 +8,7 @@
 
 
 ; ------------------------------------------------------------------
+; TODO: load 4096 bytes only, then flash ENTER
 ; init_title: Show title screen, play theme music.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -16,14 +17,23 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_title:
+    ld a,BACKGROUND_ATTR            ; load gameplay background attribute
+    ld (23693),a                    ; set our screen colours.
+    call 3503                       ; clear the screen.
+    ld a,2                          ; 2 = upper screen.
+    call 5633                       ; open channel.
+
 	call $0daf			    ; clear the screen.
-	ld hl,title_graphic	    ; load title graphic data (top 2/3)
+	ld hl,title_screen      ; load title graphic data (top 2/3)
 	ld de,16384             ; MAGIC - 0x4000
-	ld bc,4096              ; copy 4096 bytes graphic data to screen
+	;ld bc,4096              ; copy 4096 bytes graphic data to screen
+    ld bc,6144
 	ldir
+
 	ld hl,title_attribute   ; load title attr
 	ld	de,22528		    ; MAGIC
-	ld bc,512			    ; copy 512 bytes of attr only
+	;ld bc,512			    ; copy 512 bytes of attr only
+    ld bc,768
 	ldir
     ret
 

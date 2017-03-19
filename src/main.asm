@@ -58,7 +58,7 @@ play_drop_loop:
 
     ; puyo has stopped
     ; drop remaining floating puyos
-    call drop_active_puyos
+    call drop_floats
 
 play_clear_loop:            ; start clearing chain
     call process_clears

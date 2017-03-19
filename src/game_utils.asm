@@ -173,25 +173,7 @@ reset_board:
     ret
 
 ; ------------------------------------------------------------
-; drop_active_puyos: drops the columns of the active puyos
-; ------------------------------------------------------------
-; Input: None
-; Output: None
-; ------------------------------------------------------------
-drop_active_puyos:
-    ret
-
-; ------------------------------------------------------------
-; drop_column: drops any floating puyos in the given column
-; ------------------------------------------------------------
-; Input: a - index of column (0, 12, 24, 36, 58, 60, 72)
-; Output: player_board updated to drop all puyos in a column
-; ------------------------------------------------------------
-drop_column:
-    ret
-
-; ------------------------------------------------------------
-; gameover: the gameover sequence
+; gameover: game over sequence
 ; ------------------------------------------------------------
 ; Input: None
 ; Output: None
@@ -209,10 +191,8 @@ gameover:
 ; Main loop will call jump to avoid overflowing call stack
 ; ------------------------------------------------------------
 gameover_detect:
-    ld hl, player_board
-    ld bc, KILL_LOCATION        ; represents 3rd column, top visible row
-    add hl, bc
-    ld a, (hl)
+    ; check 3rd column, top visible row
+    ld a, (player_board+KILL_LOCATION)
     and 0x07                    ; Isolate color bits
     ret                         ; If empty, reg a should now be 0x00
                                 ; This will fail if KILL_LOCATION
