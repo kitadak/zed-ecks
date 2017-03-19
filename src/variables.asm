@@ -15,6 +15,7 @@ TOTAL_COLUMNS   equ 8
 BOARD_SIZE      equ 96
 
 BIT_VISIT       equ 3
+BIT_DELETE      equ 7
 NUM_TO_CLEAR    equ 4
 DELETE_COLOR    equ 5
 EMPTY_COLOR     equ 0

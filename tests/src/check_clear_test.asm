@@ -53,11 +53,15 @@ check_clears_main:
     ; is this a valid puyo?
     cp EMPTY_COLOR                  ; check existence
     jp z, check_clears_main
+
+    bit BIT_VISIT, a                ; has this been visited
+    jp nz, check_clears_main
+
     and COLOR_BITS                  ; isolate color bits
     cp WALL_COLOR                   ; check wall
     jp z, check_clears_main
-    cp DELETE_COLOR                 ; check if deleted
-    jp z, check_clears_main
+    ;cp DELETE_COLOR                 ; check if deleted
+    ;jp z, check_clears_main
 
     ; mark this puyo as visited
     set BIT_VISIT, (hl)
@@ -233,7 +237,7 @@ check_clears_mark:
     add hl, bc
     ld a, (hl)
     push hl                         ; store location
-    push af                         ; store puyo
+    ;push af                         ; store puyo
 
     ; save the color for scoring purposes
     and COLOR_BITS                  ; isolate color bits
@@ -256,11 +260,15 @@ check_clears_mark_y:
     set 3, (hl)
 check_clears_mark_delete:
 
-    pop af                          ; restore puyo
-    and 0xf8                        ; mask out the color bits
-    or DELETE_COLOR                 ; replace with a special deleted color
-    pop hl                          ; restore location
-    ld (hl), a
+    ;pop af                          ; restore puyo
+    pop hl                          ; get address
+    inc hl                          ; load second byte
+    set BIT_DELETE,(hl)
+
+    ;and 0xf8                        ; mask out the color bits
+    ;or DELETE_COLOR                 ; replace with a special deleted color
+    ;pop hl                          ; restore location
+    ;ld (hl), a
 
     ; increment score
     ld hl, cleared_count
@@ -351,6 +359,9 @@ curr_idx: defb 0
 curr_addr: defs 2, 0
 board_idx: defb 0
 prev_matches: defs 4,0
+cleared_count: defb 0
+cleared_colors: defb 0
+BIT_DELETE equ 7
 
 old_stack: defs 2, 0
 clear_stack_space: defs 256, 0
