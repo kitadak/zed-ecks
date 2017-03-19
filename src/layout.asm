@@ -8,7 +8,6 @@
 
 
 ; ------------------------------------------------------------------
-; TODO: load 4096 bytes only, then flash ENTER
 ; init_title: Show title screen, play theme music.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -17,24 +16,63 @@
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 init_title:
-    ld a,BACKGROUND_ATTR            ; load gameplay background attribute
-    ld (23693),a                    ; set our screen colours.
-    call 3503                       ; clear the screen.
-    ld a,2                          ; 2 = upper screen.
-    call 5633                       ; open channel.
-
-	call $0daf			    ; clear the screen.
-	ld hl,title_screen      ; load title graphic data (top 2/3)
-	ld de,16384             ; MAGIC - 0x4000
-	;ld bc,4096              ; copy 4096 bytes graphic data to screen
-    ld bc,6144
+    ld a,TITLE_BOTTOM_ATTR          ; load title background attribute
+    ld (23693),a
+	call $0daf			            ; clear the screen.
+	ld hl,title_screen              ; load title graphic data (top 2/3)
+	ld de,16384                     ; MAGIC - 0x4000
+	ld bc,4096                      ; copy top 2/3 graphic data to screen
 	ldir
-
-	ld hl,title_attribute   ; load title attr
-	ld	de,22528		    ; MAGIC
-	;ld bc,512			    ; copy 512 bytes of attr only
-    ld bc,768
+	ld hl,title_attribute           ; load title attr
+	ld	de,22528		            ; MAGIC
+	ld bc,512			            ; copy 512 bytes of attr only
 	ldir
+    ld l,TITLE_FLASH_ATTR           ; load ENTER flash attr
+    ld bc,0x8860
+    call load_2x2_attr
+    ld bc,0x8870
+    call load_2x2_attr
+    ld bc,0x8880
+    call load_2x2_attr
+init_title_dialog:
+    ld bc,0x0208
+    push bc
+    ld bc,0x9030
+    call get_pixel_address
+    ld hl,title_dialog_data_2
+    push de
+    xor a
+init_title_dialog_loop:
+    ld bc,21
+    ldir
+    pop de
+    inc d
+    pop bc
+    dec c
+    push bc
+    push de
+    cp c
+    jp nz,init_title_dialog_loop
+init_title_dialog_endloop:
+    pop de
+    pop bc
+    dec b
+    xor a
+    cp b
+    jp z,init_title_dialog_music
+    ld bc,0x0103
+    push bc
+    ld bc,0x8830
+    call get_pixel_address
+    ld a,5
+    add a,d
+    ld d,a
+    push de
+    xor a
+    ld hl,title_dialog_data
+    jp init_title_dialog_loop
+init_title_dialog_music:
+    call start_theme_music          ; play title music
     ret
 
 ; ------------------------------------------------------------------

@@ -92,6 +92,8 @@ EMPTY_BOARD:
 ; ------------------------------------------------------------------
 
 BACKGROUND_ATTR     equ 3
+TITLE_BOTTOM_ATTR   equ 0x06
+TITLE_FLASH_ATTR    equ 0x86
 PUYO_BLUE           equ 65
 PUYO_RED            equ 66
 PUYO_GREEN          equ 68
