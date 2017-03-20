@@ -20,7 +20,8 @@ KILL_LOCATION           equ 74  ; Based on byte representation
 
 ; Level & preview area
 LP_TOPLEFT              equ 0x1088
-LP_ROWS                 equ 8
+;LP_ROWS                 equ 8
+LP_ROWS                 equ 20
 LP_COLUMNS              equ 12
 PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
@@ -81,6 +82,8 @@ msg_paused_underline:   defb '  ________  '
 msg_paused_underline_end:
 msg_level:              defb '  Level: 1  '
 msg_level_end:
+msg_partition:          defb '____________'
+msg_partition_end:
 
 
 ; Puyo Pairs

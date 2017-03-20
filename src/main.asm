@@ -3,8 +3,8 @@
 ; Main test driver
 ; ------------------------------------------------------------------
     call populate_coord_tab ; begin game setup
-    call init_title         ; load title screen
-    call start_theme_music  ; play title music
+    ;call init_title         ; load title screen
+    ;call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
     ; test draw_curr_pair with input

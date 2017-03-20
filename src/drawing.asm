@@ -121,17 +121,39 @@ init_background:
     ld de,LEVEL_TEXT_POSITION
     call print_text
     ld bc,LEVEL_LINE                ; load level attr
-    ld hl,1
-    exx
-    ld d,LP_COLUMNS
-    ld e,LEVEL_ATTR
-    exx
-    call set_attr_block
+    ld h,LP_COLUMNS
+    ld l,LEVEL_ATTR
+    call set_attr_line
 
     ; TODO:
     ; avatar area
     ; clear score area
 
+    ret
+
+; ------------------------------------------------------------------
+; set_attr_line: set single row to given attribute
+; ------------------------------------------------------------------
+; Input: bc - coordinates of left cell
+;        h  - number of columns
+;        l  - attribute byte
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+set_attr_line:
+    push hl                         ; push loop counter
+    call get_attr_address
+set_attr_line_loop:
+    pop hl
+    ld a,l
+    ld (de),a
+    inc de
+    dec h
+    push hl
+    jp nz,set_attr_line_loop
+set_attr_line_done:
+    pop hl
     ret
 
 ; ------------------------------------------------------------------
