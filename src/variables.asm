@@ -22,10 +22,11 @@ KILL_LOCATION           equ 74  ; Based on byte representation
 LP_TOPLEFT              equ 0x1088
 LP_ROWS                 equ 10
 LP_COLUMNS              equ 12
+LP_TEXT_WIDTH           equ 8
 PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
-LEVEL_LINE              equ 0x4088
-SCORE_NUM_LINE          equ 0x5088
+LEVEL_LINE              equ 0x4098
+SCORE_NUM_LINE          equ 0x5098
 AVATAR_LINE             equ 0x6088
 AVATAR_LINE_2           equ 0x6888
 ;SCORE_LINE              equ 0x1888
@@ -33,16 +34,15 @@ AVABOX_TOPLEFT          equ 0x7098
 AVABOX_ROWS             equ 8
 AVABOX_COLUMNS          equ 8
 LEVEL_NUM               equ 0x40d0
+SCORE_NUM               equ 0x5098
 
 ; Address of character set in ROM starting from '0'
 ROM_CHAR_ZERO           equ 0x3d80
 
 ; Text positions
-LEVEL_TEXT_POSITION     equ 0x0811
+LEVEL_TEXT_POSITION     equ 0x0813
 AVATAR_PARTITION        equ 0x0c11
-SCORE_NUMBER            equ 0x0a11
 ;SCORE_TITLE             equ 0x0a11
-SCORE_NUM               equ 0x0813
 
 ; In-game "popup"
 POPUP_TOPLEFT           equ 0x4018
@@ -96,14 +96,10 @@ msg_over:               defb '    OVER    '
 msg_over_end:
 msg_paused_underline:   defb '  ________  '
 msg_paused_underline_end:
-msg_level:              defb '  Level:    '
+msg_level:              defb 'Level: '
 msg_level_end:
-msg_partition:          defb '____________'
-msg_partition_end:
 msg_score:              defb '   SCORE:   '
 msg_score_end:
-msg_score_number:       defb '  00123456  '
-msg_score_number_end:
 
 
 ; Puyo Pairs
@@ -207,7 +203,7 @@ drop_timer: defb 0
 
 current_speed: defb 0
 
-clear_puyos_counter: defb 0
+graphics_counter: defb 0
 
 ; Active airborne puyo pair
 curr_pair: defb 26,%00000010    ; current pair position
@@ -251,6 +247,7 @@ drop_table:
 board_to_coord_tab:
     defs 192,0xfb
 
-; Test level variables
+; Test level & score variables
 test_level: defb 3
+test_score: defb 0x14, 0x67, 0x92, 0x00
 

@@ -74,7 +74,7 @@ init_title_dialog_end:
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
+; TODO: avatar
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -124,17 +124,14 @@ init_background:
     call print_text
     call print_level
     ld bc,LEVEL_LINE                ; load level attr
-    ld h,LP_COLUMNS
+    ld h,LP_TEXT_WIDTH
     ld l,LEVEL_ATTR
     call set_attr_line
 
-    ; TODO: print actual score from BCD (another routine)
-    ld bc,msg_score_number          ; load score number
-    ld hl,msg_score_number_end
-    ld de,SCORE_NUMBER
-    call print_text
+    ; print score
+    call print_score
     ld bc,SCORE_NUM_LINE
-    ld h,LP_COLUMNS
+    ld h,LP_TEXT_WIDTH
     ld l,SCORE_NUM_ATTR
     call set_attr_line
 
@@ -217,14 +214,54 @@ set_attr_block_row_loop:
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
 ; print_score: display current score
 ; ------------------------------------------------------------------
-; Input: dehl - binary coded score (8 digits)
+; Input: None
 ; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
+print_score:
+    ld a,4                      ; init counter
+    ld (graphics_counter),a
+    ld hl,test_score            ; save score address
+    push hl
+    ld bc,SCORE_NUM             ; save current print address
+    call get_pixel_address
+    push de
+print_score_loop:
+    ld b,0
+    ld c,(hl)                   ; get odd digit
+    srl c
+    srl c
+    srl c
+    srl c
+    call get_num_data_addr      ; get pixel data from ROM
+    call load_cell_data
+    pop de                      ; update print address
+    pop hl                      ; restore score address
+    inc e
+    push hl                     ; save score address
+    push de                     ; save print position
+    ld b,0
+    ld a,(hl)                   ; get even digit
+    and 0x0f
+    ld c,a
+    call get_num_data_addr      ; get pixel data from ROM
+    call load_cell_data
+    pop de                      ; update print position
+    pop hl                      ; increment score address
+    inc e
+    inc hl
+    push hl                     ; save score address
+    push de                     ; save print position
+    ld a,(graphics_counter)     ; check counter, loopback if not done
+    dec a
+    ld (graphics_counter),a
+    jp nz,print_score_loop
+    pop hl
+    pop hl
+    ret
 
 ; ------------------------------------------------------------------
 ; print_level: display current level from variable
@@ -779,7 +816,7 @@ drop_floats_animate_loopback:
 clear_puyos:
     ; read whole board
     ld a,2
-    ld (clear_puyos_counter),a
+    ld (graphics_counter),a
 clear_puyos_begin:
     ld bc,0xffff
     push bc
@@ -814,7 +851,7 @@ clear_puyos_read:
     jp clear_puyos_read
 clear_puyos_not_hidden:
     pop bc                      ; restore bc
-    ld a,(clear_puyos_counter)  ; if second pass, skip color
+    ld a,(graphics_counter)  ; if second pass, skip color
     cp 0
     jp z,clear_puyos_no_color
     dec hl
@@ -851,7 +888,7 @@ clear_puyos_write:
     ld b,0
     push bc
     call get_board_to_coord     ; get coordinates in bc
-    ld a,(clear_puyos_counter)
+    ld a,(graphics_counter)
     cp 0
     jp z,clear_puyos_erase      ; if 2nd pop stage, erase from board
     ld l,d
@@ -870,11 +907,11 @@ clear_puyos_erase:
     ld (hl),a
     jp clear_puyos_write
 clear_puyos_write_done:
-    ld a,(clear_puyos_counter)
+    ld a,(graphics_counter)
     cp 0
     jp z,clear_puyos_end        ; if second time here, finish
     dec a
-    ld (clear_puyos_counter),a
+    ld (graphics_counter),a
     ld c,BLINK_DELAY
     call blink_delay
     jp clear_puyos_begin        ; loop back to read board again
