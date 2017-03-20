@@ -29,15 +29,20 @@ SCORE_NUM_LINE          equ 0x5088
 AVATAR_LINE             equ 0x6088
 AVATAR_LINE_2           equ 0x6888
 ;SCORE_LINE              equ 0x1888
-AVABOX_TOPLEFT             equ 0x7098
-AVABOX_ROWS                equ 8
-AVABOX_COLUMNS             equ 8
+AVABOX_TOPLEFT          equ 0x7098
+AVABOX_ROWS             equ 8
+AVABOX_COLUMNS          equ 8
+LEVEL_NUM               equ 0x40d0
+
+; Address of character set in ROM starting from '0'
+ROM_CHAR_ZERO           equ 0x3d80
 
 ; Text positions
 LEVEL_TEXT_POSITION     equ 0x0811
 AVATAR_PARTITION        equ 0x0c11
 SCORE_NUMBER            equ 0x0a11
 ;SCORE_TITLE             equ 0x0a11
+SCORE_NUM               equ 0x0813
 
 ; In-game "popup"
 POPUP_TOPLEFT           equ 0x4018
@@ -91,7 +96,7 @@ msg_over:               defb '    OVER    '
 msg_over_end:
 msg_paused_underline:   defb '  ________  '
 msg_paused_underline_end:
-msg_level:              defb '  Level: 1  '
+msg_level:              defb '  Level:    '
 msg_level_end:
 msg_partition:          defb '____________'
 msg_partition_end:
@@ -246,4 +251,6 @@ drop_table:
 board_to_coord_tab:
     defs 192,0xfb
 
+; Test level variables
+test_level: defb 3
 

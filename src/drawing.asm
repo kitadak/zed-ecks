@@ -74,7 +74,7 @@ init_title_dialog_end:
     ret
 
 ; ------------------------------------------------------------------
-; TODO: score area
+; TODO:
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -122,7 +122,7 @@ init_background:
     ld hl,msg_level_end
     ld de,LEVEL_TEXT_POSITION
     call print_text
-    ; TODO: print actual level number
+    call print_level
     ld bc,LEVEL_LINE                ; load level attr
     ld h,LP_COLUMNS
     ld l,LEVEL_ATTR
@@ -217,13 +217,48 @@ set_attr_block_row_loop:
     ret
 
 ; ------------------------------------------------------------------
-; TODO: score layout
+; TODO:
+; print_score: display current score
 ; ------------------------------------------------------------------
-; Input:
-; Output:
+; Input: dehl - binary coded score (8 digits)
+; Output: None
 ; ------------------------------------------------------------------
-; Registers polluted:
+; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
+
+; ------------------------------------------------------------------
+; print_level: display current level from variable
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+print_level:
+    ld bc,LEVEL_NUM             ; get pixel address of position
+    call get_pixel_address
+    ld b,0
+    ld a,(test_level)
+    ld c,a
+    call get_num_data_addr
+    call load_cell_data
+    ret
+
+; ------------------------------------------------------------------
+; get_num_data_addr: calculate address in ROM of pixel data of digit
+; ------------------------------------------------------------------
+; Input: bc - digit
+; Output: hl - address of digit data
+; ------------------------------------------------------------------
+; Registers polluted: b, c, h, l
+; ------------------------------------------------------------------
+get_num_data_addr:
+    ld hl,ROM_CHAR_ZERO         ; basically zero+8*(input)
+    sla c
+    sla c
+    sla c
+    add hl,bc
+    ret
 
 ; ------------------------------------------------------------------
 ; is_wall_hidden: check if given board coordinates are wall/hidden
