@@ -153,7 +153,7 @@ def write_music(f,o):
 if len(sys.argv) != 2:
     print "Usage: ./compile_sound.py [theme name]"
     exit(-1)
-INFILE = SOUND_PATH + sys.argv[1]
+INFILE = SOUND_PATH + "input/" + sys.argv[1]
 OUTFILE = SOUND_PATH + sys.argv[1] + ".asm"
 f = open(INFILE, 'r')
 o = open(OUTFILE, 'w')
