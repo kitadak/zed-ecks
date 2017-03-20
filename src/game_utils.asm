@@ -5,6 +5,64 @@
 ; Output: None
 ; ------------------------------------------------------------
 
+
+; ------------------------------------------------------------
+; bin_to_dec: Converts a 24-bit binary number to decimal
+; ------------------------------------------------------------
+; In: E:HL = 24-bit binary number (0-16777215)
+; Out: DE:HL = 8 digit decimal form (packed BCD)
+; Changes: AF, BC, DE, HL & IX
+;
+; by Alwin Henseler
+; ------------------------------------------------------------
+; Source:
+; https://www.msx.org/forum/development/msx-development/32-bit-long-ascii
+; ------------------------------------------------------------
+
+bin_to_dec:
+    ld c,e
+    push hl
+    pop ix          ; input value in c:ix
+    ld hl,1
+    ld d,h
+    ld e,h          ; start value corresponding with 1st 1-bit
+    ld b,24         ; bitnr. being processed + 1
+
+find1:
+    add ix,ix
+    rl c            ; shift bit 23-0 from c:ix into carry
+    jr c,nextbit
+    djnz find1      ; find highest 1-bit
+
+    ; all bits 0:
+    res 0,l         ; least significant bit not 1 after all ..
+    ret
+
+dblloop:
+    ld a,l
+    add a,a
+    daa
+    ld l,a
+    ld a,h
+    adc a,a
+    daa
+    ld h,a
+    ld a,e
+    adc a,a
+    daa
+    ld e,a
+    ld a,d
+    adc a,a
+    daa
+    ld d,a          ; double the value found so far
+    add ix,ix
+    rl c            ; shift next bit from c:ix into carry
+    jr nc,nextbit   ; bit = 0 -> don't add 1 to the number
+    set 0,l         ; bit = 1 -> add 1 to the number
+nextbit:
+    djnz dblloop
+    ret
+
 ; ------------------------------------------------------------
 ; check_clears: Marks puyos to be erased
 ; ------------------------------------------------------------
