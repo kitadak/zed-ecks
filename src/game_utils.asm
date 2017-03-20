@@ -1,3 +1,12 @@
+
+
+; ==================================================================
+; FILE: game_utils.asm
+; ------------------------------------------------------------------
+;   Game utility routines: input handler, player board updates, etc.
+; ==================================================================
+
+
 ; ------------------------------------------------------------
 ; <routine>: <description>
 ; ------------------------------------------------------------
@@ -784,7 +793,6 @@ play_check_h:                   ; rotations can't be repeated
     ld a, (prev_input)
     bit BIT_H, a
     call z, rotate_ccw
-    call draw_curr_pair         ; redraw
     ret
 
     ; check j
@@ -792,7 +800,6 @@ play_check_j:
     ld a, (prev_input)
     bit BIT_J, a
     call z, rotate_cw
-    call draw_curr_pair         ; redraw
     ret
 
     ; check p
@@ -991,6 +998,7 @@ rotate_cw_end:
     inc a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
 
 ; ------------------------------------------------------------------
@@ -1068,6 +1076,7 @@ rotate_ccw_end:
     dec a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
 
 ; ------------------------------------------------------------
@@ -1084,4 +1093,16 @@ rotate_ccw_end:
 
 update_score:
     ret
+
+; ------------------------------------------------------------
+; TODO:
+; write_pair_to_board: Write current active pair to board
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+; Registers used: a, b, c, d, e, h, l
+; ------------------------------------------------------------
+write_pair_to_board:
+    ld hl,player_board
 

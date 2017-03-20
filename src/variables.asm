@@ -49,9 +49,9 @@ BIT_LEFT                equ 4
 ; Delays
 INPUT_LONG_DELAY        equ 128
 INPUT_SHORT_DELAY       equ 16
-DROP_FLOATS_DELAY       equ 255
-BLINK_DELAY             equ 255
-BLINK_DELAY_2           equ 63
+CONST_DELAY             equ 255
+BLINK_DELAY             equ 63
+PRESS_DELAY             equ 5
 
 
 ; Puyo Pairs

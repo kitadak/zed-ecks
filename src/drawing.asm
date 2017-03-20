@@ -164,16 +164,15 @@ is_wall_hidden_true:
     ret
 
 ; ------------------------------------------------------------------
-; blink_delay: delay for BLINK_DELAY*BLINK_DELAY_2 time
+; blink_delay: delay for CONST_DELAY*(input) time
 ; ------------------------------------------------------------------
-; Input: None
+; Input: c - delay loop count
 ; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c
 ; ------------------------------------------------------------------
 blink_delay:
-    ld b,BLINK_DELAY
-    ld c,BLINK_DELAY_2
+    ld b,CONST_DELAY
     xor a
 blink_delay_loop:
     dec b
@@ -182,8 +181,53 @@ blink_delay_loop:
     dec c
     cp c
     ret z
-    ld b,BLINK_DELAY
+    ld b,CONST_DELAY
     jp blink_delay_loop
+
+; ------------------------------------------------------------------
+; get_2nd_puyo_coord: calculate 2nd puyo from pivot
+; ------------------------------------------------------------------
+; Input: a  - pair orientation
+;        bc - coordinates of pivot
+; Output: bc - coordinates of 2nd puyo in pair
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, e
+; ------------------------------------------------------------------
+get_2nd_puyo_coord:
+    and %00000011           ; calculate coord of 2nd
+    ld e,a
+    ld a,0x03
+    cp e
+    jp z,get_2nd_puyo_coord_left
+    dec a
+    cp e
+    jp z,get_2nd_puyo_coord_down
+    dec a
+    cp e
+    jp z,get_2nd_puyo_coord_right
+get_2nd_puyo_coord_up:          ; b-16
+    ld a,b
+    ld e,16
+    sub e
+    ld b,a
+    jp get_2nd_puyo_coord_end
+get_2nd_puyo_coord_right:       ; c+16
+    ld a,16
+    add a,c
+    ld c,a
+    jp get_2nd_puyo_coord_end
+get_2nd_puyo_coord_down:        ; b+16
+    ld a,16
+    add a,b
+    ld b,a
+    jp get_2nd_puyo_coord_end
+get_2nd_puyo_coord_left:        ; c-16
+    ld a,c
+    ld e,16
+    sub e
+    ld c,a
+get_2nd_puyo_coord_end:
+    ret
 
 ; ------------------------------------------------------------------
 ; draw_preview: display preview of next puyo pair
@@ -308,56 +352,24 @@ refresh_board_done:
 draw_curr_pair:
     ; push coordinates: curr pivot, curr 2nd, prev pivot, prev 2nd
     ld d,2
-    ld hl,curr_pair+1       ; get current position info
+    ld hl,curr_pair+1           ; get current position info
     ld a,(hl)
     push af
     dec hl
 draw_curr_pair_calc:
     ld a,(hl)
-    ld c,a                  ; calculate coord of pivot & push
+    ld c,a                      ; calculate coord of pivot & push
     ld b,0
     call get_board_to_coord
-    call is_wall_hidden            ; check if pivot is wall
+    call is_wall_hidden         ; check if pivot is wall
     cp 0
     jp z,draw_curr_pair_push_1  ; if not wall, push normally, else push 0xffff
     ld bc,0xffff
 draw_curr_pair_push_1:
     pop af
     push bc
-    and %00000011           ; calculate coord of 2nd
-    ld e,a
-    ld a,0x03
-    cp e
-    jp z,draw_curr_pair_left
-    dec a
-    cp e
-    jp z,draw_curr_pair_down
-    dec a
-    cp e
-    jp z,draw_curr_pair_right
-draw_curr_pair_up:          ; b-16
-    ld a,b
-    ld e,16
-    sub e
-    ld b,a
-    jp draw_curr_pair_wall_check
-draw_curr_pair_right:       ; c+16
-    ld a,16
-    add a,c
-    ld c,a
-    jp draw_curr_pair_wall_check
-draw_curr_pair_down:        ; b+16
-    ld a,16
-    add a,b
-    ld b,a
-    jp draw_curr_pair_wall_check
-draw_curr_pair_left:        ; c-16
-    ld a,c
-    ld e,16
-    sub e
-    ld c,a
-
-draw_curr_pair_wall_check:  ; if current cell is wall or hidden, push 0xffff
+    call get_2nd_puyo_coord     ; get coordinates of 2nd puyo
+draw_curr_pair_wall_check:      ; if current cell is wall or hidden, push 0xffff
     call is_wall_hidden
     cp 0
     jp z,draw_curr_pair_push_2  ; if not wall, push normally, else push 0xffff
@@ -375,7 +387,7 @@ draw_curr_pair_push_2:
     pop af
 
     ; finished pushing, pop to erase and draw next
-    pop bc                  ; erase previous position first
+    pop bc                      ; erase previous position first
     ld a,0xff
     cp b
     jp z,draw_curr_pair_erase_skip_1   ; if wall, ignore
@@ -403,7 +415,7 @@ draw_curr_pair_erase_skip_2:
     ld a,0xff
     cp b
     jp z,draw_curr_pair_draw_skip_1
-    ld a,(pair_color)       ; draw curr 2nd puyo
+    ld a,(pair_color)           ; draw curr 2nd puyo
     and 0x07
     or %01000000
     ld l,a
@@ -417,7 +429,7 @@ draw_curr_pair_draw_skip_1:
     ld a,0xff
     cp b
     jp z,draw_curr_pair_draw_skip_2
-    ld a,(pair_color)       ; draw curr pivot puyo
+    ld a,(pair_color)           ; draw curr pivot puyo
     srl a
     srl a
     srl a
@@ -564,7 +576,7 @@ drop_floats_animate_wall_right:
     jp z,drop_floats_animate_loopback
     ; delay
     push bc                     ; push current cell coordinates
-    ld b,DROP_FLOATS_DELAY
+    ld b,CONST_DELAY
     xor a
 drop_floats_animate_delay:
     dec b
@@ -657,6 +669,7 @@ clear_puyos_read_wall:
     ld e,TOTAL_ROWS             ; reset wall counter
     jp clear_puyos_read
 clear_puyos_read_delay:
+    ld c,BLINK_DELAY
     call blink_delay            ; blink delay first to see animation
 
 clear_puyos_write:
@@ -693,9 +706,9 @@ clear_puyos_write_done:
     jp z,clear_puyos_end        ; if second time here, finish
     dec a
     ld (clear_puyos_counter),a
+    ld c,BLINK_DELAY
     call blink_delay
     jp clear_puyos_begin        ; loop back to read board again
 clear_puyos_end:
     ret
-
 
