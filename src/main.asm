@@ -59,7 +59,7 @@ main_loop_spawn:
     call draw_curr_pair
     call drop_timer_reset
 main_loop_drop:
-    ld c, 5
+    ld c, 3
     call blink_delay
 
     ; draw active puyo

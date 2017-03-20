@@ -1,5 +1,3 @@
-
-
 ; ==================================================================
 ; FILE: game_utils.asm
 ; ------------------------------------------------------------------
@@ -970,7 +968,7 @@ spawn_puyos:
     ld (hl), 0                  ; reset counter
     ld hl, current_level
     ld a, (hl)
-    cp 0 ;MAX_LEVEL
+    cp MAX_LEVEL
     ret z                       ; don't go past the max level
     inc (hl)                    ; otherwise, go up one level
     ret
@@ -1043,6 +1041,13 @@ rotate_cw_u:
     cp 0
     jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
+    ; before shifting, check to see if something is on the left (wall/puyo)
+    ld a, (curr_pair)
+    sub 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz                   ; if nothing, shift + rotate is fine
     ld hl, curr_pair
     ld a, (hl)
     ld c, 12
@@ -1076,7 +1081,16 @@ rotate_cw_d:
     call get_puyo
     cp 0
     jp z, rotate_cw_end
-    ld hl, curr_pair                ; something exists, move right
+    ; something exists on the left
+    ; check right
+    ld a, (curr_pair)
+    add a, 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+    ld hl, curr_pair
     ld a, (hl)
     ld c, 12
     add a, c
@@ -1118,7 +1132,14 @@ rotate_ccw_u:
     call get_puyo
     cp 0
     jp z, rotate_ccw_end
-    ld hl, curr_pair                ; something exists, move right
+    ld a, (curr_pair)               ; check if somethings on right
+    add a, 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+    ld hl, curr_pair                ; nothing on right, move right
     ld a, (hl)
     ld c, 12
     add a, c
@@ -1152,6 +1173,15 @@ rotate_ccw_d:
     call get_puyo
     cp 0
     jp z, rotate_ccw_end      ; if nothing, rotation is fine
+
+    ld a, (curr_pair)
+    sub 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+
     ; something exists, need to shift curr_pair left
     ld hl, curr_pair
     ld a, (hl)

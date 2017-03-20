@@ -41,8 +41,8 @@ WALL_COLOR              equ 7
 COLOR_BITS              equ 7
 VISIBLE_END             equ 84
 
-LEVEL_UP        equ 30
-MAX_LEVEL       equ 10
+LEVEL_UP        equ 15
+MAX_LEVEL       equ 9
 
 WALL_LEFT               equ 0x08    ; cp c
 WALL_RIGHT              equ 0x78    ; cp c
@@ -221,8 +221,8 @@ chain_table:
 ; Drop time table
 ; Defines number of frames before the puyo is dropped to the next half row
 drop_table:
-    defb 32, 128, 28, 25, 22, 20, 18, 15, 13, 11,  8
-    ;Lv.  0   1   2   3   4   5   6   7   8   9  10
+    defb 100, 80, 70, 60, 50, 40, 35, 30, 20, 17
+    ;Lv.   0   1   2   3   4   5   6   7   8   9
 
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
