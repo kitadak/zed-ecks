@@ -2,6 +2,8 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
+    call start_greets
+
     jp main_init
     jp inf_loop
     call populate_coord_tab ; begin game setup

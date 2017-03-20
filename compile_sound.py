@@ -9,6 +9,7 @@ QUARTERBEAT=80
 REST="R"
 TWONOTES="2"
 TEMPO="TEMPO"
+BREAK="BREAK"
 
 # W->Whole Note
 # H->Half Note
@@ -112,6 +113,8 @@ def write_music(f,o):
 			str(time) + "," + str(time) + "\n")
 	elif tokens[0] == TEMPO:
 		redo_timetable(int(tokens[1]))
+	elif tokens[0] == BREAK:
+		o.write("\tdefb 255\n")
 	else:
 		time = 0
 		# 3E10    mult[TIMETABLE]division
