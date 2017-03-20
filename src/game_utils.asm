@@ -452,6 +452,7 @@ check_active_below_l:
     call get_puyo
 check_active_below_end:
     ret
+
 ; -------------------------------------------------------------
 ; check_active_left: checks if something exists to the left
 ; of either puyo
@@ -582,7 +583,6 @@ reset_board:
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
-    ret
 
 ; ------------------------------------------------------------
 ; gameover_detect : checks for a gameover
@@ -808,10 +808,7 @@ play_check_p:
     ld a, (prev_input)
     bit BIT_P, a
     ret nz
-    ld a, (is_paused)           ; flip paused state
-    cpl
-    ld (is_paused), a
-    ;TODO: call pause routine here
+    call pause_game             ; go to pause routine
     ret
 
 
@@ -858,13 +855,25 @@ input_move_down:
     ret
 
 ; ------------------------------------------------------------
-; TODO:
 ; pause_game: pause game sequence
 ; ------------------------------------------------------------
 ; Input: None
-; Output: 0 if no clears occured, else clears occured
+; Output: None
 ; ------------------------------------------------------------
 pause_game:
+    call display_pause          ; show paused popup
+    ld c,BLINK_DELAY            ; delay to avoid hold pattern
+    call blink_delay
+pause_game_loop:
+    call get_input              ; get current input
+    ld a, (curr_input)
+    bit BIT_P, a
+    jp z, pause_game_loop       ; if not pressed, keep checking input
+    ld a, (curr_input)          ; update previous input
+    ld (prev_input), a
+    call refresh_board          ; finish, redraw everything and return
+    call draw_curr_pair
+    ret
 
 ; ------------------------------------------------------------
 ; process_clears: clears 4+ connected puyos

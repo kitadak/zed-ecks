@@ -181,8 +181,6 @@ drop_timer: defb 0
 
 current_speed: defb 0
 
-is_paused: defb 0
-
 clear_puyos_counter: defb 0
 
 ; Active airborne puyo pair
