@@ -2,9 +2,11 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
+    call start_greets
+
     call populate_coord_tab ; begin game setup
     call init_title         ; load title screen
-    call start_theme_music  ; play title music
+    call play_theme_music  ; play title music
     call init_background    ; load play area layout
 
     ;call reset_board

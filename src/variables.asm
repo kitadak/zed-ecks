@@ -190,3 +190,22 @@ board_to_coord_tab:
     defs 192,0xfb
 
 
+GREETS_MESSAGE:
+    defb 16,7
+    defb 'CSE'
+    defb 22,0,4
+    defb '0175'
+    defb 13
+    defb 'Kenta Kitada'
+    defb 13
+    defb 'Thao Truong'
+    defb 13
+    defb 'Joshua Tang'
+    defb 13 
+    defb 'Professor Hovav Shacham'
+    defb 13
+    defb 22,20,0
+    defb "Special thanks to:"
+    defb 13
+    defb "Adam Liu's perfect pitch."
+EOGREETS: equ $
