@@ -18,15 +18,26 @@ TOTAL_COLUMNS           equ 8
 BOARD_SIZE              equ 96
 KILL_LOCATION           equ 74  ; Based on byte representation
 
-; Level & preview area
+; Info section
 LP_TOPLEFT              equ 0x1088
-;LP_ROWS                 equ 8
-LP_ROWS                 equ 20
+LP_ROWS                 equ 10
 LP_COLUMNS              equ 12
 PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
 LEVEL_LINE              equ 0x4088
+SCORE_NUM_LINE          equ 0x5088
+AVATAR_LINE             equ 0x6088
+AVATAR_LINE_2           equ 0x6888
+;SCORE_LINE              equ 0x1888
+AVABOX_TOPLEFT             equ 0x7098
+AVABOX_ROWS                equ 8
+AVABOX_COLUMNS             equ 8
+
+; Text positions
 LEVEL_TEXT_POSITION     equ 0x0811
+AVATAR_PARTITION        equ 0x0c11
+SCORE_NUMBER            equ 0x0a11
+;SCORE_TITLE             equ 0x0a11
 
 ; In-game "popup"
 POPUP_TOPLEFT           equ 0x4018
@@ -84,6 +95,10 @@ msg_level:              defb '  Level: 1  '
 msg_level_end:
 msg_partition:          defb '____________'
 msg_partition_end:
+msg_score:              defb '   SCORE:   '
+msg_score_end:
+msg_score_number:       defb '  00123456  '
+msg_score_number_end:
 
 
 ; Puyo Pairs
@@ -129,7 +144,9 @@ TITLE_FLASH_ATTR    equ 0x86
 
 PAUSED_ATTR         equ %00101001
 GAMEOVER_ATTR       equ %11110010
+;SCORE_ATTR          equ %00000101
 LEVEL_ATTR          equ %01000111
+SCORE_NUM_ATTR      equ %01000101
 
 COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65

@@ -109,26 +109,44 @@ init_background:
     ld bc,PREVIEW_COORDS_BOTTOM
     ld hl,puyo_none
     call load_2x2_data
-    ld bc,LP_TOPLEFT                ; clear preview & level area
+    ld bc,LP_TOPLEFT
     ld hl,LP_ROWS
     exx
     ld d,LP_COLUMNS
     ld e,0
     exx
-    call set_attr_block             ; load level text
-    ld bc,msg_level
+    call set_attr_block
+
+    ; level info
+    ld bc,msg_level                 ; load level text
     ld hl,msg_level_end
     ld de,LEVEL_TEXT_POSITION
     call print_text
+    ; TODO: print actual level number
     ld bc,LEVEL_LINE                ; load level attr
     ld h,LP_COLUMNS
     ld l,LEVEL_ATTR
     call set_attr_line
 
-    ; TODO:
-    ; avatar area
-    ; clear score area
+    ; TODO: print actual score from BCD (another routine)
+    ld bc,msg_score_number          ; load score number
+    ld hl,msg_score_number_end
+    ld de,SCORE_NUMBER
+    call print_text
+    ld bc,SCORE_NUM_LINE
+    ld h,LP_COLUMNS
+    ld l,SCORE_NUM_ATTR
+    call set_attr_line
 
+    ; TODO: print avatar (another routine)
+    ; clear avatar area
+    ld bc,AVABOX_TOPLEFT
+    ld hl,AVABOX_ROWS
+    exx
+    ld d,AVABOX_COLUMNS
+    ld e,0
+    exx
+    call set_attr_block
     ret
 
 ; ------------------------------------------------------------------
