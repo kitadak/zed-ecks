@@ -9,6 +9,7 @@ QUARTERBEAT=80
 REST="R"
 TWONOTES="2"
 TEMPO="TEMPO"
+BREAK="BREAK"
 
 # W->Whole Note
 # H->Half Note
@@ -112,6 +113,8 @@ def write_music(f,o):
 			str(time) + "," + str(time) + "\n")
 	elif tokens[0] == TEMPO:
 		redo_timetable(int(tokens[1]))
+	elif tokens[0] == BREAK:
+		o.write("\tdefb 255\n")
 	else:
 		time = 0
 		# 3E10    mult[TIMETABLE]division
@@ -153,7 +156,7 @@ def write_music(f,o):
 if len(sys.argv) != 2:
     print "Usage: ./compile_sound.py [theme name]"
     exit(-1)
-INFILE = SOUND_PATH + sys.argv[1]
+INFILE = SOUND_PATH + "input/" + sys.argv[1]
 OUTFILE = SOUND_PATH + sys.argv[1] + ".asm"
 f = open(INFILE, 'r')
 o = open(OUTFILE, 'w')

@@ -74,7 +74,7 @@ init_title_dialog_end:
     ret
 
 ; ------------------------------------------------------------------
-; TODO: score area
+; TODO: avatar
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -109,29 +109,66 @@ init_background:
     ld bc,PREVIEW_COORDS_BOTTOM
     ld hl,puyo_none
     call load_2x2_data
-    ld bc,LP_TOPLEFT                ; clear preview & level area
+    ld bc,LP_TOPLEFT
     ld hl,LP_ROWS
     exx
     ld d,LP_COLUMNS
     ld e,0
     exx
-    call set_attr_block             ; load level text
-    ld bc,msg_level
+    call set_attr_block
+
+    ; level info
+    ld bc,msg_level                 ; load level text
     ld hl,msg_level_end
     ld de,LEVEL_TEXT_POSITION
     call print_text
+    call print_level
     ld bc,LEVEL_LINE                ; load level attr
-    ld hl,1
+    ld h,LP_TEXT_WIDTH
+    ld l,LEVEL_ATTR
+    call set_attr_line
+
+    ; print score
+    call print_score
+    ld bc,SCORE_NUM_LINE
+    ld h,LP_TEXT_WIDTH
+    ld l,SCORE_NUM_ATTR
+    call set_attr_line
+
+    ; TODO: print avatar (another routine)
+    ; clear avatar area
+    ld bc,AVABOX_TOPLEFT
+    ld hl,AVABOX_ROWS
     exx
-    ld d,LP_COLUMNS
-    ld e,LEVEL_ATTR
+    ld d,AVABOX_COLUMNS
+    ld e,0
     exx
     call set_attr_block
+    ret
 
-    ; TODO:
-    ; avatar area
-    ; clear score area
-
+; ------------------------------------------------------------------
+; set_attr_line: set single row to given attribute
+; ------------------------------------------------------------------
+; Input: bc - coordinates of left cell
+;        h  - number of columns
+;        l  - attribute byte
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+set_attr_line:
+    push hl                         ; push loop counter
+    call get_attr_address
+set_attr_line_loop:
+    pop hl
+    ld a,l
+    ld (de),a
+    inc de
+    dec h
+    push hl
+    jp nz,set_attr_line_loop
+set_attr_line_done:
+    pop hl
     ret
 
 ; ------------------------------------------------------------------
@@ -177,13 +214,88 @@ set_attr_block_row_loop:
     ret
 
 ; ------------------------------------------------------------------
-; TODO: score layout
+; print_score: display current score
 ; ------------------------------------------------------------------
-; Input:
-; Output:
+; Input: None
+; Output: None
 ; ------------------------------------------------------------------
-; Registers polluted:
+; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
+print_score:
+    ld a,4                      ; init counter
+    ld (graphics_counter),a
+    ld hl,test_score            ; save score address
+    push hl
+    ld bc,SCORE_NUM             ; save current print address
+    call get_pixel_address
+    push de
+print_score_loop:
+    ld b,0
+    ld c,(hl)                   ; get odd digit
+    srl c
+    srl c
+    srl c
+    srl c
+    call get_num_data_addr      ; get pixel data from ROM
+    call load_cell_data
+    pop de                      ; update print address
+    pop hl                      ; restore score address
+    inc e
+    push hl                     ; save score address
+    push de                     ; save print position
+    ld b,0
+    ld a,(hl)                   ; get even digit
+    and 0x0f
+    ld c,a
+    call get_num_data_addr      ; get pixel data from ROM
+    call load_cell_data
+    pop de                      ; update print position
+    pop hl                      ; increment score address
+    inc e
+    inc hl
+    push hl                     ; save score address
+    push de                     ; save print position
+    ld a,(graphics_counter)     ; check counter, loopback if not done
+    dec a
+    ld (graphics_counter),a
+    jp nz,print_score_loop
+    pop hl
+    pop hl
+    ret
+
+; ------------------------------------------------------------------
+; print_level: display current level from variable
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+print_level:
+    ld bc,LEVEL_NUM             ; get pixel address of position
+    call get_pixel_address
+    ld b,0
+    ld a,(current_level)
+    ld c,a
+    call get_num_data_addr
+    call load_cell_data
+    ret
+
+; ------------------------------------------------------------------
+; get_num_data_addr: calculate address in ROM of pixel data of digit
+; ------------------------------------------------------------------
+; Input: bc - digit
+; Output: hl - address of digit data
+; ------------------------------------------------------------------
+; Registers polluted: b, c, h, l
+; ------------------------------------------------------------------
+get_num_data_addr:
+    ld hl,ROM_CHAR_ZERO         ; basically zero+8*(input)
+    sla c
+    sla c
+    sla c
+    add hl,bc
+    ret
 
 ; ------------------------------------------------------------------
 ; is_wall_hidden: check if given board coordinates are wall/hidden
@@ -702,7 +814,7 @@ drop_floats_animate_loopback:
 clear_puyos:
     ; read whole board
     ld a,2
-    ld (clear_puyos_counter),a
+    ld (graphics_counter),a
 clear_puyos_begin:
     ld bc,0xffff
     push bc
@@ -737,7 +849,7 @@ clear_puyos_read:
     jp clear_puyos_read
 clear_puyos_not_hidden:
     pop bc                      ; restore bc
-    ld a,(clear_puyos_counter)  ; if second pass, skip color
+    ld a,(graphics_counter)  ; if second pass, skip color
     cp 0
     jp z,clear_puyos_no_color
     dec hl
@@ -774,7 +886,7 @@ clear_puyos_write:
     ld b,0
     push bc
     call get_board_to_coord     ; get coordinates in bc
-    ld a,(clear_puyos_counter)
+    ld a,(graphics_counter)
     cp 0
     jp z,clear_puyos_erase      ; if 2nd pop stage, erase from board
     ld l,d
@@ -793,11 +905,11 @@ clear_puyos_erase:
     ld (hl),a
     jp clear_puyos_write
 clear_puyos_write_done:
-    ld a,(clear_puyos_counter)
+    ld a,(graphics_counter)
     cp 0
     jp z,clear_puyos_end        ; if second time here, finish
     dec a
-    ld (clear_puyos_counter),a
+    ld (graphics_counter),a
     ld c,BLINK_DELAY
     call blink_delay
     jp clear_puyos_begin        ; loop back to read board again

@@ -16,14 +16,31 @@ TOTAL_COLUMNS           equ 8
 BOARD_SIZE              equ 96
 KILL_LOCATION           equ 74  ; Based on byte representation
 
-; Level & preview area
+; Info section
 LP_TOPLEFT              equ 0x1088
-LP_ROWS                 equ 8
+LP_ROWS                 equ 10
 LP_COLUMNS              equ 12
+LP_TEXT_WIDTH           equ 8
 PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
-LEVEL_LINE              equ 0x4088
-LEVEL_TEXT_POSITION     equ 0x0811
+LEVEL_LINE              equ 0x4098
+SCORE_NUM_LINE          equ 0x5098
+AVATAR_LINE             equ 0x6088
+AVATAR_LINE_2           equ 0x6888
+;SCORE_LINE              equ 0x1888
+AVABOX_TOPLEFT          equ 0x7098
+AVABOX_ROWS             equ 8
+AVABOX_COLUMNS          equ 8
+LEVEL_NUM               equ 0x40d0
+SCORE_NUM               equ 0x5098
+
+; Address of character set in ROM starting from '0'
+ROM_CHAR_ZERO           equ 0x3d80
+
+; Text positions
+LEVEL_TEXT_POSITION     equ 0x0813
+AVATAR_PARTITION        equ 0x0c11
+;SCORE_TITLE             equ 0x0a11
 
 ; In-game "popup"
 POPUP_TOPLEFT           equ 0x4018
@@ -80,8 +97,10 @@ msg_over:               defb '    OVER    '
 msg_over_end:
 msg_paused_underline:   defb '  ________  '
 msg_paused_underline_end:
-msg_level:              defb '  Level: 1  '
+msg_level:              defb 'Level: '
 msg_level_end:
+msg_score:              defb '   SCORE:   '
+msg_score_end:
 
 
 ; Puyo Pairs
@@ -127,7 +146,9 @@ TITLE_FLASH_ATTR    equ 0x86
 
 PAUSED_ATTR         equ %00101001
 GAMEOVER_ATTR       equ %11110010
+;SCORE_ATTR          equ %00000101
 LEVEL_ATTR          equ %01000111
+SCORE_NUM_ATTR      equ %01000101
 
 COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65
@@ -176,11 +197,9 @@ next_pair: defb 0
 player_score: defs 3,0
 player_score_bcd: defs 4, 0
 
-high_score: defs 3,0
-
 puyos_cleared: defb 0
 
-clear_puyos_counter: defb 0
+graphics_counter: defb 0
 
 ; Drop variables
 drop_timer: defb 0
@@ -239,4 +258,64 @@ drop_table:
 board_to_coord_tab:
     defs 192,0xfb
 
+; Test score variables
+test_score: defb 0x14, 0x67, 0x92, 0x00
 
+
+GREETS_MESSAGE:
+    defb 16,7
+    defb 'CSE 0175'
+    defb 13,13
+    defb 'Kenta Kitada'
+    defb 13
+    defb 'Thao Truong'
+    defb 13
+    defb 'Joshua Tang'
+    defb 13
+    defb 'Professor Hovav Shacham'
+    defb 13
+    defb 22,20,0
+    defb "Special thanks to:"
+    defb 13
+    defb "Adam Liu's perfect pitch."
+EOGREETS: equ $
+
+
+GREETS_MESSAGE_22:
+    defb 16,7
+    defb 'CSE'
+    defb 22,0,4
+    defb '0175'
+    defb 22,2,0
+    defb 'Kenta'
+    defb 22,2,6
+    defb 'Kitada'
+    defb 22,3,0
+    defb 'Thao'
+    defb 22,3,5
+    defb 'Truong'
+    defb 22,4,0
+    defb 'Joshua'
+    defb 22,4,7
+    defb 'Tang'
+    defb 22,5,0
+    defb 'Professor'
+    defb 22,5,10
+    defb 'Hovav'
+    defb 22,5,16
+    defb 'Shacham'
+    defb 22,20,0
+    defb 'Special'
+    defb 22,20,8
+    defb 'thanks'
+    defb 22,20,15
+    defb 'to:'
+    defb 22,21,0
+    defb 'Adam'
+    defb 22,21,5
+    defb "Liu's"
+    defb 22,21,11
+    defb 'perfect'
+    defb 22,21,19
+    defb 'pitch.'
+EOGREETS_22: equ $
