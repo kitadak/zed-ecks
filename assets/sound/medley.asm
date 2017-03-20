@@ -1,5 +1,5 @@
 
-theme_music_data:
+medley_music_data:
 	defb 254,160,160
 	defb 110,104,105
 	defb 110,87,88
