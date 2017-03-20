@@ -61,8 +61,8 @@ BIT_DOWN                equ 5
 BIT_LEFT                equ 4
 
 ; Delays
-INPUT_LONG_DELAY        equ 128
-INPUT_SHORT_DELAY       equ 16
+INPUT_LONG_DELAY        equ 64
+INPUT_SHORT_DELAY       equ 8
 CONST_DELAY             equ 255
 BLINK_DELAY             equ 63
 PRESS_DELAY             equ 5
