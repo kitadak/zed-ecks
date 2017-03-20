@@ -34,7 +34,7 @@ init_title:
     call load_2x2_attr
     ld bc,0x8880
     call load_2x2_attr
-init_title_dialog:
+init_title_dialog:                  ; load bottom 3rd data
     ld bc,0x0208
     push bc
     ld bc,0x9030
@@ -53,13 +53,12 @@ init_title_dialog_loop:
     push de
     cp c
     jp nz,init_title_dialog_loop
-init_title_dialog_endloop:
     pop de
     pop bc
     dec b
     xor a
     cp b
-    jp z,init_title_dialog_music
+    jp z,init_title_dialog_end
     ld bc,0x0103
     push bc
     ld bc,0x8830
@@ -71,11 +70,11 @@ init_title_dialog_endloop:
     xor a
     ld hl,title_dialog_data
     jp init_title_dialog_loop
-init_title_dialog_music:
-    call start_theme_music          ; play title music
+init_title_dialog_end:
     ret
 
 ; ------------------------------------------------------------------
+; TODO: score area
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -228,6 +227,16 @@ draw_curr_pair_erase_skip_1:
     ld a,0xff
     cp b
     jp z,draw_curr_pair_erase_skip_2   ; if wall, ignore
+    pop de
+    push de
+    ld a,b
+    cp d
+    jp nz,draw_curr_pair_erase_pivot   ; if same pivot, don't erase
+    ld d,0
+    ld a,c
+    cp e
+    jp z,draw_curr_pair_erase_skip_2
+draw_curr_pair_erase_pivot:
     call erase_puyo_2x2
 draw_curr_pair_erase_skip_2:
     pop bc
@@ -553,4 +562,17 @@ draw_preview:
     ld bc,PREVIEW_COORDS_BOTTOM
     call load_2x2_attr
     ret
+
+; ------------------------------------------------------------------
+; TODO:
+; clear_puyos: erase matched puyos from board
+; ------------------------------------------------------------------
+; Input: None
+; Output: puyos cleared from play area, boardmap updated
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+clear_puyos:
+
+
 

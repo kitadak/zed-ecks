@@ -3,7 +3,8 @@
 ; Main test driver
 ; ------------------------------------------------------------------
     call populate_coord_tab ; begin game setup
-    call init_title         ; load title screen
+    ;call init_title         ; load title screen
+    ;call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
     ;call reset_board
@@ -13,8 +14,7 @@
     call connect_puyos
     call check_clears
     call refresh_board
-    call test_single_cell
-    ;call draw_curr_pair
+    call draw_curr_pair
 
 inf_loop:                   ; infinite loop to not exit program
     ;call play_check_input
