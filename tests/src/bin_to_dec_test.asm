@@ -1,4 +1,4 @@
-    ld e, 0xFF
+    ld e, 0x00
     ld hl, 0xFFFF
 ; Routine for converting a 24-bit binary number to decimal
 ; In: E:HL = 24-bit binary number (0-16777215)
