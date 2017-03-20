@@ -784,6 +784,7 @@ play_check_h:                   ; rotations can't be repeated
     ld a, (prev_input)
     bit BIT_H, a
     call z, rotate_ccw
+    call draw_curr_pair         ; redraw
     ret
 
     ; check j
@@ -791,6 +792,7 @@ play_check_j:
     ld a, (prev_input)
     bit BIT_J, a
     call z, rotate_cw
+    call draw_curr_pair         ; redraw
     ret
 
     ; check p
@@ -801,6 +803,7 @@ play_check_p:
     ld a, (is_paused)           ; flip paused state
     cpl
     ld (is_paused), a
+    ;TODO: call pause routine here
     ret
 
 
@@ -815,6 +818,7 @@ input_move_left:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check d
@@ -828,6 +832,7 @@ input_move_right:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check s
@@ -841,6 +846,7 @@ input_move_down:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
 ; ------------------------------------------------------------

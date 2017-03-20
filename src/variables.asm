@@ -10,49 +10,49 @@
 ; Macros/Constants
 ; ------------------------------------------------------------------
 
-TOPLEFT_HIDDEN  equ 0x0008
-TOPLEFT_VISIBLE equ 0x1018
-TOTAL_ROWS      equ 12
-TOTAL_COLUMNS   equ 8
-BOARD_SIZE      equ 96
-
-BIT_VISIT       equ 3
-BIT_DELETE      equ 7
-NUM_TO_CLEAR    equ 4
-DELETE_COLOR    equ 5
-EMPTY_COLOR     equ 0
-WALL_COLOR      equ 7
-COLOR_BITS      equ 7
-VISIBLE_END     equ 84
-
-
-WALL_LEFT       equ 0x08    ; cp c
-WALL_RIGHT      equ 0x78    ; cp c
-WALL_BOTTOM     equ 0xB0    ; cp b
-HIDDEN_ROW      equ 0x00    ; cp b
-
-BIT_P equ 7
-BIT_H equ 4
-BIT_J equ 3
-BIT_D equ 2
-BIT_S equ 1
-BIT_A equ 0
-
-BIT_UP      equ 7
-BIT_RIGHT   equ 6
-BIT_DOWN    equ 5
-BIT_LEFT    equ 4
-
-INPUT_LONG_DELAY equ 128
-INPUT_SHORT_DELAY equ 16
-
-
-KILL_LOCATION   equ 74  ; Based on byte representation
-
-DROP_FLOATS_DELAY   equ 255
-
+; Coordinates / board positions
+TOPLEFT_HIDDEN          equ 0x0008
+TOPLEFT_VISIBLE         equ 0x1018
+TOTAL_ROWS              equ 12
+TOTAL_COLUMNS           equ 8
+BOARD_SIZE              equ 96
 PREVIEW_COORDS_TOP      equ 0x1088
 PREVIEW_COORDS_BOTTOM   equ 0x2088
+KILL_LOCATION           equ 74  ; Based on byte representation
+
+BIT_VISIT               equ 3
+BIT_DELETE              equ 7
+NUM_TO_CLEAR            equ 4
+DELETE_COLOR            equ 5
+EMPTY_COLOR             equ 0
+WALL_COLOR              equ 7
+COLOR_BITS              equ 7
+VISIBLE_END             equ 84
+
+WALL_LEFT               equ 0x08    ; cp c
+WALL_RIGHT              equ 0x78    ; cp c
+WALL_BOTTOM             equ 0xB0    ; cp b
+HIDDEN_ROW              equ 0x00    ; cp b
+
+BIT_P                   equ 7
+BIT_H                   equ 4
+BIT_J                   equ 3
+BIT_D                   equ 2
+BIT_S                   equ 1
+BIT_A                   equ 0
+
+BIT_UP                  equ 7
+BIT_RIGHT               equ 6
+BIT_DOWN                equ 5
+BIT_LEFT                equ 4
+
+; Delays
+INPUT_LONG_DELAY        equ 128
+INPUT_SHORT_DELAY       equ 16
+DROP_FLOATS_DELAY       equ 255
+BLINK_DELAY             equ 255
+BLINK_DELAY_2           equ 63
+
 
 ; Puyo Pairs
 ; In order:
@@ -94,6 +94,7 @@ EMPTY_BOARD:
 BACKGROUND_ATTR     equ 3
 TITLE_BOTTOM_ATTR   equ 0x06
 TITLE_FLASH_ATTR    equ 0x86
+COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65
 PUYO_RED            equ 66
 PUYO_GREEN          equ 68
@@ -107,6 +108,8 @@ val_puyo_yellow:    defb 70
 ; ------------------------------------------------------------------
 ; Variables/Tables
 ; ------------------------------------------------------------------
+
+tmp_counter: defb 0
 
     defm "Hai PLAYER_BOARD desu"
 player_board:
@@ -149,8 +152,10 @@ current_speed: defb 0
 
 is_paused: defb 0
 
+clear_puyos_counter: defb 0
+
 ; Active airborne puyo pair
-curr_pair: defb 43,%00000010    ; current pair position
+curr_pair: defb 26,%00000010    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
 pair_color: defb %00100001
 

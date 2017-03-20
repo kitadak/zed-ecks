@@ -7,14 +7,15 @@
     ;call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
-    ;call reset_board
     call gen_puyos
     call draw_preview
     call drop_floats
     call connect_puyos
-    call check_clears
     call refresh_board
-    call draw_curr_pair
+    call check_clears
+    call clear_puyos
+    call refresh_board
+    ;call draw_curr_pair
 
 inf_loop:                   ; infinite loop to not exit program
     ;call play_check_input

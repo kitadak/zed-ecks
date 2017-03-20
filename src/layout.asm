@@ -227,7 +227,9 @@ draw_curr_pair_erase_skip_1:
     ld a,0xff
     cp b
     jp z,draw_curr_pair_erase_skip_2   ; if wall, ignore
+    pop hl
     pop de
+    push hl
     push de
     ld a,b
     cp d
@@ -565,6 +567,29 @@ draw_preview:
 
 ; ------------------------------------------------------------------
 ; TODO:
+; blink_delay: delay for BLINK_DELAY*BLINK_DELAY_2 time
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c
+; ------------------------------------------------------------------
+blink_delay:
+    ld b,BLINK_DELAY
+    ld c,BLINK_DELAY_2
+    xor a
+blink_delay_loop:
+    dec b
+    cp b
+    jp nz,blink_delay_loop
+    dec c
+    cp c
+    ret z
+    ld b,BLINK_DELAY
+    jp blink_delay_loop
+
+; ------------------------------------------------------------------
+; TODO:
 ; clear_puyos: erase matched puyos from board
 ; ------------------------------------------------------------------
 ; Input: None
@@ -573,6 +598,123 @@ draw_preview:
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 clear_puyos:
+    ; Overview:
+    ; - set clear_puyos_counter
+    ; - read whole board, if marked:
+    ;   + change color to white
+    ;   + push cell index & original color
+    ; - pop indices, change back to original color
+    ; - reset clear_puyos_counter
+    ; - read whole board, if marked:
+    ;   + change color to white
+    ;   + push cell index
+    ; - pop indices, erase from board
 
+    ; Registers:
+    ; b - cell color
+    ; d - cell index
+    ; e - row counter
+
+    ; read whole board
+    ld a,2
+    ld (clear_puyos_counter),a
+clear_puyos_begin:
+    ld bc,0xffff
+    push bc
+    ld hl,player_board+83+83+1
+    ld d,83
+    ld e,TOTAL_ROWS
+clear_puyos_read:
+    ld a,11                     ; check if finished top left cell
+    cp d
+    jp z,clear_puyos_read_delay
+    dec d
+    dec hl
+    dec hl
+    dec e                       ; check if finished column
+    jp z,clear_puyos_read_wall
+    bit 7,(hl)                  ; check if cell is marked to be cleared
+    jp z,clear_puyos_read       ; if not marked, skip cell
+    ld b,0                      ; begin check hidden
+    ld c,d
+    push bc                     ; save bc & hl on stack
+    push hl
+    call get_board_to_coord
+    pop hl                      ; restore hl
+    xor a
+    cp b                        ; check if cell is in hidden row!!
+    jp nz,clear_puyos_not_hidden
+    pop bc
+    ld (hl),a                   ; if hidden, just erase on board and skip
+    dec hl
+    ld (hl),a
+    inc hl
+    jp clear_puyos_read
+clear_puyos_not_hidden:
+    pop bc                      ; restore bc
+    ld a,(clear_puyos_counter)  ; if second pass, skip color
+    cp 0
+    jp z,clear_puyos_no_color
+    dec hl
+    ld a,(hl)                   ; get color
+    and 0x07
+    or %01000000
+    ld b,a
+    inc hl
+clear_puyos_no_color:
+    push bc                     ; push: cell color (b), index (c)
+    push hl                     ; push hl to save on stack
+    push de                     ; push de to save on stack
+    ld b,0
+    call get_board_to_coord
+    ld l,COLOR_WHITE_FLASH
+    call load_2x2_attr          ; set marked cell color to white
+    pop de
+    pop hl
+    jp clear_puyos_read         ; loop back to continue reading whole board
+clear_puyos_read_wall:
+    ld e,TOTAL_ROWS             ; reset wall counter
+    jp clear_puyos_read
+clear_puyos_read_delay:
+    call blink_delay            ; blink delay first to see animation
+
+clear_puyos_write:
+    ; begin popping all indices
+    pop bc
+    ld a,0xff
+    cp b
+    jp z,clear_puyos_write_done ; if reached stack sentinel, we're done popping
+    ld d,b
+    ld b,0
+    push bc
+    call get_board_to_coord     ; get coordinates in bc
+    ld a,(clear_puyos_counter)
+    cp 0
+    jp z,clear_puyos_erase      ; if 2nd pop stage, erase from board
+    ld l,d
+    call load_2x2_attr          ; flip puyo back to original color
+    pop bc
+    jp clear_puyos_write
+clear_puyos_erase:
+    call erase_puyo_2x2         ; erase puyo on screen
+    pop bc
+    ld hl,player_board          ; erase puyo in memory
+    add hl,bc
+    add hl,bc
+    xor a
+    ld (hl),a
+    inc hl
+    ld (hl),a
+    jp clear_puyos_write
+clear_puyos_write_done:
+    ld a,(clear_puyos_counter)
+    cp 0
+    jp z,clear_puyos_end        ; if second time here, finish
+    dec a
+    ld (clear_puyos_counter),a
+    call blink_delay
+    jp clear_puyos_begin        ; loop back to read board again
+clear_puyos_end:
+    ret
 
 
