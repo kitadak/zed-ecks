@@ -1,7 +1,7 @@
 
 
 ; ==================================================================
-; FILE: layout.asm
+; FILE: drawing.asm
 ; ------------------------------------------------------------------
 ;   Contains routines to draw entire screen layout and game area.
 ; ==================================================================
@@ -135,6 +135,164 @@ init_background_clear_row_loop:
 ; ------------------------------------------------------------------
 ; Registers polluted:
 ; ------------------------------------------------------------------
+
+; ------------------------------------------------------------------
+; is_wall_hidden: check if given board coordinates are wall/hidden
+; ------------------------------------------------------------------
+; Input: bc - coordinates (as given by get_board_to_coord)
+; Output: e - zero if not wall/hidden, 0xff otherwise
+; ------------------------------------------------------------------
+; Registers polluted: a
+; ------------------------------------------------------------------
+is_wall_hidden:
+    ld a,WALL_LEFT
+    cp c
+    jp z,is_wall_hidden_true
+    ld a,WALL_RIGHT
+    cp c
+    jp z,is_wall_hidden_true
+    ld a,WALL_BOTTOM
+    cp b
+    jp z,is_wall_hidden_true
+    ld a,HIDDEN_ROW
+    cp b
+    jp z,is_wall_hidden_true
+    ld a,0
+    ret
+is_wall_hidden_true:
+    ld a,0xff
+    ret
+
+; ------------------------------------------------------------------
+; blink_delay: delay for BLINK_DELAY*BLINK_DELAY_2 time
+; ------------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c
+; ------------------------------------------------------------------
+blink_delay:
+    ld b,BLINK_DELAY
+    ld c,BLINK_DELAY_2
+    xor a
+blink_delay_loop:
+    dec b
+    cp b
+    jp nz,blink_delay_loop
+    dec c
+    cp c
+    ret z
+    ld b,BLINK_DELAY
+    jp blink_delay_loop
+
+; ------------------------------------------------------------------
+; draw_preview: display preview of next puyo pair
+; ------------------------------------------------------------------
+; Input: None
+; Output: Next pair color displayed next to play area.
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+draw_preview:
+    ld hl,next_pair             ; get colors
+    ld a,(hl)
+    srl a
+    srl a
+    srl a
+    and 0x07
+    or 0x40
+    push af
+    ld a,(hl)
+    and 0x07
+    or 0x40
+    ld l,a
+    ld bc,PREVIEW_COORDS_TOP
+    call load_2x2_attr
+    pop af
+    ld l,a
+    ld bc,PREVIEW_COORDS_BOTTOM
+    call load_2x2_attr
+    ret
+
+; ------------------------------------------------------------------
+; refresh_board: update play area from board map
+; ------------------------------------------------------------------
+; Input: None
+; Output: all cell pixel data & attr in play area updated
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+refresh_board:
+    ld bc,TOPLEFT_VISIBLE   ; clear play area
+    call init_background_clear
+
+    ld de,0xffff            ; push stack end marker
+    push de
+    ld c,BOARD_SIZE         ; setup initial counter and values
+    ld b,13                 ; row counter -- to ignore hidden row
+    ld e,0                  ; position index
+    ld hl,player_board
+refresh_board_write:        ; read all cell values, push existing ones to stack
+    xor a                   ; clear a for comparison
+    dec b                   ; decrement row counter, check for hidden row
+    cp b
+    jp z,refresh_board_hidden   ; if hidden row, do not push, refresh b
+    ld d,(hl)               ; load current map cell
+    ld a,d
+    and 0x07
+    jp z,refresh_board_next ; if cell empty, do not push
+    xor 0x07
+    jp z,refresh_board_next ; if cell is wall, do not push
+refresh_board_push:
+    push de                 ; push: cell value (d) & position number (e)
+    ld a,d                  ; push: attribute (d) & position (e)
+    and 0x07                ; color
+    or 0x40                 ; set to bright
+    ld d,a
+    push de
+    jp refresh_board_next
+refresh_board_hidden:
+    ld b,TOTAL_ROWS
+refresh_board_next:
+    inc hl                  ; increment pointer to cell in boardmap
+    inc hl
+    inc e                   ; increment position index
+    xor a
+    dec c                   ; decrement cell counter, check if reached last cell
+    cp c
+    jp nz,refresh_board_write
+
+refresh_board_read:
+    pop de                  ; pop values, compare to 0xff
+    ld a,0xff
+    cp e
+    jp z,refresh_board_done
+refresh_board_draw:
+    ld b,0                  ; put coordinates in bc
+    ld c,e
+    call get_board_to_coord
+    push bc
+    ld l,d
+    call load_2x2_attr
+    pop bc
+    pop de                  ; calculate sprite address
+    ld a,d                  ; should be puyo_none + orientation*32
+    and 0xf0
+    sla a
+    ld e,a
+    ld a,d
+    ld d,0
+    and 0x80
+    cp 0
+    jp z,refresh_board_calc
+    ld d,1
+refresh_board_calc:
+    ld hl,puyo_none
+    add hl,de
+    call load_2x2_data      ; draw puyo
+    jp refresh_board_read   ; repeat until stack marker reached
+refresh_board_done:
+    ret
 
 ; ------------------------------------------------------------------
 ; draw_curr_pair: Update current airborne puyo pair on the screen
@@ -271,113 +429,6 @@ draw_curr_pair_draw_skip_1:
     ld hl,puyo_none
     call load_2x2_data
 draw_curr_pair_draw_skip_2:
-    ret
-
-; ------------------------------------------------------------------
-; refresh_board: update play area from board map
-; ------------------------------------------------------------------
-; Input: None
-; Output: all cell pixel data & attr in play area updated
-; ------------------------------------------------------------------
-; Registers polluted: a, b, c, d, e, h, l
-; ------------------------------------------------------------------
-refresh_board:
-    ld bc,TOPLEFT_VISIBLE   ; clear play area
-    call init_background_clear
-
-    ld de,0xffff            ; push stack end marker
-    push de
-    ld c,BOARD_SIZE         ; setup initial counter and values
-    ld b,13                 ; row counter -- to ignore hidden row
-    ld e,0                  ; position index
-    ld hl,player_board
-refresh_board_write:        ; read all cell values, push existing ones to stack
-    xor a                   ; clear a for comparison
-    dec b                   ; decrement row counter, check for hidden row
-    cp b
-    jp z,refresh_board_hidden   ; if hidden row, do not push, refresh b
-    ld d,(hl)               ; load current map cell
-    ld a,d
-    and 0x07
-    jp z,refresh_board_next ; if cell empty, do not push
-    xor 0x07
-    jp z,refresh_board_next ; if cell is wall, do not push
-refresh_board_push:
-    push de                 ; push: cell value (d) & position number (e)
-    ld a,d                  ; push: attribute (d) & position (e)
-    and 0x07                ; color
-    or 0x40                 ; set to bright
-    ld d,a
-    push de
-    jp refresh_board_next
-refresh_board_hidden:
-    ld b,TOTAL_ROWS
-refresh_board_next:
-    inc hl                  ; increment pointer to cell in boardmap
-    inc hl
-    inc e                   ; increment position index
-    xor a
-    dec c                   ; decrement cell counter, check if reached last cell
-    cp c
-    jp nz,refresh_board_write
-
-refresh_board_read:
-    pop de                  ; pop values, compare to 0xff
-    ld a,0xff
-    cp e
-    jp z,refresh_board_done
-refresh_board_draw:
-    ld b,0                  ; put coordinates in bc
-    ld c,e
-    call get_board_to_coord
-    push bc
-    ld l,d
-    call load_2x2_attr
-    pop bc
-    pop de                  ; calculate sprite address
-    ld a,d                  ; should be puyo_none + orientation*32
-    and 0xf0
-    sla a
-    ld e,a
-    ld a,d
-    ld d,0
-    and 0x80
-    cp 0
-    jp z,refresh_board_calc
-    ld d,1
-refresh_board_calc:
-    ld hl,puyo_none
-    add hl,de
-    call load_2x2_data      ; draw puyo
-    jp refresh_board_read   ; repeat until stack marker reached
-refresh_board_done:
-    ret
-
-; ------------------------------------------------------------------
-; is_wall_hidden: check if given board coordinates are wall/hidden
-; ------------------------------------------------------------------
-; Input: bc - coordinates (as given by get_board_to_coord)
-; Output: e - zero if not wall/hidden, 0xff otherwise
-; ------------------------------------------------------------------
-; Registers polluted: a
-; ------------------------------------------------------------------
-is_wall_hidden:
-    ld a,WALL_LEFT
-    cp c
-    jp z,is_wall_hidden_true
-    ld a,WALL_RIGHT
-    cp c
-    jp z,is_wall_hidden_true
-    ld a,WALL_BOTTOM
-    cp b
-    jp z,is_wall_hidden_true
-    ld a,HIDDEN_ROW
-    cp b
-    jp z,is_wall_hidden_true
-    ld a,0
-    ret
-is_wall_hidden_true:
-    ld a,0xff
     ret
 
 ; ------------------------------------------------------------------
@@ -537,59 +588,6 @@ drop_floats_animate_loopback:
     ret
 
 ; ------------------------------------------------------------------
-; draw_preview: display preview of next puyo pair
-; ------------------------------------------------------------------
-; Input: None
-; Output: Next pair color displayed next to play area.
-; ------------------------------------------------------------------
-; Registers polluted: a, b, c, d, e, h, l
-; ------------------------------------------------------------------
-draw_preview:
-    ld hl,next_pair             ; get colors
-    ld a,(hl)
-    srl a
-    srl a
-    srl a
-    and 0x07
-    or 0x40
-    push af
-    ld a,(hl)
-    and 0x07
-    or 0x40
-    ld l,a
-    ld bc,PREVIEW_COORDS_TOP
-    call load_2x2_attr
-    pop af
-    ld l,a
-    ld bc,PREVIEW_COORDS_BOTTOM
-    call load_2x2_attr
-    ret
-
-; ------------------------------------------------------------------
-; TODO:
-; blink_delay: delay for BLINK_DELAY*BLINK_DELAY_2 time
-; ------------------------------------------------------------------
-; Input: None
-; Output: None
-; ------------------------------------------------------------------
-; Registers polluted: a, b, c
-; ------------------------------------------------------------------
-blink_delay:
-    ld b,BLINK_DELAY
-    ld c,BLINK_DELAY_2
-    xor a
-blink_delay_loop:
-    dec b
-    cp b
-    jp nz,blink_delay_loop
-    dec c
-    cp c
-    ret z
-    ld b,BLINK_DELAY
-    jp blink_delay_loop
-
-; ------------------------------------------------------------------
-; TODO:
 ; clear_puyos: erase matched puyos from board
 ; ------------------------------------------------------------------
 ; Input: None
@@ -598,23 +596,6 @@ blink_delay_loop:
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 clear_puyos:
-    ; Overview:
-    ; - set clear_puyos_counter
-    ; - read whole board, if marked:
-    ;   + change color to white
-    ;   + push cell index & original color
-    ; - pop indices, change back to original color
-    ; - reset clear_puyos_counter
-    ; - read whole board, if marked:
-    ;   + change color to white
-    ;   + push cell index
-    ; - pop indices, erase from board
-
-    ; Registers:
-    ; b - cell color
-    ; d - cell index
-    ; e - row counter
-
     ; read whole board
     ld a,2
     ld (clear_puyos_counter),a
