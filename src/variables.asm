@@ -16,13 +16,20 @@ TOPLEFT_VISIBLE         equ 0x1018
 TOTAL_ROWS              equ 12
 TOTAL_COLUMNS           equ 8
 BOARD_SIZE              equ 96
-PREVIEW_COORDS_TOP      equ 0x1088
-PREVIEW_COORDS_BOTTOM   equ 0x2088
 KILL_LOCATION           equ 74  ; Based on byte representation
 
+; Level & preview area
+LP_TOPLEFT              equ 0x1088
+LP_ROWS                 equ 8
+LP_COLUMNS              equ 12
+PREVIEW_COORDS_TOP      equ 0x18b0
+PREVIEW_COORDS_BOTTOM   equ 0x28b0
+LEVEL_LINE              equ 0x4088
+LEVEL_TEXT_POSITION     equ 0x0811
+
 ; In-game "popup"
-POPUP_TOPLEFT           equ 0x4018  ; do not dec: top line of middle 3rd of screen
-POPUP_ROWS              equ 2
+POPUP_TOPLEFT           equ 0x4018
+POPUP_ROWS              equ 4
 POPUP_PAUSED_COORD      equ 0x3830
 POPUP_GAMEOVER_COORD    equ 0x3828
 POPUP_MSG_TOP           equ 0x0803
@@ -71,6 +78,8 @@ msg_over:               defb '    OVER    '
 msg_over_end:
 msg_paused_underline:   defb '  ________  '
 msg_paused_underline_end:
+msg_level:              defb '  Level: 1  '
+msg_level_end:
 
 
 ; Puyo Pairs
@@ -115,7 +124,8 @@ TITLE_BOTTOM_ATTR   equ 0x06
 TITLE_FLASH_ATTR    equ 0x86
 
 PAUSED_ATTR         equ %00101001
-GAMEOVER_ATTR       equ %10110010   ; red on yellow, flash, no bright
+GAMEOVER_ATTR       equ %11110010
+LEVEL_ATTR          equ %01000111
 
 COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65

@@ -3,14 +3,16 @@
 ; Main test driver
 ; ------------------------------------------------------------------
     call populate_coord_tab ; begin game setup
-    call init_title         ; load title screen
-    call start_theme_music  ; play title music
+    ;call init_title         ; load title screen
+    ;call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
     ; test paused/gameover display
     ;call display_pause
-    ;call display_gameover
-    ;call inf_loop
+    call display_gameover
+    call gen_puyos
+    call draw_preview
+    call inf_loop
 
     ; test draw_curr_pair with input
     ;call reset_board

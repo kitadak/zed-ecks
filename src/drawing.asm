@@ -88,51 +88,72 @@ init_background:
     call 3503                       ; clear the screen.
     ld a,2                          ; 2 = upper screen.
     call 5633                       ; open channel.
-    ld hl,background_data           ; fill entire screen with background
+
+    ; fill entire screen with background
+    ld hl,background_data
     call fill_screen_data
-    ld bc,PREVIEW_COORDS_TOP        ; clear preview area
-    call erase_puyo_2x2
-    ld bc,PREVIEW_COORDS_TOP
-    ld hl,puyo_none
-    call load_2x2_data
-    ld bc,PREVIEW_COORDS_BOTTOM
-    call erase_puyo_2x2
-    ld bc,PREVIEW_COORDS_BOTTOM
-    ld hl,puyo_none
-    call load_2x2_data
+
+    ; clear play area
     ld bc,TOPLEFT_VISIBLE
-    ld hl,TOTAL_ROWS-2
+    ld hl,TOTAL_ROWS+TOTAL_ROWS-4
     exx
-    ld d,TOTAL_COLUMNS-2
+    ld d,TOTAL_COLUMNS+TOTAL_COLUMNS-4
     ld e,0
     exx
     call set_attr_block
+
+    ; clear level & preview area
+    ld bc,PREVIEW_COORDS_TOP        ; setup preview sprites
+    ld hl,puyo_none
+    call load_2x2_data
+    ld bc,PREVIEW_COORDS_BOTTOM
+    ld hl,puyo_none
+    call load_2x2_data
+    ld bc,LP_TOPLEFT                ; clear preview & level area
+    ld hl,LP_ROWS
+    exx
+    ld d,LP_COLUMNS
+    ld e,0
+    exx
+    call set_attr_block             ; load level text
+    ld bc,msg_level
+    ld hl,msg_level_end
+    ld de,LEVEL_TEXT_POSITION
+    call print_text
+    ld bc,LEVEL_LINE                ; load level attr
+    ld hl,1
+    exx
+    ld d,LP_COLUMNS
+    ld e,LEVEL_ATTR
+    exx
+    call set_attr_block
+
+    ; TODO:
+    ; avatar area
+    ; clear score area
+
     ret
 
 ; ------------------------------------------------------------------
 ; set_attr_block: set selected rectangle's attribute to given value
 ; ------------------------------------------------------------------
 ; Input: bc  - coordinates of top left cell
-;        hl  - number of rows (2x2)
-;        d'  - number of columns (2x2)
+;        hl  - number of rows
+;        d'  - number of columns
 ;        e'  - attribute byte
 ; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 set_attr_block:
-    add hl,hl                       ; push loop counter = rows*2
-    push hl
+    push hl                         ; push loop counter = rows
 set_attr_block_loop:
     call get_attr_address           ; get attr addr of left cell
     exx                             ; get num of columns & attr byte
     push de
     exx
     pop hl
-    ld a,h                          ; column counter = cols*2-1
-    add a,h
-    dec a
-    ld h,a
+    dec h
     ld a,l
     ld (de),a
 set_attr_block_row_loop:
@@ -147,7 +168,7 @@ set_attr_block_row_loop:
     add a,b
     ld b,a
     pop hl
-    dec hl
+    dec l
     push hl
     xor a
     cp l
@@ -336,9 +357,9 @@ draw_preview:
 ; ------------------------------------------------------------------
 refresh_board:
     ld bc,TOPLEFT_VISIBLE   ; clear play area
-    ld hl,TOTAL_ROWS-2
+    ld hl,TOTAL_ROWS+TOTAL_ROWS-4
     exx
-    ld d,TOTAL_COLUMNS-2
+    ld d,TOTAL_COLUMNS+TOTAL_COLUMNS-4
     ld e,0
     exx
     call set_attr_block
@@ -823,7 +844,7 @@ display_gameover:
     ld bc,POPUP_TOPLEFT
     ld hl,POPUP_ROWS
     exx
-    ld d,TOTAL_COLUMNS-2
+    ld d,TOTAL_COLUMNS+TOTAL_COLUMNS-4
     ld e,GAMEOVER_ATTR
     exx
     call set_attr_block
@@ -867,7 +888,7 @@ display_pause:
     ld bc,POPUP_TOPLEFT
     ld hl,POPUP_ROWS
     exx
-    ld d,TOTAL_COLUMNS-2
+    ld d,TOTAL_COLUMNS+TOTAL_COLUMNS-4
     ld e,PAUSED_ATTR
     exx
     call set_attr_block
