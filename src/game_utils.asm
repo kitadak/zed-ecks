@@ -576,13 +576,20 @@ reset_board:
     ret
 
 ; ------------------------------------------------------------
-; TODO:
 ; gameover: the gameover sequence
 ; ------------------------------------------------------------
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
+    call display_gameover       ; show gameover popup
+    ld d,GAMEOVER_DELAY         ; delay
+    ld c,CONST_DELAY
+gameover_delay_loop:
+    call blink_delay
+    dec d
+    jp nz,gameover_delay_loop
+    ret
 
 ; ------------------------------------------------------------
 ; gameover_detect : checks for a gameover

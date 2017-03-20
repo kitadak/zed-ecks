@@ -66,6 +66,7 @@ INPUT_SHORT_DELAY       equ 8
 CONST_DELAY             equ 255
 BLINK_DELAY             equ 63
 PRESS_DELAY             equ 5
+GAMEOVER_DELAY          equ 15
 
 ; Messages
 msg_blank_line:         defb '            '
