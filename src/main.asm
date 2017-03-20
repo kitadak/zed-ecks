@@ -2,6 +2,8 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
+    jp main_init
+    jp inf_loop
     call populate_coord_tab ; begin game setup
     call init_title         ; load title screen
     call start_theme_music  ; play title music
@@ -19,8 +21,9 @@
     call refresh_board
     call check_clears
     call clear_puyos
-    call refresh_board
+    call drop_floats
     call draw_curr_pair
+    call refresh_board
     ;call gameover
     ;call write_pair_to_board
 
@@ -30,14 +33,6 @@ inf_loop:                   ; infinite loop to not exit program
     ;call blink_delay
     jp inf_loop
 
-; ------------------------------------------------------------------
-; Test drop loop (no user input, new board representation)
-; ------------------------------------------------------------------
-test_init:
-    ld a,25
-    ld (drop_timer),a
-test_play_drop_loop:
-
 
 ; ------------------------------------------------------------------
 ; Main Game Loop
@@ -46,9 +41,11 @@ test_play_drop_loop:
 main_init:
     call populate_coord_tab
     ; call greets
-    ; call title_screen
 
 main_title:
+    ;call init_title
+    ;call start_theme_music
+    call init_background
 
 main_game_start:
     call reset_game
@@ -58,8 +55,13 @@ main_loop_spawn:
     cp 0
     jp nz, gameover
     call spawn_puyos
+    call draw_preview
+    call draw_curr_pair
     call drop_timer_reset
 main_loop_drop:
+    ld c, 5
+    call blink_delay
+
     ; draw active puyo
     ld hl, drop_timer           ; update drop timer
     dec (hl)
@@ -84,18 +86,19 @@ main_loop_input:
     jp main_loop_drop
 
 main_loop_clear_init:
-    ; write active puyo to board
+    call write_pair_to_board
 main_loop_clear:
     call drop_floats            ; drop any floating puyos
-    call refresh_board
     call connect_puyos
+    call refresh_board
     call check_clears           ; mark the clears
     cp 0
     jp z, main_loop_spawn       ; nothing to clear, go spawn a new puyo
-    ; call deletes
+    call clear_puyos
     jp main_loop_clear          ; keep chaining clears/settles
 
 reset_game:                     ; reset all variables
+    call reset_board
     xor a
     ld (next_pair), a
     ld (player_score), a

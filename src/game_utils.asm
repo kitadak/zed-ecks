@@ -647,7 +647,7 @@ gameover_delay_loop:
     call blink_delay
     dec d
     jp nz,gameover_delay_loop
-    ret
+    jp main_title
 
 ; ------------------------------------------------------------
 ; gameover_detect : checks for a gameover
@@ -970,7 +970,7 @@ spawn_puyos:
     ld (hl), 0                  ; reset counter
     ld hl, current_level
     ld a, (hl)
-    cp MAX_LEVEL
+    cp 0 ;MAX_LEVEL
     ret z                       ; don't go past the max level
     inc (hl)                    ; otherwise, go up one level
     ret

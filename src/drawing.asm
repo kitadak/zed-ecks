@@ -258,8 +258,8 @@ get_2nd_puyo_index_up:          ; c-1
     dec c
     jp get_2nd_puyo_index_end
 get_2nd_puyo_index_right:       ; c+12
-    ld a,12
-    add a,c
+    ld a,c
+    add a,12
     ld c,a
     jp get_2nd_puyo_index_end
 get_2nd_puyo_index_down:        ; c+1
@@ -267,8 +267,7 @@ get_2nd_puyo_index_down:        ; c+1
     jp get_2nd_puyo_index_end
 get_2nd_puyo_index_left:        ; c-12
     ld a,c
-    ld e,12
-    sub e
+    sub 12
     ld c,a
 get_2nd_puyo_index_end:
     ret
@@ -296,24 +295,22 @@ get_2nd_puyo_coord:
     jp z,get_2nd_puyo_coord_right
 get_2nd_puyo_coord_up:          ; b-16
     ld a,b
-    ld e,16
-    sub e
+    sub 16
     ld b,a
     jp get_2nd_puyo_coord_end
 get_2nd_puyo_coord_right:       ; c+16
-    ld a,16
-    add a,c
+    ld a,c
+    add a,16
     ld c,a
     jp get_2nd_puyo_coord_end
 get_2nd_puyo_coord_down:        ; b+16
-    ld a,16
-    add a,b
+    ld a,b
+    add a,16
     ld b,a
     jp get_2nd_puyo_coord_end
 get_2nd_puyo_coord_left:        ; c-16
     ld a,c
-    ld e,16
-    sub e
+    sub 16
     ld c,a
 get_2nd_puyo_coord_end:
     ret
@@ -510,6 +507,9 @@ draw_curr_pair_erase_skip_2:
     cp b
     jp z,draw_curr_pair_draw_skip_1
     ld a,(pair_color)           ; draw curr 2nd puyo
+    srl a
+    srl a
+    srl a
     and 0x07
     or %01000000
     ld l,a
@@ -524,9 +524,7 @@ draw_curr_pair_draw_skip_1:
     cp b
     jp z,draw_curr_pair_draw_skip_2
     ld a,(pair_color)           ; draw curr pivot puyo
-    srl a
-    srl a
-    srl a
+    and 0x07
     or %01000000
     ld l,a
     push bc

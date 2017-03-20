@@ -221,7 +221,7 @@ chain_table:
 ; Drop time table
 ; Defines number of frames before the puyo is dropped to the next half row
 drop_table:
-    defb 32, 32, 28, 25, 22, 20, 18, 15, 13, 11,  8
+    defb 32, 128, 28, 25, 22, 20, 18, 15, 13, 11,  8
     ;Lv.  0   1   2   3   4   5   6   7   8   9  10
 
 ; Translation table from board position to pixel coordinates
