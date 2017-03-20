@@ -21,6 +21,7 @@
     call clear_puyos
     call refresh_board
     call draw_curr_pair
+    ;call write_pair_to_board
 
 inf_loop:                   ; infinite loop to not exit program
     ;call play_check_input

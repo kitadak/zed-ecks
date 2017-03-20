@@ -1095,7 +1095,6 @@ update_score:
     ret
 
 ; ------------------------------------------------------------
-; TODO:
 ; write_pair_to_board: Write current active pair to board
 ; ------------------------------------------------------------
 ; Input: None
@@ -1104,5 +1103,24 @@ update_score:
 ; Registers used: a, b, c, d, e, h, l
 ; ------------------------------------------------------------
 write_pair_to_board:
-    ld hl,player_board
+    ld a,(curr_pair)                ; get pivot position
+    ld c,a
+    ld b,0
+    ld a,(pair_color)               ; get pair colors
+    srl a                           ; assuming bits 7-6 are zeros
+    srl a
+    srl a
+    ld hl,player_board              ; write pivot puyo to board
+    add hl,bc
+    add hl,bc
+    ld (hl),a
+    ld a,(curr_pair+1)              ; calculate coordinates of 2nd puyo
+    call get_2nd_puyo_index
+    ld hl,player_board              ; write 2nd puyo to board
+    add hl,bc
+    add hl,bc
+    ld a,(pair_color)
+    and 0x07
+    ld (hl),a
+    ret
 

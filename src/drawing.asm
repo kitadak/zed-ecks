@@ -185,6 +185,46 @@ blink_delay_loop:
     jp blink_delay_loop
 
 ; ------------------------------------------------------------------
+; get_2nd_puyo_index: calculate 2nd puyo index from pivot
+; ------------------------------------------------------------------
+; Input: a - pair orientation
+;        c - index of pivot
+; Output: c - index of 2nd puyo in pair
+; ------------------------------------------------------------------
+; Registers polluted: a, c, e
+; ------------------------------------------------------------------
+get_2nd_puyo_index:
+    and %00000011           ; calculate coord of 2nd
+    ld e,a
+    ld a,0x03
+    cp e
+    jp z,get_2nd_puyo_index_left
+    dec a
+    cp e
+    jp z,get_2nd_puyo_index_down
+    dec a
+    cp e
+    jp z,get_2nd_puyo_index_right
+get_2nd_puyo_index_up:          ; c-1
+    dec c
+    jp get_2nd_puyo_index_end
+get_2nd_puyo_index_right:       ; c+12
+    ld a,12
+    add a,c
+    ld c,a
+    jp get_2nd_puyo_index_end
+get_2nd_puyo_index_down:        ; c+1
+    inc c
+    jp get_2nd_puyo_index_end
+get_2nd_puyo_index_left:        ; c-12
+    ld a,c
+    ld e,12
+    sub e
+    ld c,a
+get_2nd_puyo_index_end:
+    ret
+
+; ------------------------------------------------------------------
 ; get_2nd_puyo_coord: calculate 2nd puyo from pivot
 ; ------------------------------------------------------------------
 ; Input: a  - pair orientation
