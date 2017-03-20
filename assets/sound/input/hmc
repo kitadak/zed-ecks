@@ -37,8 +37,6 @@ E A
 E D 3
 E F# 3
 
-TEMPO 60
-
 Q D 1
 Q G 1
 Q Bb 1
@@ -356,8 +354,327 @@ Q C# 2
 T D 1
 T F# 1
 T A 1
-H D 2
-H D 2
+HD D 2
 
+# M61
+R H
+Q D 1
+
+H Eb 1
+Q D 1
+
+Q C 1
+Q Bb
+Q A
+
+Q Bb
+Q C 1
+Q D 1
+
+H F
+R SF
+Q F
+
+H Eb 1
+E D 1
+E F
+
+Q C 1
+Q Bb
+Q C 1
+
+# M68
+T D
+T F
+T A
+H D 1
+E Bb
+E A
+
+E F
+E D
+E C
+E 254
+Q D 1
+R SF
+
+1Q3 D 1
+1Q3 E 1
+1Q3 D 1
+Q C# 1
+Q D 1
+
+Q F 1
+Q E 1
+Q D 1
+
+H C# 1
+Q E 1
+
+H A
+R SF
+1Q5 A
+1Q5 Bb
+1Q5 A
+1Q5 G#
+1Q5 A
+
+# M74
+H A 1
+R SF
+Q A 1
+
+T A
+T D 1
+T F 1
+Q A 1
+E G 1
+E G
+E F 1
+E G
+
+QD E 1
+E G
+E C# 1
+E Bb
+
+E G
+E E
+E C#
+E 254
+Q A
+
+H F# 1
+R SF
+Q F# 1
+R SF
+
+Q F# 1
+Q G 1
+Q A 1
+
+# M80
+T Bb
+T D 1
+T G 1
+H Bb 1
+Q Bb
+
+HD G
+
+H E 1
+R SF
+Q E 1
+
+T E
+T G
+T Bb
+Q E 1
+Q F 1
+Q G 1
+
+T A
+T C 1
+T F 1
+HD A 1
+
+T G
+T C 1
+Q G 1
+Q F 1
+
+# M86
+T E
+T A
+Q E 1
+Q D# 1
+Q E 1
+
+T G
+T B
+T D 1
+Q G 1
+Q F 1
+Q E 1
+
+T D
+T E
+T G
+Q D 1
+Q C# 1
+Q D 1
+
+H E 1
+Q A 1
+
+T C 1
+T Eb 1
+T G 1
+T A 1
+H C 2
+Q Bb 1
+
+H A 1
+T G
+T Bb
+T D 1
+Q G 1
+
+# M92
+TEMPO 85
+E F# 1
+E A 1
+1Q3 C 2
+1Q3 D 2
+1Q3 C 2
+
+TEMPO 90
+H Bb 1
+R SF
+1Q3 Bb 1
+1Q3 C 2
+1Q3 Bb 1
+
+TEMPO 95
+H A 1
+1Q3 G 1
+1Q3 A 1
+1Q3 G 1
+
+TEMPO 100
+H F# 1
+1Q3 Eb 1
+1Q3 F# 1
+1Q3 Eb 1
+
+TEMPO 80
+Q D 1
+Q F# 1
+Q Bb 1
+
+H D 2
+R SF
+Q D 2
+
+Q C 2
+Q Bb 1
+Q A 1
+R SF
+
+# M99
+HD Bb 1
+
+Q G 1
+Q Bb 1
+Q D 2
+
+H G 2
+R SF
+Q G 2
+
+T G 1
+T C 2
+T Eb 2
+Q G 2
+Q A 2
+R SF
+E F 2
+R SF
+E Eb 2
+R SF
+
+H F 2
+1Q9 D
+1Q9 F
+1Q9 A
+1Q9 D 1
+1Q9 F 1
+1Q9 A 1
+1Q9 D 2
+1Q9 F 2
+1Q9 A 2
+
+Q Bb 1
+R SF
+E D 2
+R SF
+E F 2
+
+Q A 2
+E D 2
+R SF
+E D 2
+R SF
+E G 2
+E D 2
+
+# M106
+Q D 2
+T F 1
+T A 1
+T C# 2
+E F 2
+E E 2
+E D# 2
+E E 2
+
+E G 2
+E C 2
+R SF
+E C 2
+R SF
+E C 2
+Q F 2
+E C 2
+
+Q C 2
+E E 2
+E D 2
+E C# 2
+E D 2
+R SF
+
+QD D 2
+E C 2
+Q Bb 1
+
+QD A 1
+E Bb 1
+Q C# 2
+
+T D 1
+T F# 1
+T A 1
+Q D 2
+E F# 1
+E G 1
+E F# 1
+E G 1
+
+# M112
+E A 1
+R E
+E F 1
+R E
+E D 1
+R E
+
+R Q
+E F#
+E G
+E F#
+E G
+
+E A
+R E
+E F#
+R E
+E D
+R E
+
+R H
+R H
+R H
+R H
 R H
 R H
