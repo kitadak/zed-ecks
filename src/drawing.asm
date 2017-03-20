@@ -100,21 +100,49 @@ init_background:
     ld bc,PREVIEW_COORDS_BOTTOM
     ld hl,puyo_none
     call load_2x2_data
-    ld bc,TOPLEFT_VISIBLE           ; clear play area
-init_background_clear:
-    ld hl,TOTAL_ROWS+TOTAL_ROWS-4   ; push loop counter = (visible rows)*2
+    ld bc,TOPLEFT_VISIBLE
+    ld hl,TOTAL_ROWS-2
+    exx
+    ld d,TOTAL_COLUMNS-2
+    ld e,0
+    exx
+    call set_attr_block
+    ret
+
+; ------------------------------------------------------------------
+; set_attr_block: set selected rectangle's attribute to given value
+; ------------------------------------------------------------------
+; Input: bc  - coordinates of top left cell
+;        hl  - number of rows (2x2)
+;        d'  - number of columns (2x2)
+;        e'  - attribute byte
+; Output:
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+set_attr_block:
+    add hl,hl                       ; push loop counter = rows*2
     push hl
-init_background_clear_loop:
+set_attr_block_loop:
     call get_attr_address           ; get attr addr of left cell
-    ld h,TOTAL_COLUMNS+TOTAL_COLUMNS-5  ; column counter = (visible cols)*2-1
-    xor a
+    exx                             ; get num of columns & attr byte
+    push de
+    exx
+    pop hl
+    ld a,h                          ; column counter = cols*2-1
+    add a,h
+    dec a
+    ld h,a
+    ld a,l
     ld (de),a
-init_background_clear_row_loop:
+set_attr_block_row_loop:
+    ld a,l
     inc de
     ld (de),a
     dec h
+    xor a
     cp h
-    jp nz,init_background_clear_row_loop
+    jp nz,set_attr_block_row_loop
     ld a,8
     add a,b
     ld b,a
@@ -123,7 +151,7 @@ init_background_clear_row_loop:
     push hl
     xor a
     cp l
-    jp nz,init_background_clear_loop
+    jp nz,set_attr_block_loop
     pop hl
     ret
 
@@ -308,7 +336,12 @@ draw_preview:
 ; ------------------------------------------------------------------
 refresh_board:
     ld bc,TOPLEFT_VISIBLE   ; clear play area
-    call init_background_clear
+    ld hl,TOTAL_ROWS-2
+    exx
+    ld d,TOTAL_COLUMNS-2
+    ld e,0
+    exx
+    call set_attr_block
 
     ld de,0xffff            ; push stack end marker
     push de
@@ -751,4 +784,38 @@ clear_puyos_write_done:
     jp clear_puyos_begin        ; loop back to read board again
 clear_puyos_end:
     ret
+
+; ------------------------------------------------------------------
+; TODO:
+; display_gameover: draw gameover scene
+; ------------------------------------------------------------------
+; Input: None
+; Output:
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+display_gameover:
+    ret
+
+; ------------------------------------------------------------------
+; TODO:
+; display_pause: draw paused scene
+; ------------------------------------------------------------------
+; Input: None
+; Output:
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+display_pause:
+    ld bc,POPUP_TOPLEFT
+    ld hl,POPUP_ROWS
+    exx
+    ld d,TOTAL_COLUMNS-2
+    ld e,PAUSED_ATTR
+    exx
+    call set_attr_block
+    ret
+
+;main_menu_control: defb '%    CONTROL   %'
+;main_menu_control_end:
 

@@ -284,6 +284,30 @@ erase_puyo_2x2_loop:
     ret
 
 ; ------------------------------------------------------------------
+; print_text: print given string at given position
+; ------------------------------------------------------------------
+; Input: bc - input string address
+;        hl - end of input string address
+;        de - print coordinates (d:vertical, e:horizontal)
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+print_text:
+    ld a,22
+    rst 16
+    ld a,d
+    rst 16
+    ld a,e
+    rst 16
+    ld de,bc
+    xor a
+    sbc hl,bc
+    ld bc,hl
+    call 0x203c
+    ret
+
+; ------------------------------------------------------------------
 ; populate_coord_tab: Populate boardmap to coordinate table
 ; ------------------------------------------------------------------
 ; Input: None

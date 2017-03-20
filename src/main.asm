@@ -7,6 +7,9 @@
     ;call start_theme_music  ; play title music
     call init_background    ; load play area layout
 
+    call display_pause
+    call inf_loop
+
     ; test draw_curr_pair with input
     ;call reset_board
     ;call draw_curr_pair

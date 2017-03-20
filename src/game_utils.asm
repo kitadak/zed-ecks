@@ -575,6 +575,7 @@ reset_board:
     ret
 
 ; ------------------------------------------------------------
+; TODO:
 ; gameover: the gameover sequence
 ; ------------------------------------------------------------
 ; Input: None
@@ -855,6 +856,15 @@ input_move_down:
     ld (prev_pair+1), a
     call draw_curr_pair         ; redraw
     ret
+
+; ------------------------------------------------------------
+; TODO:
+; pause_game: pause game sequence
+; ------------------------------------------------------------
+; Input: None
+; Output: 0 if no clears occured, else clears occured
+; ------------------------------------------------------------
+pause_game:
 
 ; ------------------------------------------------------------
 ; process_clears: clears 4+ connected puyos

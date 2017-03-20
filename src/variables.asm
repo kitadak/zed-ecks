@@ -20,6 +20,12 @@ PREVIEW_COORDS_TOP      equ 0x1088
 PREVIEW_COORDS_BOTTOM   equ 0x2088
 KILL_LOCATION           equ 74  ; Based on byte representation
 
+; In-game "popup"
+POPUP_TOPLEFT           equ 0x3018
+POPUP_ROWS              equ 2
+POPUP_PAUSED_COORD      equ 0x3830
+POPUP_GAMEOVER_COORD    equ 0x3828
+
 BIT_VISIT               equ 3
 BIT_DELETE              equ 7
 NUM_TO_CLEAR            equ 4
@@ -94,6 +100,10 @@ EMPTY_BOARD:
 BACKGROUND_ATTR     equ 3
 TITLE_BOTTOM_ATTR   equ 0x06
 TITLE_FLASH_ATTR    equ 0x86
+
+PAUSED_ATTR         equ %00101001   ; blue on cyan only
+GAMEOVER_ATTR       equ %10110010   ; red on yellow, flash, no bright
+
 COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65
 PUYO_RED            equ 66
