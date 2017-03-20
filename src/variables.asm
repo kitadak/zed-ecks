@@ -21,10 +21,11 @@ PREVIEW_COORDS_BOTTOM   equ 0x2088
 KILL_LOCATION           equ 74  ; Based on byte representation
 
 ; In-game "popup"
-POPUP_TOPLEFT           equ 0x3018
+POPUP_TOPLEFT           equ 0x4018  ; do not dec: top line of middle 3rd of screen
 POPUP_ROWS              equ 2
 POPUP_PAUSED_COORD      equ 0x3830
 POPUP_GAMEOVER_COORD    equ 0x3828
+POPUP_MSG_TOP           equ 0x0803
 
 BIT_VISIT               equ 3
 BIT_DELETE              equ 7
@@ -58,6 +59,18 @@ INPUT_SHORT_DELAY       equ 16
 CONST_DELAY             equ 255
 BLINK_DELAY             equ 63
 PRESS_DELAY             equ 5
+
+; Messages
+msg_blank_line:         defb '            '
+msg_blank_line_end:
+msg_paused:             defb '   PAUSED   '
+msg_paused_end:
+msg_game:               defb '  _ GAME _  '
+msg_game_end:
+msg_over:               defb '    OVER    '
+msg_over_end:
+msg_paused_underline:   defb '  ________  '
+msg_paused_underline_end:
 
 
 ; Puyo Pairs
@@ -101,7 +114,7 @@ BACKGROUND_ATTR     equ 3
 TITLE_BOTTOM_ATTR   equ 0x06
 TITLE_FLASH_ATTR    equ 0x86
 
-PAUSED_ATTR         equ %00101001   ; blue on cyan only
+PAUSED_ATTR         equ %00101001
 GAMEOVER_ATTR       equ %10110010   ; red on yellow, flash, no bright
 
 COLOR_WHITE_FLASH   equ 0x47

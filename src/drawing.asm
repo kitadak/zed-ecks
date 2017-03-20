@@ -116,7 +116,7 @@ init_background:
 ;        hl  - number of rows (2x2)
 ;        d'  - number of columns (2x2)
 ;        e'  - attribute byte
-; Output:
+; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
@@ -786,27 +786,84 @@ clear_puyos_end:
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
-; display_gameover: draw gameover scene
+; display_gameover: draw gameover popup
 ; ------------------------------------------------------------------
 ; Input: None
-; Output:
+; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 display_gameover:
+    ; print text
+    ld bc,msg_blank_line
+    ld hl,msg_blank_line_end
+    ld de,POPUP_MSG_TOP
+    push de
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_game
+    ld hl,msg_game_end
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_over
+    ld hl,msg_over_end
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_blank_line
+    ld hl,msg_blank_line_end
+    call print_text
+
+    ; set background color for popup
+    ld bc,POPUP_TOPLEFT
+    ld hl,POPUP_ROWS
+    exx
+    ld d,TOTAL_COLUMNS-2
+    ld e,GAMEOVER_ATTR
+    exx
+    call set_attr_block
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
-; display_pause: draw paused scene
+; display_pause: draw paused popup
 ; ------------------------------------------------------------------
 ; Input: None
-; Output:
+; Output: None
 ; ------------------------------------------------------------------
 ; Registers polluted: a, b, c, d, e, h, l
 ; ------------------------------------------------------------------
 display_pause:
+    ; print text
+    ld bc,msg_blank_line
+    ld hl,msg_blank_line_end
+    ld de,POPUP_MSG_TOP
+    push de
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_paused
+    ld hl,msg_paused_end
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_paused_underline
+    ld hl,msg_paused_underline_end
+    call print_text
+    pop de
+    inc d
+    push de
+    ld bc,msg_blank_line
+    ld hl,msg_blank_line_end
+    call print_text
+
+    ; set background color for popup
     ld bc,POPUP_TOPLEFT
     ld hl,POPUP_ROWS
     exx
@@ -815,7 +872,4 @@ display_pause:
     exx
     call set_attr_block
     ret
-
-;main_menu_control: defb '%    CONTROL   %'
-;main_menu_control_end:
 
