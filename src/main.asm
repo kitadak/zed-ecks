@@ -93,9 +93,18 @@ main_loop_clear:
     call refresh_board
     call check_clears           ; mark the clears
     cp 0
-    jp z, main_loop_spawn       ; nothing to clear, go spawn a new puyo
+    jp z, main_reset_score_vars; nothing to clear, go spawn a new puyo
     call clear_puyos
+    call update_score
     jp main_loop_clear          ; keep chaining clears/settles
+
+main_reset_score_vars:
+    xor a
+    ld (cleared_colors), a
+    ld (chain_count), a
+    ld (cleared_count), a
+    jp main_loop_spawn
+
 
 reset_game:                     ; reset all variables
     call reset_board

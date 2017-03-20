@@ -1210,13 +1210,143 @@ rotate_ccw_end:
 ; Input: cleared_colors: defb 0
 ;        cleared_count: defb 0
 ;        chain_count: defb 0
-;
-; Output: a - 0 if score was not updated, otherwise 1
-;        player_score - updated
-;
+; Output: None
 ; ------------------------------------------------------------
 
 update_score:
+    ; formula is as follows:
+    ; cleared_count * (color_bonus(cleared_colors) +
+    ;                  group_bonus(cleared_count) +
+    ;                  chain_bonus(chain_count))
+    ; where (cleared_colors + cleared_count + chain_count) is [1,999]
+
+    ; get our count multiplier
+update_score_group_bonus:
+    ld a, (cleared_count)           ; a has number cleared in our group
+    sub NUM_TO_CLEAR                ; subtract min number required for a match (4)
+    cp 8                            ; group table only has 8 entries
+    jp nc, update_score_max_group_bonus
+    ; less than 8, so grab value from table
+    ld hl, group_table
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, (hl)                      ; a has color bonus
+    ld c, a                         ; push 16-bit value onto stack
+
+    ld hl, 0                        ; store bonus into de
+    add hl, bc
+    ex de, hl
+    jp update_score_color_bonus
+update_score_max_group_bonus        ; max is a bonus of 10
+    ld b, 0
+    ld c, 10
+
+    ld hl, 0                        ; store bonus into de
+    add hl, bc
+    ex de, hl
+
+update_score_color_bonus:
+    ld a, (cleared_colors)          ; # of bits set = number of colors
+    ld b, 0
+    ld c, a
+    ld hl, set_bits_table
+    add hl, bc
+    ld c, (hl)                      ; c - number of unique colors cleared in combo
+    dec c                           ; subtract min colors (1)
+    ld hl, color_table
+    add hl, bc
+    ld c, (hl)                      ; c contains the color bonus
+
+    ex de, hl                       ; store bonus into de
+    add hl, bc
+    ex de, hl
+
+
+update_score_chain_bonus:
+    ld a, (chain_count)
+    cp 14                           ; chain only goes up to 14 (starts from 0)
+    jp nc, update_score_max_chain_bonus
+    ld b, 0
+    ld c, a
+    ld hl, chain_table
+    add hl, bc
+    ld c, (hl)
+    inc hl
+    ld b, (hl)
+    ex de, hl                       ; store bonus into de
+    add hl, bc
+    ex de, hl
+    jp update_score_total_mult
+
+update_score_max_chain_bonus:
+    ld bc, 999
+    ex de, hl                       ; store bonus into de
+    add hl, bc
+    ex de, hl
+
+
+; hl should at this point contain the multiplier bonus
+update_score_total_mult:
+    inc e
+    dec e
+    jp nz, update_score_multiply
+    inc e
+
+update_score_multiply:
+    ld a, (cleared_count)           ; load multiplier
+    ld b, 0
+    ld c, a
+    ; use multiply routine found at
+    ;http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
+
+Mul16:                              ; DEHL = BC*DE
+    ld hl,0
+    ld a,16
+Mul16Loop:
+    add hl,hl
+    rl e
+    rl d
+    jp nc,NoMul16
+    add hl,bc
+    jp nc,NoMul16
+    inc de                         ; This instruction (with the jump) is like an "ADC DE,0"
+NoMul16:
+    dec a
+    jp nz,Mul16Loop
+
+    ld d, 0                         ; clear d
+
+    ; add to our current score
+    ld a, (player_score)
+    add a, l
+    ld l, a
+    ld (player_score), a
+
+    ld a, (player_score+1)
+    adc a, h
+    ld h, a
+    ld (player_score+1), a
+
+    ld a, (player_score+2)
+    adc a, e
+    ld e, a
+    ld (player_score+2), a
+
+    ; value is in 16-bit number, convert to BCD for scoring
+    call bin_to_dec
+
+
+    ; store BCD into player_score_bcd
+    ld a, l
+    ld (player_score_bcd), a
+    ld a, h
+    ld (player_score_bcd+1), a
+    ld a, e
+    ld (player_score_bcd+2), a
+    ld a, d
+    ld (player_score_bcd+3), a
+
     ret
 
 ; ------------------------------------------------------------
