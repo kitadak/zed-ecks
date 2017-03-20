@@ -1,3 +1,12 @@
+
+
+; ==================================================================
+; FILE: game_utils.asm
+; ------------------------------------------------------------------
+;   Game utility routines: input handler, player board updates, etc.
+; ==================================================================
+
+
 ; ------------------------------------------------------------
 ; <routine>: <description>
 ; ------------------------------------------------------------
@@ -502,6 +511,7 @@ check_active_below_l:
     call get_puyo
 check_active_below_end:
     ret
+
 ; -------------------------------------------------------------
 ; check_active_left: checks if something exists to the left
 ; of either puyo
@@ -630,6 +640,13 @@ get_puyo:
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
+    call display_gameover       ; show gameover popup
+    ld d,GAMEOVER_DELAY         ; delay
+    ld c,CONST_DELAY
+gameover_delay_loop:
+    call blink_delay
+    dec d
+    jp nz,gameover_delay_loop
     ret
 
 ; ------------------------------------------------------------
@@ -642,10 +659,8 @@ gameover:
 ; Main loop will call jump to avoid overflowing call stack
 ; ------------------------------------------------------------
 gameover_detect:
-    ld hl, player_board
-    ld bc, KILL_LOCATION        ; represents 3rd column, top visible row
-    add hl, bc
-    ld a, (hl)
+    ; check 3rd column, top visible row
+    ld a, (player_board+KILL_LOCATION)
     and 0x07                    ; Isolate color bits
     ret                         ; If empty, reg a should now be 0x00
                                 ; This will fail if KILL_LOCATION
@@ -858,9 +873,7 @@ play_check_p:
     ld a, (prev_input)
     bit BIT_P, a
     ret nz
-    ld a, (is_paused)           ; flip paused state
-    cpl
-    ld (is_paused), a
+    call pause_game             ; go to pause routine
     ret
 
 
@@ -875,6 +888,7 @@ input_move_left:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check d
@@ -888,6 +902,7 @@ input_move_right:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check s
@@ -901,9 +916,31 @@ input_move_down:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
-
     call drop_timer_reset       ; we've moved down, reset the drop timer
+    call draw_curr_pair         ; redraw
     ret
+
+; ------------------------------------------------------------
+; pause_game: pause game sequence
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+pause_game:
+    call display_pause          ; show paused popup
+    ld c,BLINK_DELAY            ; delay to avoid hold pattern
+    call blink_delay
+pause_game_loop:
+    call get_input              ; get current input
+    ld a, (curr_input)
+    bit BIT_P, a
+    jp z, pause_game_loop       ; if not pressed, keep checking input
+    ld a, (curr_input)          ; update previous input
+    ld (prev_input), a
+    call refresh_board          ; finish, redraw everything and return
+    call draw_curr_pair
+    ret
+
 
 
 ; ------------------------------------------------------------
@@ -1054,6 +1091,7 @@ rotate_cw_end:
     inc a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
 
 ; ------------------------------------------------------------------
@@ -1131,6 +1169,7 @@ rotate_ccw_end:
     dec a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
 
 
@@ -1148,5 +1187,35 @@ rotate_ccw_end:
 ; ------------------------------------------------------------
 
 update_score:
+    ret
+
+; ------------------------------------------------------------
+; write_pair_to_board: Write current active pair to board
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+; Registers used: a, b, c, d, e, h, l
+; ------------------------------------------------------------
+write_pair_to_board:
+    ld a,(curr_pair)                ; get pivot position
+    ld c,a
+    ld b,0
+    ld a,(pair_color)               ; get pair colors
+    srl a                           ; assuming bits 7-6 are zeros
+    srl a
+    srl a
+    ld hl,player_board              ; write pivot puyo to board
+    add hl,bc
+    add hl,bc
+    ld (hl),a
+    ld a,(curr_pair+1)              ; calculate coordinates of 2nd puyo
+    call get_2nd_puyo_index
+    ld hl,player_board              ; write 2nd puyo to board
+    add hl,bc
+    add hl,bc
+    ld a,(pair_color)
+    and 0x07
+    ld (hl),a
     ret
 

@@ -28,9 +28,9 @@ test_single_cell:
     call get_pixel_address  ; calculate screen addr into de
     call load_cell_data     ; draw to screen - NOTE: bc corrupted!
 
-    ld c,0                  ; load pixel coordinates
-    ld b,72                 ; for now, use (0-255,0-191) coordinates
-    ld hl,puyo_d            ; load pixel data addr into hl
+    ld c,16                 ; load pixel coordinates
+    ld b,0                  ; for now, use (0-255,0-191) coordinates
+    ld hl,puyo_dl           ; load pixel data addr into hl
     call load_2x2_data
 
     ld c,0                  ; load pixel coordinates
@@ -281,6 +281,30 @@ erase_puyo_2x2_loop:
     cp l
     jp nz,erase_puyo_2x2_loop
     pop hl
+    ret
+
+; ------------------------------------------------------------------
+; print_text: print given string at given position
+; ------------------------------------------------------------------
+; Input: bc - input string address
+;        hl - end of input string address
+;        de - print coordinates (d:vertical, e:horizontal)
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+print_text:
+    ld a,22
+    rst 16
+    ld a,d
+    rst 16
+    ld a,e
+    rst 16
+    ld de,bc
+    xor a
+    sbc hl,bc
+    ld bc,hl
+    call 0x203c
     ret
 
 ; ------------------------------------------------------------------

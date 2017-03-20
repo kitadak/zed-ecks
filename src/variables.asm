@@ -8,47 +8,81 @@
 ; Macros/Constants
 ; ------------------------------------------------------------------
 
-TOPLEFT_HIDDEN  equ 0x0008
-TOPLEFT_VISIBLE equ 0x1018
-TOTAL_ROWS      equ 12
-TOTAL_COLUMNS   equ 8
-BOARD_SIZE      equ 96
+; Coordinates / board positions
+TOPLEFT_HIDDEN          equ 0x0008
+TOPLEFT_VISIBLE         equ 0x1018
+TOTAL_ROWS              equ 12
+TOTAL_COLUMNS           equ 8
+BOARD_SIZE              equ 96
+KILL_LOCATION           equ 74  ; Based on byte representation
 
-BIT_VISIT       equ 3
-BIT_DELETE      equ 7
-NUM_TO_CLEAR    equ 4
-DELETE_COLOR    equ 5
-EMPTY_COLOR     equ 0
-WALL_COLOR      equ 7
-COLOR_BITS      equ 7
-VISIBLE_END     equ 84
+; Level & preview area
+LP_TOPLEFT              equ 0x1088
+LP_ROWS                 equ 8
+LP_COLUMNS              equ 12
+PREVIEW_COORDS_TOP      equ 0x18b0
+PREVIEW_COORDS_BOTTOM   equ 0x28b0
+LEVEL_LINE              equ 0x4088
+LEVEL_TEXT_POSITION     equ 0x0811
+
+; In-game "popup"
+POPUP_TOPLEFT           equ 0x4018
+POPUP_ROWS              equ 4
+POPUP_PAUSED_COORD      equ 0x3830
+POPUP_GAMEOVER_COORD    equ 0x3828
+POPUP_MSG_TOP           equ 0x0803
+
+BIT_VISIT               equ 3
+BIT_DELETE              equ 7
+NUM_TO_CLEAR            equ 4
+DELETE_COLOR            equ 5
+EMPTY_COLOR             equ 0
+WALL_COLOR              equ 7
+COLOR_BITS              equ 7
+VISIBLE_END             equ 84
 
 LEVEL_UP        equ 30
 MAX_LEVEL       equ 10
 
+WALL_LEFT               equ 0x08    ; cp c
+WALL_RIGHT              equ 0x78    ; cp c
+WALL_BOTTOM             equ 0xB0    ; cp b
+HIDDEN_ROW              equ 0x00    ; cp b
 
-WALL_LEFT       equ 0x08    ; cp c
-WALL_RIGHT      equ 0x78    ; cp c
-WALL_BOTTOM     equ 0xB0    ; cp b
-HIDDEN_ROW      equ 0x00    ; cp b
+BIT_P                   equ 7
+BIT_H                   equ 4
+BIT_J                   equ 3
+BIT_D                   equ 2
+BIT_S                   equ 1
+BIT_A                   equ 0
 
-BIT_P equ 7
-BIT_H equ 4
-BIT_J equ 3
-BIT_D equ 2
-BIT_S equ 1
-BIT_A equ 0
+BIT_UP                  equ 7
+BIT_RIGHT               equ 6
+BIT_DOWN                equ 5
+BIT_LEFT                equ 4
 
-BIT_UP      equ 7
-BIT_RIGHT   equ 6
-BIT_DOWN    equ 5
-BIT_LEFT    equ 4
+; Delays
+INPUT_LONG_DELAY        equ 64
+INPUT_SHORT_DELAY       equ 8
+CONST_DELAY             equ 255
+BLINK_DELAY             equ 63
+PRESS_DELAY             equ 5
+GAMEOVER_DELAY          equ 15
 
-INPUT_LONG_DELAY equ 128
-INPUT_SHORT_DELAY equ 16
+; Messages
+msg_blank_line:         defb '            '
+msg_blank_line_end:
+msg_paused:             defb '   PAUSED   '
+msg_paused_end:
+msg_game:               defb '  _ GAME _  '
+msg_game_end:
+msg_over:               defb '    OVER    '
+msg_over_end:
+msg_paused_underline:   defb '  ________  '
+msg_paused_underline_end:
+msg_level:              defb '  Level: 1  '
+msg_level_end:
 
-
-KILL_LOCATION   equ 74  ; Based on byte representation
 
 ; Puyo Pairs
 ; In order:
@@ -88,6 +122,14 @@ EMPTY_BOARD:
 ; ------------------------------------------------------------------
 
 BACKGROUND_ATTR     equ 3
+TITLE_BOTTOM_ATTR   equ 0x06
+TITLE_FLASH_ATTR    equ 0x86
+
+PAUSED_ATTR         equ %00101001
+GAMEOVER_ATTR       equ %11110010
+LEVEL_ATTR          equ %01000111
+
+COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65
 PUYO_RED            equ 66
 PUYO_GREEN          equ 68
@@ -102,17 +144,16 @@ val_puyo_yellow:    defb 70
 ; Variables/Tables
 ; ------------------------------------------------------------------
 
+    defm "Hai PLAYER_BOARD desu"
 player_board:
     ;defs 192,0
     defs 24,0xff
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
+    ; test sprites
+    defb 0x06,0x00,0x02,0x00,0x06,0x00,0x02,0x00,0x06,0x00,0xf2,0x00
+    defb 0xe6,0x00,0xd2,0x00,0xc6,0x00,0xb2,0x00,0xa6,0x00
     defb 0xff,0xff
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
-    defb 0xff,0xff
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
+    defb 0xf6,0x00,0x92,0x00,0x86,0x00,0x72,0x00,0x66,0x00,0x52,0x00
+    defb 0x46,0x00,0x32,0x00,0x26,0x00,0x12,0x00,0x06,0x00
     defb 0xff,0xff
     defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00
     defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
@@ -121,11 +162,15 @@ player_board:
     defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
     defb 0xff,0xff
     ; has empty cell
+    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0x00,0x00,0xf6,0x00,0xa6,0x00
+    defb 0xf6,0x00,0xa2,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+    defb 0xff,0xff
     defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00
-    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0x00,0x00
+    defb 0xf6,0x00,0xa2,0x00,0xf6,0x00,0xa2,0x00,0xf6,0x00
     defb 0xff,0xff
     defs 24,0xff
 
+;next_pair: defb %00100001
 next_pair: defb 0
 
 player_score: defs 3,0
@@ -134,7 +179,7 @@ high_score: defs 3,0
 
 puyos_cleared: defb 0
 
-is_paused: defb 0
+clear_puyos_counter: defb 0
 
 ; Drop variables
 drop_timer: defb 0
@@ -142,7 +187,7 @@ drops_spawned: defb 0
 current_level: defb 1
 
 ; Active airborne puyo pair
-curr_pair: defb 43,%00000010    ; current pair position
+curr_pair: defb 26,%00000010    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
 pair_color: defb %00100001
 

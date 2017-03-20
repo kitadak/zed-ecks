@@ -2,24 +2,32 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
-    ld a,BACKGROUND_ATTR    ; black ink on purple paper, no bright, no flash
-    ld (23693),a            ; set our screen colours.
-    call 3503               ; clear the screen.
-    ld a,2                  ; 2 = upper screen.
-    call 5633               ; open channel.
+    call populate_coord_tab ; begin game setup
+    call init_title         ; load title screen
+    call start_theme_music  ; play title music
+    call init_background    ; load play area layout
 
-    call populate_coord_tab
+    ; test draw_curr_pair with input
     ;call reset_board
-    call init_background
+    ;call draw_curr_pair
+    ;call inf_loop
+
+    call gen_puyos
+    call draw_preview
+    call drop_floats
     call connect_puyos
+    call refresh_board
     call check_clears
-    call refresh_board      ; test
-    call test_single_cell   ; test
-    ;call drop_floats       ; test
+    call clear_puyos
+    call refresh_board
+    call draw_curr_pair
+    ;call gameover
+    ;call write_pair_to_board
 
 inf_loop:                   ; infinite loop to not exit program
     ;call play_check_input
-    ;call draw_curr_pair     ; test
+    ;ld c,PRESS_DELAY
+    ;call blink_delay
     jp inf_loop
 
 ; ------------------------------------------------------------------
