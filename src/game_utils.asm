@@ -1,3 +1,10 @@
+; ==================================================================
+; FILE: game_utils.asm
+; ------------------------------------------------------------------
+;   Game utility routines: input handler, player board updates, etc.
+; ==================================================================
+
+
 ; ------------------------------------------------------------
 ; <routine>: <description>
 ; ------------------------------------------------------------
@@ -6,10 +13,68 @@
 ; ------------------------------------------------------------
 
 ; ------------------------------------------------------------
+; bin_to_dec: Converts a 24-bit binary number to decimal
+; ------------------------------------------------------------
+; In: E:HL = 24-bit binary number (0-16777215)
+; Out: DE:HL = 8 digit decimal form (packed BCD)
+; Changes: AF, BC, DE, HL & IX
+;
+; by Alwin Henseler
+; ------------------------------------------------------------
+; Source:
+; https://www.msx.org/forum/development/msx-development/32-bit-long-ascii
+; ------------------------------------------------------------
+
+bin_to_dec:
+    ld c,e
+    push hl
+    pop ix          ; input value in c:ix
+    ld hl,1
+    ld d,h
+    ld e,h          ; start value corresponding with 1st 1-bit
+    ld b,24         ; bitnr. being processed + 1
+
+find1:
+    add ix,ix
+    rl c            ; shift bit 23-0 from c:ix into carry
+    jr c,nextbit
+    djnz find1      ; find highest 1-bit
+
+    ; all bits 0:
+    res 0,l         ; least significant bit not 1 after all ..
+    ret
+
+dblloop:
+    ld a,l
+    add a,a
+    daa
+    ld l,a
+    ld a,h
+    adc a,a
+    daa
+    ld h,a
+    ld a,e
+    adc a,a
+    daa
+    ld e,a
+    ld a,d
+    adc a,a
+    daa
+    ld d,a          ; double the value found so far
+    add ix,ix
+    rl c            ; shift next bit from c:ix into carry
+    jr nc,nextbit   ; bit = 0 -> don't add 1 to the number
+    set 0,l         ; bit = 1 -> add 1 to the number
+nextbit:
+    djnz dblloop
+    ret
+
+; ------------------------------------------------------------
 ; check_clears: Marks puyos to be erased
 ; ------------------------------------------------------------
 ; Input: None
-; Output: None
+; Output: a - 0 if nothing was marked as cleared
+;             1 if something was marked as cleared
 ; ------------------------------------------------------------
 ; Variables:
 ; curr_idx: index of the current puyo
@@ -36,6 +101,7 @@ check_clears_init:
     xor a
     ld (board_idx), a
     ld (curr_idx), a
+    ld e, a                         ; 0 if nothing is marked as cleared
 
 check_clears_start:
     ; stack.push(curr_idx)
@@ -239,7 +305,7 @@ check_clears_inc:
     inc (hl)
     ld a, (hl)
     cp VISIBLE_END                  ; are we at the end?
-    jp z, check_clears_end          ; clean up board
+    jp z, check_clears_unset          ; clean up board
     jp check_clears_start
 
 check_clears_mark:
@@ -277,36 +343,36 @@ check_clears_mark_delete:
     pop hl                          ; get address
     inc hl                          ; load second byte
     set BIT_DELETE,(hl)             ; set last bit to to mark deletion
-    ;pop af                          ; restore puyo
-    ;and 0xf8                        ; mask out the color bits
-    ;or DELETE_COLOR                 ; replace with a special deleted color
-    ;pop hl                          ; restore location
-    ;ld (hl), a
 
     ; increment score
     ld hl, cleared_count
     inc (hl)
+    ; we've marked a puyo for deletion
+    ld e, 1
 
     ret
 
-check_clears_end:
+check_clears_unset:
     ; unset visited bits
     ; go through board
     ld c, 95
     ld hl, player_board-2
     ld sp, (old_stack)
-check_clear_unset_loop:
+check_clears_unset_loop:
     dec c
-    ret z
+    jp z, check_clears_end
     inc hl
     inc hl
     ld a, (hl)
     and 0x7                          ; is this a wall
     cp 0x7
-    jp z, check_clear_unset_loop
+    jp z, check_clears_unset_loop
     res BIT_VISIT, (hl)
-    jp check_clear_unset_loop
+    jp check_clears_unset_loop
 
+check_clears_end:
+    ld a, e                         ; load status of clearing into a
+    ret
 
 
 ; ------------------------------------------------------------
@@ -443,6 +509,7 @@ check_active_below_l:
     call get_puyo
 check_active_below_end:
     ret
+
 ; -------------------------------------------------------------
 ; check_active_left: checks if something exists to the left
 ; of either puyo
@@ -532,6 +599,23 @@ check_active_right_end:
     xor a
     ret
 
+
+; ------------------------------------------------------------
+; drop_timer_reset: Resets timer to current level
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+drop_timer_reset:
+    ld hl, drop_table               ; get table
+    ld a, (current_level)
+    ld b, 0
+    ld c, a                         ; get level
+    add hl, bc
+    ld a, (hl)                      ; grab value from table
+    ld (drop_timer), a
+    ret
+
 ; ------------------------------------------------------------
 ; get_puyo: given index, returns the puyo at that spot
 ; ------------------------------------------------------------
@@ -548,31 +632,20 @@ get_puyo:
     ret                             ; 10
 
 ; ------------------------------------------------------------
-; reset_board: Resets the board to empty
-; ------------------------------------------------------------
-; Input: None
-; Output: None
-; ------------------------------------------------------------
-; Registers used: bcdehl
-; ------------------------------------------------------------
-
-reset_board:
-    ld b, 0
-    ld c, BOARD_SIZE
-    sla c
-    ld de, player_board
-    ld hl, EMPTY_BOARD
-    ldir
-    ret
-
-; ------------------------------------------------------------
 ; gameover: the gameover sequence
 ; ------------------------------------------------------------
 ; Input: None
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
-    ret
+    call display_gameover       ; show gameover popup
+    ld d,GAMEOVER_DELAY         ; delay
+    ld c,CONST_DELAY
+gameover_delay_loop:
+    call blink_delay
+    dec d
+    jp nz,gameover_delay_loop
+    jp main_title
 
 ; ------------------------------------------------------------
 ; gameover_detect : checks for a gameover
@@ -798,9 +871,7 @@ play_check_p:
     ld a, (prev_input)
     bit BIT_P, a
     ret nz
-    ld a, (is_paused)           ; flip paused state
-    cpl
-    ld (is_paused), a
+    call pause_game             ; go to pause routine
     ret
 
 
@@ -815,6 +886,7 @@ input_move_left:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check d
@@ -828,6 +900,7 @@ input_move_right:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call draw_curr_pair         ; redraw
     ret
 
     ; check s
@@ -841,39 +914,38 @@ input_move_down:
     ld (curr_pair), a
     ld a, (curr_pair+1)
     ld (prev_pair+1), a
+    call drop_timer_reset       ; we've moved down, reset the drop timer
+    call draw_curr_pair         ; redraw
     ret
 
 ; ------------------------------------------------------------
-; process_clears: clears 4+ connected puyos
+; pause_game: pause game sequence
 ; ------------------------------------------------------------
 ; Input: None
-; Output: 0 if no clears occured, else clears occured
+; Output: None
 ; ------------------------------------------------------------
-process_clears
+pause_game:
+    call display_pause          ; show paused popup
+    ld c,BLINK_DELAY            ; delay to avoid hold pattern
+    call blink_delay
+pause_game_loop:
+    call get_input              ; get current input
+    ld a, (curr_input)
+    bit BIT_P, a
+    jp z, pause_game_loop       ; if not pressed, keep checking input
+    ld a, (curr_input)          ; update previous input
+    ld (prev_input), a
+    call refresh_board          ; finish, redraw everything and return
+    call draw_curr_pair
     ret
 
-; ------------------------------------------------------------
-; reset_drop_timer: Resets the timer to the current speed
-; ------------------------------------------------------------
-; Input: None
-; Output: drop_timer - time till next drop
-; ------------------------------------------------------------
-; Registers Used: bc, hl
-; ------------------------------------------------------------
 
-reset_drop_timer:
-    ld bc, current_speed
-    ld hl, drop_table
-    add hl, bc
-    ld (drop_timer), hl
-    ret
 
 ; ------------------------------------------------------------
-; spawn_puyos: puts puyos onto the field
+; spawn_puyos: fills curr_pair with puyos
 ; ------------------------------------------------------------
 ; Input: next_pair: two randomly colored puyos
-; Output: player_board: updated with new puyos
-;         curr_pair: the current pair position
+; Output: curr_pair: the current pair position
 ;         prev_pair: the previous pair position
 ; ------------------------------------------------------------
 spawn_puyos:
@@ -886,6 +958,19 @@ spawn_puyos:
     ld a, (next_pair)
     ld (pair_color), a
     call gen_puyos              ; generate new puyos after
+
+    ld hl, drops_spawned        ; increment number of puyos spawned
+    inc (hl)
+    ld a, (hl)                  ; if we've spawned enough puyos,
+    cp LEVEL_UP                 ; speed up the game
+    ret nz                      ; not enough for level up
+    ; increased a level!
+    ld (hl), 0                  ; reset counter
+    ld hl, current_level
+    ld a, (hl)
+    cp MAX_LEVEL
+    ret z                       ; don't go past the max level
+    inc (hl)                    ; otherwise, go up one level
     ret
 
 ; ------------------------------------------------------------
@@ -909,6 +994,25 @@ rand8:
     add a, b
     sbc a, 255
     ret
+
+; ------------------------------------------------------------
+; reset_board: Resets the board to empty
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+; Registers used: bcdehl
+; ------------------------------------------------------------
+
+reset_board:
+    ld b, 0
+    ld c, BOARD_SIZE
+    sla c
+    ld de, player_board
+    ld hl, EMPTY_BOARD
+    ldir
+    ret
+
 
 ; ------------------------------------------------------------------
 ; rotate_cw: Rotate current puyo pair clockwise
@@ -937,6 +1041,13 @@ rotate_cw_u:
     cp 0
     jp z, rotate_cw_end      ; if nothing, rotation is fine
     ; something exists, need to shift curr_pair left
+    ; before shifting, check to see if something is on the left (wall/puyo)
+    ld a, (curr_pair)
+    sub 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz                   ; if nothing, shift + rotate is fine
     ld hl, curr_pair
     ld a, (hl)
     ld c, 12
@@ -970,7 +1081,16 @@ rotate_cw_d:
     call get_puyo
     cp 0
     jp z, rotate_cw_end
-    ld hl, curr_pair                ; something exists, move right
+    ; something exists on the left
+    ; check right
+    ld a, (curr_pair)
+    add a, 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+    ld hl, curr_pair
     ld a, (hl)
     ld c, 12
     add a, c
@@ -985,6 +1105,7 @@ rotate_cw_end:
     inc a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
 
 ; ------------------------------------------------------------------
@@ -1011,7 +1132,14 @@ rotate_ccw_u:
     call get_puyo
     cp 0
     jp z, rotate_ccw_end
-    ld hl, curr_pair                ; something exists, move right
+    ld a, (curr_pair)               ; check if somethings on right
+    add a, 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+    ld hl, curr_pair                ; nothing on right, move right
     ld a, (hl)
     ld c, 12
     add a, c
@@ -1045,6 +1173,15 @@ rotate_ccw_d:
     call get_puyo
     cp 0
     jp z, rotate_ccw_end      ; if nothing, rotation is fine
+
+    ld a, (curr_pair)
+    sub 12
+    ld c, a
+    call get_puyo
+    cp 0
+    ret nz
+
+
     ; something exists, need to shift curr_pair left
     ld hl, curr_pair
     ld a, (hl)
@@ -1062,20 +1199,53 @@ rotate_ccw_end:
     dec a                           ; update orientation
     and 0x03
     ld (hl), a
+    call draw_curr_pair             ; redraw
 	ret
+
+
 
 ; ------------------------------------------------------------
 ; update_score: Updates the score
 ; ------------------------------------------------------------
-; Input: a - puyos cleared
-;        b - chain count
-;        c - color bonus
-;        d - group bonus
+; Input: cleared_colors: defb 0
+;        cleared_count: defb 0
+;        chain_count: defb 0
+;
 ; Output: a - 0 if score was not updated, otherwise 1
 ;        player_score - updated
 ;
 ; ------------------------------------------------------------
 
 update_score:
+    ret
+
+; ------------------------------------------------------------
+; write_pair_to_board: Write current active pair to board
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+; Registers used: a, b, c, d, e, h, l
+; ------------------------------------------------------------
+write_pair_to_board:
+    ld a,(curr_pair)                ; get pivot position
+    ld c,a
+    ld b,0
+    ld a,(pair_color)               ; get pair colors
+    srl a                           ; assuming bits 7-6 are zeros
+    srl a
+    srl a
+    ld hl,player_board              ; write pivot puyo to board
+    add hl,bc
+    add hl,bc
+    ld (hl),a
+    ld a,(curr_pair+1)              ; calculate coordinates of 2nd puyo
+    call get_2nd_puyo_index
+    ld hl,player_board              ; write 2nd puyo to board
+    add hl,bc
+    add hl,bc
+    ld a,(pair_color)
+    and 0x07
+    ld (hl),a
     ret
 

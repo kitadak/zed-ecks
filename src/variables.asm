@@ -1,5 +1,3 @@
-
-
 ; ==================================================================
 ; FILE: variables.asm
 ; ------------------------------------------------------------------
@@ -10,49 +8,100 @@
 ; Macros/Constants
 ; ------------------------------------------------------------------
 
-TOPLEFT_HIDDEN  equ 0x0008
-TOPLEFT_VISIBLE equ 0x1018
-TOTAL_ROWS      equ 12
-TOTAL_COLUMNS   equ 8
-BOARD_SIZE      equ 96
+; Coordinates / board positions
+TOPLEFT_HIDDEN          equ 0x0008
+TOPLEFT_VISIBLE         equ 0x1018
+TOTAL_ROWS              equ 12
+TOTAL_COLUMNS           equ 8
+BOARD_SIZE              equ 96
+KILL_LOCATION           equ 74  ; Based on byte representation
 
-BIT_VISIT       equ 3
-BIT_DELETE      equ 7
-NUM_TO_CLEAR    equ 4
-DELETE_COLOR    equ 5
-EMPTY_COLOR     equ 0
-WALL_COLOR      equ 7
-COLOR_BITS      equ 7
-VISIBLE_END     equ 84
+; Info section
+LP_TOPLEFT              equ 0x1088
+LP_ROWS                 equ 10
+LP_COLUMNS              equ 12
+LP_TEXT_WIDTH           equ 8
+PREVIEW_COORDS_TOP      equ 0x18b0
+PREVIEW_COORDS_BOTTOM   equ 0x28b0
+LEVEL_LINE              equ 0x4098
+SCORE_NUM_LINE          equ 0x5098
+AVATAR_LINE             equ 0x6088
+AVATAR_LINE_2           equ 0x6888
+;SCORE_LINE              equ 0x1888
+AVABOX_TOPLEFT          equ 0x7098
+AVABOX_ROWS             equ 8
+AVABOX_COLUMNS          equ 8
+LEVEL_NUM               equ 0x40d0
+SCORE_NUM               equ 0x5098
 
+; Address of character set in ROM starting from '0'
+ROM_CHAR_ZERO           equ 0x3d80
 
-WALL_LEFT       equ 0x08    ; cp c
-WALL_RIGHT      equ 0x78    ; cp c
-WALL_BOTTOM     equ 0xB0    ; cp b
-HIDDEN_ROW      equ 0x00    ; cp b
+; Text positions
+LEVEL_TEXT_POSITION     equ 0x0813
+AVATAR_PARTITION        equ 0x0c11
+;SCORE_TITLE             equ 0x0a11
 
-BIT_P equ 7
-BIT_H equ 4
-BIT_J equ 3
-BIT_D equ 2
-BIT_S equ 1
-BIT_A equ 0
+; In-game "popup"
+POPUP_TOPLEFT           equ 0x4018
+POPUP_ROWS              equ 4
+POPUP_PAUSED_COORD      equ 0x3830
+POPUP_GAMEOVER_COORD    equ 0x3828
+POPUP_MSG_TOP           equ 0x0803
 
-BIT_UP      equ 7
-BIT_RIGHT   equ 6
-BIT_DOWN    equ 5
-BIT_LEFT    equ 4
+BIT_VISIT               equ 3
+BIT_DELETE              equ 7
+NUM_TO_CLEAR            equ 4
+DELETE_COLOR            equ 5
+EMPTY_COLOR             equ 0
+WALL_COLOR              equ 7
+COLOR_BITS              equ 7
+VISIBLE_END             equ 84
 
-INPUT_LONG_DELAY equ 128
-INPUT_SHORT_DELAY equ 16
+LEVEL_UP        equ 15
+MAX_LEVEL       equ 9
 
+WALL_LEFT               equ 0x08    ; cp c
+WALL_RIGHT              equ 0x78    ; cp c
+WALL_BOTTOM             equ 0xB0    ; cp b
+HIDDEN_ROW              equ 0x00    ; cp b
 
-KILL_LOCATION   equ 74  ; Based on byte representation
+BIT_P                   equ 7
+BIT_H                   equ 4
+BIT_J                   equ 3
+BIT_D                   equ 2
+BIT_S                   equ 1
+BIT_A                   equ 0
 
-DROP_FLOATS_DELAY   equ 255
+BIT_UP                  equ 7
+BIT_RIGHT               equ 6
+BIT_DOWN                equ 5
+BIT_LEFT                equ 4
 
-PREVIEW_COORDS_TOP      equ 0x1088
-PREVIEW_COORDS_BOTTOM   equ 0x2088
+; Delays
+INPUT_LONG_DELAY        equ 64
+INPUT_SHORT_DELAY       equ 8
+CONST_DELAY             equ 255
+BLINK_DELAY             equ 63
+PRESS_DELAY             equ 5
+GAMEOVER_DELAY          equ 15
+
+; Messages
+msg_blank_line:         defb '            '
+msg_blank_line_end:
+msg_paused:             defb '   PAUSED   '
+msg_paused_end:
+msg_game:               defb '  _ GAME _  '
+msg_game_end:
+msg_over:               defb '    OVER    '
+msg_over_end:
+msg_paused_underline:   defb '  ________  '
+msg_paused_underline_end:
+msg_level:              defb 'Level: '
+msg_level_end:
+msg_score:              defb '   SCORE:   '
+msg_score_end:
+
 
 ; Puyo Pairs
 ; In order:
@@ -92,6 +141,16 @@ EMPTY_BOARD:
 ; ------------------------------------------------------------------
 
 BACKGROUND_ATTR     equ 3
+TITLE_BOTTOM_ATTR   equ 0x06
+TITLE_FLASH_ATTR    equ 0x86
+
+PAUSED_ATTR         equ %00101001
+GAMEOVER_ATTR       equ %11110010
+;SCORE_ATTR          equ %00000101
+LEVEL_ATTR          equ %01000111
+SCORE_NUM_ATTR      equ %01000101
+
+COLOR_WHITE_FLASH   equ 0x47
 PUYO_BLUE           equ 65
 PUYO_RED            equ 66
 PUYO_GREEN          equ 68
@@ -135,20 +194,19 @@ player_board:
 ;next_pair: defb %00100001
 next_pair: defb 0
 
-player_score: defs 4,0
-
-high_score: defs 4,0
+player_score: defs 3,0
 
 puyos_cleared: defb 0
 
+graphics_counter: defb 0
+
+; Drop variables
 drop_timer: defb 0
-
-current_speed: defb 0
-
-is_paused: defb 0
+drops_spawned: defb 0
+current_level: defb 1
 
 ; Active airborne puyo pair
-curr_pair: defb 43,%00000010    ; current pair position
+curr_pair: defb 26,%00000010    ; current pair position
 prev_pair: defb 82,%00000011    ; previous position of current pair
 pair_color: defb %00100001
 
@@ -159,7 +217,6 @@ LR_timer: defb 0
 D_timer: defb 0
 rotate_timer: defb 0
 
-
 ; Clearing Variables
 old_stack: defs 2, 0
 curr_idx: defb 0
@@ -167,7 +224,7 @@ curr_addr: defs 2, 0
 board_idx: defb 0
 prev_matches: defs 4,0
 
-clear_stack_space: defs 256,0   ; space for stack, as stack goes upwards
+clear_stack_space: defs 254,0   ; space for stack, as stack goes upwards
 clear_stack: defs 2, 0
 
 ; Scoring Variables
@@ -183,10 +240,13 @@ chain_table:
 ; Drop time table
 ; Defines number of frames before the puyo is dropped to the next half row
 drop_table:
-    defb 32, 23, 20, 16, 13, 10, 7
+    defb 100, 80, 70, 60, 50, 40, 35, 30, 20, 17
+    ;Lv.   0   1   2   3   4   5   6   7   8   9
 
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
     defs 192,0xfb
 
+; Test score variables
+test_score: defb 0x14, 0x67, 0x92, 0x00
 
