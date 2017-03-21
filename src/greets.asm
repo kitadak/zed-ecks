@@ -17,7 +17,7 @@ start_greets:
     cp 2
     jr z, greets_hAndD_theme
     cp 3
-    jr z, greets_nightofnights_theme
+    jr z, greets_hungarian_theme
 greets_hmc_theme:
 	ld ix,hmc_music_data
 	jr greets_animated_print
@@ -27,8 +27,8 @@ greets_medley_theme:
 greets_hAndD_theme:
 	ld ix,hAndD_music_data
 	jr greets_animated_print
-greets_nightofnights_theme:
-	ld ix,nightofnights_music_data
+greets_hungarian_theme:
+	ld ix,hungarian_music_data
 	ld (hl),255
 	jr greets_animated_print
 

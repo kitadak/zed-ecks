@@ -1,0 +1,733 @@
+R H
+
+TEMPO 200
+T C# 1
+R SF
+Q C# 1
+T G#
+R SF
+E G#
+R E
+
+T C# 1
+T B
+T C# 1
+Q B
+T F#
+R SF
+E F#
+T C# 1
+T E 1
+T D 1
+T C# 1
+R SF
+
+Q C# 1
+T G#
+R SF
+E G#
+R E
+
+T C# 1
+T B
+T C# 1
+Q B
+T F#
+R SF
+E F#
+T A
+T G#
+T B
+T A
+T G#
+R SF
+
+# P1L2
+Q G#
+T F
+R SF
+E F
+R E
+
+T G#
+R SF
+Q G#
+T E
+R SF
+E E
+T A
+T G#
+T B
+T A
+T G#
+R SF
+
+Q G#
+T D#
+R SF
+E D#
+R E
+
+1Q6 F#
+1Q6 A
+1Q6 G#
+1Q6 B
+1Q6 A
+1Q6 G#
+1Q6 F#
+1Q6 E
+1Q6 F#
+1Q6 D#
+1Q6 A
+1Q6 G#
+
+# P1L3
+TEMPO 160
+ED C#
+S G#
+Q C# 1
+
+ED C#
+S G#
+ED C# 1
+T G#
+R SF
+T G#
+
+E C# 1
+R E
+Q C# 1
+
+S C# 1
+S C 1
+S C# 1
+S D# 1
+S E 1
+S A
+S E 1
+S D# 1
+
+ED C# 1
+T C# 1
+R SF
+T C# 1
+T D# 1
+ED C# 1
+S C 1
+
+Q C# 1
+ED C# 1
+S D# 1
+
+E E 1
+R E
+Q E 1
+R SF
+
+S E 1
+S D# 1
+S E 1
+S F# 1
+S G# 1
+S D# 1
+S G# 1
+S F# 1
+
+# P1L4
+Q E 1
+T E 1
+T F# 1
+ED E 1
+S D# 1
+
+Q E 1
+ED E 1
+S D# 1
+
+T G#
+T C# 1
+T E 1
+T G# 1
+E C# 2
+R E
+T G# 1
+Q C# 2
+
+S A 1
+S C 2
+S C# 2
+S D# 2
+S E 2
+S A 1
+S E 2
+S D# 2
+
+E C# 2
+R E
+T C# 2
+T D# 2
+ED C# 2
+S C 2
+
+Q C# 2
+ED C# 2
+E G# 1
+S E 2
+
+E G# 2
+R E
+Q G# 1
+
+# P1L5
+2H49 G# 1
+2H49 G 1
+2H49 G# 1
+2H49 G 1
+2H49 E 1
+2H49 G 1
+2H49 G# 1
+2H49 A# 1
+2H49 B 1
+2H49 C# 2
+2H49 D# 2
+2H49 E 2
+2H49 G 2
+2H49 G# 2
+2H49 A# 2
+2H49 B 2
+2H49 C# 3
+2H49 D# 3
+2H49 E 3
+2H49 D# 3
+2H49 C# 3
+2H49 B 2
+2H49 A# 2
+2H49 G# 2
+2H49 G 2
+2H49 B 2
+2H49 A# 2
+2H49 G# 2
+2H49 G 2
+2H49 E 2
+2H49 D# 2
+2H49 C# 2
+2H49 E 2
+2H49 D# 2
+2H49 C# 2
+2H49 B 1
+2H49 A# 1
+2H49 G# 1
+2H49 G 1
+2H49 G# 1
+2H49 G 1
+2H49 E 1
+2H49 G 1
+2H49 B 1
+2H49 B 1
+2H49 B 1
+2H49 B 1
+2H49 B 1
+2H49 A# 1
+
+Q G# 1
+T G# 1
+T A# 1
+ED G# 1
+S G 1
+
+Q G# 1
+E D# 1
+R E
+T G# 1
+R SF
+T G# 1
+
+# P2L1
+E G# 2
+R E
+T B 1
+T E 2
+Q G# 2
+
+S G# 2
+S F# 2
+S G# 2
+S A 2
+S B 2
+S E 2
+S A 2
+S G# 2
+
+E F# 2
+R E
+T F# 2
+T G# 2
+E F# 2
+R S
+S F 2
+
+E F# 2
+R E
+Q G# 2
+
+E E 2
+R E
+T G# 1
+T C# 2
+Q E 2
+
+# P2L2
+S E 2
+S D# 2
+S E 2
+S F# 2
+T E 2
+T F# 2
+S G# 2
+S C# 2
+S F# 2
+S E 2
+
+E D# 2
+R E
+T D# 2
+T E 2
+E D# 2
+R S
+S C# 2
+
+Q D# 2
+R Q
+
+T D# 2
+R SF
+T D# 2
+R SF
+ED D# 2
+S G# 1
+T C 2
+T G# 2
+ED C 2
+S C# 2
+
+T D# 2
+T G# 2
+ED D# 2
+S F# 2
+T E 2
+T G# 2
+ED E 2
+S D# 2
+
+# P2L3
+T C# 2
+T G# 2
+ED C# 2
+S G# 1
+T C# 2
+T G# 2
+ED C# 2
+S D# 2
+
+T E 2
+T G# 2
+ED E 2
+S G# 2
+T F# 2
+T G# 2
+ED F# 2
+S E 2
+
+T D# 2
+T G# 2
+E D# 2
+T G# 1
+T G# 2
+E G# 1
+T C 2
+T G# 2
+E C 2
+T C# 2
+T G# 2
+E C# 2
+
+T D# 2
+T G# 2
+E D# 2
+T F# 2
+T G# 2
+E F# 2
+T E 2
+T G# 2
+E E 2
+T D# 2
+T G# 2
+E D# 2
+
+SD G# 2
+SD A 2
+S G# 2
+S A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+SF G# 2
+SF A 2
+SF G# 2
+SF A 2
+SF G# 2
+SF A 2
+T G# 2
+E C# 2
+R S
+S D# 2
+
+# P2L4
+ED E 2
+S G# 2
+ED C# 3
+S E 3
+
+1E5 G# 1
+1E5 D# 2
+1E5 G# 2
+1E5 D# 2
+1E5 G# 1
+T G# 1
+T G# 1
+T G# 2
+T G# 1
+T C 2
+T G# 2
+T C 2
+T G# 1
+T C# 2
+T G# 2
+T C# 2
+T G# 1
+
+T D# 2
+T G# 2
+T D# 2
+T G# 1
+T F# 2
+T G# 2
+T F# 2
+T G# 1
+T E 2
+T G# 2
+T E 2
+T G# 1
+T D# 2
+T G# 2
+T D# 2
+T G# 1
+
+# P2L5
+1E5 G# 1
+1E5 C# 2
+1E5 G# 2
+1E5 C# 2
+1E5 G# 1
+T G# 1
+T G# 1
+T G# 2
+T G# 1
+T C# 2
+T G# 2
+T C# 2
+T G# 1
+T D# 2
+T G# 2
+T D# 2
+T G# 1
+
+T E 2
+T G# 2
+T E 2
+T G# 1
+T G# 2
+T G# 1
+T G# 2
+T G# 1
+T F# 2
+T G# 2
+T F# 2
+T G# 2
+T E 2
+T G# 2
+T E 2
+T G# 1
+
+# P3L1
+1H20 D# 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 D# 2
+1H20 G# 1
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+1H20 C 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+1H20 C# 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+
+1H20 D# 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+1H20 F# 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+1H20 E 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+1H20 D# 2
+1H20 G# 2
+1H20 A 2
+1H20 G# 2
+1H20 G# 1
+
+# P3L2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+T G# 2
+T A 2
+E C# 2
+R S
+S C 2
+
+Q C# 2
+1Q11 E 2
+1Q11 G# 2
+1Q11 E 3
+1Q11 D# 3
+1Q11 C# 3
+1Q11 G# 2
+1Q11 E 2
+1Q11 D# 2
+1Q11 C# 2
+1Q11 G# 1
+1Q11 E 1
+
+S D# 1
+R T
+T E 1
+S F# 1
+R T
+T G# 1
+S A 1
+R T
+T G# 1
+S B 1
+R T
+T A 1
+
+E G# 1
+T G#
+E G# 1
+T A#
+E G# 1
+T C 1
+E G# 1
+
+# P3L3
+T C# 1
+T D# 2
+S C# 1
+R T
+T C 1
+S C# 1
+R T
+T D# 1
+T E 1
+T F# 1
+S E 1
+R T
+T D# 1
+S E 1
+R T
+T F# 1
+
+S G 1
+R T
+T G# 1
+S A 1
+R T
+T G# 1
+S F# 1
+R T
+T E 1
+S G# 1
+R T
+T C# 1
+
+S D# 2
+R T
+T E 2
+S F# 2
+R T
+T G# 2
+S A 2
+R T
+T G# 2
+S B 2
+R T
+T A 2
+
+# P3L4
+E G# 2
+T G#
+E G# 1
+T A#
+E A# 1
+T C 1
+E C 2
+
+T C# 1
+T G# 1
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+T C# 2
+T D# 2
+
+# P3L5
+2H59 C# 2
+2H59 C 2
+2H59 D# 2
+2H59 C# 2
+2H59 F 2
+2H59 D# 2
+2H59 C# 2
+2H59 G# 1
+2H59 E 1
+2H59 D# 1
+2H59 C# 1
+2H59 G#
+2H59 F
+2H59 G#
+2H59 C# 1
+2H59 D# 1
+2H59 E 1
+2H59 G# 1
+2H59 C# 2
+2H59 D# 2
+2H59 E 2
+2H59 G# 2
+2H59 C# 3
+2H59 G# 2
+2H59 D# 3
+2H59 C# 3
+2H59 F 3
+2H59 D# 3
+2H59 C# 3
+2H59 G# 2
+2H59 E 2
+2H59 C# 3
+2H59 G# 2
+2H59 E 2
+2H59 D# 2
+2H59 C# 2
+2H59 E 2
+2H59 D# 2
+2H59 C# 2
+2H59 G# 1
+2H59 E 1
+2H59 C# 2
+2H59 G# 1
+2H59 E 1
+2H59 D# 1
+2H59 C# 1
+2H59 E 1
+2H59 D# 1
+2H59 C# 1
+2H59 G#
+2H59 E
+2H59 C# 1
+2H59 G#
+2H59 E
+2H59 D#
+2H59 C#
+2H59 E
+2H59 D#
+2H59 C#
+
+Q C#
+Q C#
+
+R Q
+R Q
+R Q
+R Q
+R Q
+R Q
