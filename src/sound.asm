@@ -3,7 +3,7 @@
 ; Play looping theme music
 ; ------------------------------------------------------------------
 start_theme_music:
-	ld ix,hmc_music_data
+	ld ix,medley_music_data
 play_theme_music:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255
@@ -54,10 +54,10 @@ play_theme_music_skip2:
 	jr play_theme_music
 
 ; ------------------------------------------------------------------
-; Play sound effect from data in ix
+; Play sound effect from data in hl
 ; ------------------------------------------------------------------
 play_sound_effect:
-	ld a,(ix)	; data in ix
+	ld a,(hl)	; data in hl
 	cp 255
 	ret z
 	cp 254
@@ -65,37 +65,44 @@ play_sound_effect:
 
 	ld b,0
 	ld c,a
-	ld d,(ix+1)
-	ld e,(ix+2)
+	inc hl
+	ld d,(hl)
+	inc hl
+	ld e,(hl)
+	dec hl
 	ld a,$10
 	jr play_se_produce_note
 	
 play_se_rest:
 	ld b,0
-	ld c,(ix+1)
-	ld d,(ix+1)
-	ld e,(ix+2)
+	inc hl
+	ld c,(hl)
+	ld d,(hl)
+	inc hl
+	ld e,(hl)
+	dec hl
 	ld a,$00
 
 play_se_produce_note:
 	out ($fe),a
 	dec d
 	jr nz,play_se_skip1
-	ld d,(ix+1)
+	ld d,(hl)
 	xor 0x10
 play_se_skip1:
 	dec e
 	jr nz,play_se_skip2
-	ld e,(ix+2)
+	inc hl
+	ld e,(hl)
+	dec hl
 	xor 0x10
 play_se_skip2:
 	djnz play_se_produce_note
 	dec c
 	jr nz,play_se_produce_note
 
-	inc ix
-	inc ix
-	inc ix
+	inc hl
+	inc hl
 	jr play_sound_effect
 
 
@@ -157,6 +164,7 @@ play_one_note_skip1:
 	ld e,(ix+2)
 	xor 0x10
 play_one_note_skip2:
+
 	djnz play_one_note_produce_note
 	dec c
 	jr nz,play_one_note_produce_note

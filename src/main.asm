@@ -2,37 +2,9 @@
 ; ------------------------------------------------------------------
 ; Main test driver
 ; ------------------------------------------------------------------
-    call start_greets
-
     jp main_init
-    jp inf_loop
-    call populate_coord_tab ; begin game setup
-    ;call init_title         ; load title screen
-    ;call start_theme_music  ; play title music
-    call init_background    ; load play area layout
 
-    ; test draw_curr_pair with input
-    ;call reset_board
-    ;call draw_curr_pair
-    ;call inf_loop
-
-    call gen_puyos
-    call draw_preview
-    call drop_floats
-    call connect_puyos
-    call refresh_board
-    call check_clears
-    call clear_puyos
-    call drop_floats
-    call draw_curr_pair
-    call refresh_board
-    ;call gameover
-    ;call write_pair_to_board
-
-inf_loop:                   ; infinite loop to not exit program
-    ;call play_check_input
-    ;ld c,PRESS_DELAY
-    ;call blink_delay
+inf_loop:
     jp inf_loop
 
 
@@ -42,15 +14,17 @@ inf_loop:                   ; infinite loop to not exit program
 
 main_init:
     call populate_coord_tab
-    ; call greets
+    call start_greets
 
 main_title:
-    ;call init_title
-    ;call start_theme_music
+    call init_title
+    call start_theme_music
     call init_background
 
 main_game_start:
     call reset_game
+    ld hl,game_start_music_data
+    call play_sound_effect
 
 main_loop_spawn:
     call gameover_detect
@@ -91,13 +65,65 @@ main_loop_clear_init:
     call write_pair_to_board
 main_loop_clear:
     call drop_floats            ; drop any floating puyos
+    ld hl,puyodrop_music_data
+    call play_sound_effect
     call connect_puyos
     call refresh_board
     call check_clears           ; mark the clears
     cp 0
-    jp z, main_loop_spawn       ; nothing to clear, go spawn a new puyo
+    jp z, main_reset_score_vars       ; nothing to clear, go spawn a new puyo
+
+    ld hl,chain_count
+    inc (hl)
+    ld a,(hl)
+
+    ; play appropriate chain up to 7
+    cp 1
+    jr z, chain1_se
+    cp 2
+    jr z, chain2_se
+    cp 3
+    jr z, chain3_se
+    cp 4
+    jr z, chain4_se
+    cp 5
+    jr z, chain5_se
+    cp 6
+    jr z, chain6_se
+    jr chain7_se
+
+chain1_se:
+    ld hl,rensa1_music_data
+    jr main_loop_clear_continue
+chain2_se:
+    ld hl,rensa2_music_data
+    jr main_loop_clear_continue
+chain3_se:
+    ld hl,rensa3_music_data
+    jr main_loop_clear_continue
+chain4_se:
+    ld hl,rensa4_music_data
+    jr main_loop_clear_continue
+chain5_se:
+    ld hl,rensa5_music_data
+    jr main_loop_clear_continue
+chain6_se:
+    ld hl,rensa6_music_data
+    jr main_loop_clear_continue
+chain7_se:
+    ld hl,rensa7_music_data
+
+main_loop_clear_continue:
+    call play_sound_effect
     call clear_puyos
     jp main_loop_clear          ; keep chaining clears/settles
+
+main_reset_score_vars:
+    xor a
+    ld (cleared_colors), a
+    ld (chain_count), a
+    ld (cleared_count), a
+    jp main_loop_spawn
 
 reset_game:                     ; reset all variables
     call reset_board
