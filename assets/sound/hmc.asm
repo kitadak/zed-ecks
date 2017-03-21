@@ -1,5 +1,6 @@
 
 hmc_music_data:
+	defb 254,160,160
 	defb 40,104,105
 	defb 40,98,99
 	defb 40,104,105
@@ -536,8 +537,6 @@ hmc_music_data:
 	defb 254,40,40
 	defb 40,208,209
 	defb 254,40,40
-	defb 254,160,160
-	defb 254,160,160
 	defb 254,160,160
 	defb 254,160,160
 	defb 254,160,160

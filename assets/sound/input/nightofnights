@@ -1,3 +1,6 @@
+TEMPO 80
+R H
+
 # Beginning
 E D 1
 E A 1
@@ -1106,3 +1109,8 @@ E F 2
 H D# 2
 H D# 2
 E D# 2
+
+R H
+R H
+R H
+R H

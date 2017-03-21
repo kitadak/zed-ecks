@@ -1,4 +1,6 @@
 TEMPO 80
+R H
+
 H F
 H F 1
 
@@ -1125,3 +1127,8 @@ R S
 1Q14 C 1
 H B 1
 H B 1
+
+R H
+R H
+R H
+R H
