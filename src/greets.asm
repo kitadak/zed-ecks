@@ -78,35 +78,35 @@ GREETS_MESSAGE_22:
     defb 16,7
     defb 18,0
 
-    defb 22,1,0
+    defb 22,1,1
     defb 'Joshua'
-    defb 22,1,7
+    defb 22,1,8
     defb 'Tang'
 
-    defb 22,2,0
+    defb 22,2,1
     defb 'Kenta'
-    defb 22,2,6
+    defb 22,2,7
     defb 'Kitada'
 
-    defb 22,3,0
+    defb 22,3,1
     defb 'Thao'
-    defb 22,3,5
+    defb 22,3,6
     defb 'Truong'
 
-    defb 22,4,0
+    defb 22,4,1
     defb 'Professor'
-    defb 22,4,10
+    defb 22,4,11
     defb 'Hovav'
-    defb 22,4,16
+    defb 22,4,17
     defb 'Shacham'
 
     defb 16,7
     defb 17,1
-    defb 22,6,0
+    defb 22,6,3
     defb 'github.com'
-    defb 22,6,10
+    defb 22,6,13
     defb '/addtea'
-    defb 22,6,17
+    defb 22,6,20
     defb '/zed-ecks'
     defb 17,0
 
