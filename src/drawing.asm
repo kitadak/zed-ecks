@@ -135,15 +135,23 @@ init_background:
     ld l,SCORE_NUM_ATTR
     call set_attr_line
 
-    ; TODO: print avatar (another routine)
-    ; clear avatar area
-    ld bc,AVABOX_TOPLEFT
+    ; avatar area
+    ld bc,AVABOX_TOPLEFT            ; clear avatar area
     ld hl,AVABOX_ROWS
     exx
     ld d,AVABOX_COLUMNS
     ld e,0
     exx
     call set_attr_block
+    ld bc,AVA_TOPLEFT               ; set avatar attribute
+    ld hl,AVA_ROWS
+    exx
+    ld d,AVA_COLUMNS
+    ld e,AVA_ATTR
+    exx
+    call set_attr_block
+    ld hl,avatar_normal             ; print default avatar
+    call print_avatar
     ret
 
 ; ------------------------------------------------------------------
@@ -279,6 +287,55 @@ print_level:
     ld c,a
     call get_num_data_addr
     call load_cell_data
+    ret
+
+; ------------------------------------------------------------------
+; TODO:
+; print_avatar: display given avatar
+; ------------------------------------------------------------------
+; Input: hl - avatar pixel data to draw
+; Output: None
+; ------------------------------------------------------------------
+; Registers polluted: a, b, c, d, e, h, l
+; ------------------------------------------------------------------
+print_avatar:
+    ld bc,AVA_TOPLEFT
+    push bc                     ; push coordinates
+    ld bc,0x0608
+    push bc                     ; push counters
+    ld bc,AVA_TOPLEFT
+    push hl                     ; push data addr
+print_avatar_addr:
+    call get_pixel_address
+    pop hl                      ; pop data addr
+    push de                     ; push pixel address
+    xor a
+print_avatar_loop:
+    ld bc,AVA_COLUMNS
+    ldir
+    pop de                      ; pop pixel addr
+    inc d
+    pop bc                      ; pop counters
+    dec c
+    push bc                     ; push counters
+    push de                     ; push addr
+    cp c
+    jp nz,print_avatar_loop
+    pop de                      ; pop addr
+    pop de                      ; pop counters
+    dec d
+    cp d
+    jp z,print_avatar_end
+    pop bc                      ; pop coordinates, add 8 vertical
+    ld a,8
+    add a,b
+    ld b,a
+    push bc                     ; push coordinates
+    ld e,0x08
+    push de                     ; push counters
+    push hl
+    jp print_avatar_addr
+print_avatar_end:
     ret
 
 ; ------------------------------------------------------------------
