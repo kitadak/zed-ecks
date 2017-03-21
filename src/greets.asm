@@ -60,15 +60,21 @@ greets_animated_print_end:
 
 GREETS_MESSAGE_22:
     defb 16,7
+    defb 19,1
     defb 'CSE'
     defb 22,0,4
     defb '0175'
     defb 22,0,9
     defb '-'
     defb 22,0,11
+
+    defb 16,4
+    defb 18,1
     defb 'Puyo'
-    defb 22,0,16
-    defb 'Puyo'
+    defb 22,0,15
+    defb ' Puyo'
+    defb 16,7
+    defb 18,0
 
     defb 22,1,0
     defb 'Joshua'
@@ -92,18 +98,23 @@ GREETS_MESSAGE_22:
     defb 22,4,16
     defb 'Shacham'
 
+    defb 16,7
+    defb 17,1
     defb 22,6,0
     defb 'github.com'
     defb 22,6,10
     defb '/addtea'
     defb 22,6,17
     defb '/zed-ecks'
+    defb 17,0
 
+    defb 16,7
     defb 22,8,0
     defb 'Special'
     defb 22,8,8
     defb 'Thanks:'
 
+    defb 19,0
     defb 22,9,1
     defb 'Adam'
     defb 22,9,6
@@ -149,8 +160,10 @@ GREETS_MESSAGE_22:
     defb 22,21,1
     defb 'ZX-Paintbrush'
 
+    defb 19,1
     defb 22,8,18
     defb 'Music:'
+    defb 19,0
 
     defb 22,9,19
     defb "Howl's"
@@ -170,5 +183,12 @@ GREETS_MESSAGE_22:
     defb "Hopes and"
     defb 22,17,20
     defb "Dreams"
+
+    defb 22,19,19
+    defb "and..."
+    defb 22,20,19
+    defb "Hungarian"
+    defb 22,21,20
+    defb "Rhapsody"
 
 EOGREETS_22: equ $
