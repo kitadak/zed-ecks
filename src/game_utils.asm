@@ -71,6 +71,40 @@ nextbit:
     djnz dblloop
     ret
 
+
+; ------------------------------------------------------------
+; check_avatar: update avatar as necessary
+; ------------------------------------------------------------
+; Input: None
+; Output: None
+; ------------------------------------------------------------
+check_avatar:
+    ld a,(curr_avatar)
+    ld d,a                  ; load current avatar in d
+    ld a,(player_board+WORRIED_LOCATION)
+    and 0x07
+    cp 0
+    jp z,check_avatar_zero
+    ld e,1
+    jp check_avatar_cmp
+check_avatar_zero:
+    ld e,0
+check_avatar_cmp:
+    ld a,e
+    cp d
+    ret z                   ; if old and new are the same, return
+    ld (curr_avatar),a      ; else update current avatar
+    cp 0
+    jp nz,check_avatar_worried
+    ld hl,avatar_normal
+    jp check_avatar_redraw
+check_avatar_worried:
+    ld hl,avatar_worried
+check_avatar_redraw:
+    call print_avatar
+    ret
+
+
 ; ------------------------------------------------------------
 ; check_clears: Marks puyos to be erased
 ; ------------------------------------------------------------
@@ -640,9 +674,11 @@ get_puyo:
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
+    call display_gameover       ; show gameover popup
+    ld hl,avatar_dead           ; show dead avatar
+    call print_avatar
     ld ix,gameover_music_data
     call play_sound_effect
-    call display_gameover       ; show gameover popup
     ld d,GAMEOVER_DELAY         ; delay
     ld c,CONST_DELAY
 gameover_delay_loop:

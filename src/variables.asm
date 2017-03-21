@@ -16,6 +16,7 @@ TOTAL_ROWS              equ 12
 TOTAL_COLUMNS           equ 8
 BOARD_SIZE              equ 96
 KILL_LOCATION           equ 74  ; Based on byte representation
+WORRIED_LOCATION        equ 80
 
 ; Info section
 LP_TOPLEFT              equ 0x1088
@@ -26,7 +27,6 @@ PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
 LEVEL_LINE              equ 0x4098
 SCORE_NUM_LINE          equ 0x5098
-;SCORE_LINE              equ 0x1888
 LEVEL_NUM               equ 0x40d0
 SCORE_NUM               equ 0x5098
 
@@ -35,8 +35,6 @@ AVABOX_TOPLEFT          equ 0x7098
 AVABOX_ROWS             equ 8
 AVABOX_COLUMNS          equ 8
 AVA_TOPLEFT             equ 0x78a0
-AVA_THIRD               equ 0x80a0
-;AVA_THIRD               equ 0x0000
 AVA_COLUMNS             equ 6
 AVA_ROWS                equ 6
 
@@ -46,7 +44,6 @@ ROM_CHAR_ZERO           equ 0x3d80
 ; Text positions
 LEVEL_TEXT_POSITION     equ 0x0813
 AVATAR_PARTITION        equ 0x0c11
-;SCORE_TITLE             equ 0x0a11
 
 ; In-game "popup"
 POPUP_TOPLEFT           equ 0x4018
@@ -153,7 +150,6 @@ AVA_ATTR            equ %01001111
 
 PAUSED_ATTR         equ %00101001
 GAMEOVER_ATTR       equ %11110010
-;SCORE_ATTR          equ %00000101
 LEVEL_ATTR          equ %01000111
 SCORE_NUM_ATTR      equ %01000101
 

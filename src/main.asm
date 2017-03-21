@@ -20,6 +20,7 @@ main_loop_spawn:
     call gameover_detect
     cp 0
     jp nz, gameover
+    call check_avatar
     call spawn_puyos
     call draw_preview
     call draw_curr_pair
