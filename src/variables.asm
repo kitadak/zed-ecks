@@ -233,8 +233,9 @@ chain_count: defb 0
 ; Scoring tables
 ; use tsuu single player scoring values
 chain_table:
-    ;defw 0, 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
-    defw 0, 4, 8, 12, 16, 18, 20, 24, 28, 32, 36, 40, 45, 50, 100
+    defw 0, 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
+; custom scoring values
+    ;defw 0, 4, 8, 12, 16, 18, 20, 24, 28, 32, 36, 40, 45, 50, 100
 
 group_table:
     defb 0, 2, 3, 4, 5, 6, 7, 10

@@ -854,6 +854,8 @@ play_check_s_short:
     ld a, INPUT_SHORT_DELAY
     ld (D_timer), a
     call input_move_down
+
+
     ret
 
     ; check h
@@ -1278,9 +1280,11 @@ update_score_chain_bonus:
     jp nc, update_score_max_chain_bonus
     ld b, 0
     ld c, a
+    sla c
     ld hl, chain_table
     add hl, bc
-    ld c, (hl)
+
+    ld c, (hl)                      ; values are in little endian
     inc hl
     ld b, (hl)
     ex de, hl                       ; store bonus into de
@@ -1304,6 +1308,8 @@ update_score_total_mult:
 
 update_score_multiply:
     ld a, (cleared_count)           ; load multiplier
+    ld hl, current_level            ; add our current level as a bonus
+    add a, (hl)
     ld b, 0
     ld c, a
     ; use multiply routine found at

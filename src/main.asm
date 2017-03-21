@@ -10,10 +10,10 @@ main_init:
 main_title:
     call init_title
     call play_theme_music
+    call reset_game
     call init_background
 
 main_game_start:
-    call reset_game
     ld hl,game_start_music_data
     call play_sound_effect
 
@@ -125,6 +125,11 @@ reset_game:                     ; reset all variables
     ld (player_score), a
     ld (player_score+1), a
     ld (player_score+2), a
+    ld (player_score_bcd), a
+    ld (player_score_bcd+1), a
+    ld (player_score_bcd+2), a
+    ld (player_score_bcd+3), a
+
     ld (drop_timer), a
     ld (drops_spawned), a
     ld (curr_pair), a
