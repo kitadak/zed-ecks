@@ -110,8 +110,8 @@ main_loop_clear_continue:
     call clear_puyos
     call update_score
     call print_score
-    ;ld hl,avatar_happy          ; print happy avatar if possible
-    ;call print_avatar
+    ld hl,avatar_happy          ; print happy avatar if possible
+    call print_avatar
     jp main_loop_clear          ; keep chaining clears/settles
 
 main_reset_score_vars:
@@ -119,6 +119,15 @@ main_reset_score_vars:
     ld (cleared_colors), a
     ld (chain_count), a
     ld (cleared_count), a
+    ld a,(curr_avatar)
+    cp 0
+    jp z,main_reset_score_vars_avatar_normal
+    ld hl,avatar_worried
+    call print_avatar
+    jp main_loop_spawn
+main_reset_score_vars_avatar_normal:
+    ld hl,avatar_normal
+    call print_avatar
     jp main_loop_spawn
 
 reset_game:                     ; reset all variables
