@@ -1,3 +1,5 @@
+
+
 ; ==================================================================
 ; FILE: game_utils.asm
 ; ------------------------------------------------------------------
@@ -971,6 +973,7 @@ spawn_puyos:
     cp MAX_LEVEL
     ret z                       ; don't go past the max level
     inc (hl)                    ; otherwise, go up one level
+    call print_level            ; update level on screen
     ret
 
 ; ------------------------------------------------------------
@@ -1339,13 +1342,13 @@ NoMul16:
 
     ; store BCD into player_score_bcd
     ld a, l
-    ld (player_score_bcd), a
-    ld a, h
-    ld (player_score_bcd+1), a
-    ld a, e
-    ld (player_score_bcd+2), a
-    ld a, d
     ld (player_score_bcd+3), a
+    ld a, h
+    ld (player_score_bcd+2), a
+    ld a, e
+    ld (player_score_bcd+1), a
+    ld a, d
+    ld (player_score_bcd), a
 
     ret
 

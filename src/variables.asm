@@ -191,13 +191,7 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-;next_pair: defb %00100001
 next_pair: defb 0
-
-player_score: defs 3,0
-player_score_bcd: defs 4, 0
-
-puyos_cleared: defb 0
 
 graphics_counter: defb 0
 
@@ -229,6 +223,9 @@ clear_stack_space: defs 254,0   ; space for stack, as stack goes upwards
 clear_stack: defs 2, 0
 
 ; Scoring Variables
+player_score: defs 3,0
+player_score_bcd: defs 4, 0
+
 cleared_colors: defb 0
 cleared_count: defb 0
 chain_count: defb 0
@@ -236,7 +233,8 @@ chain_count: defb 0
 ; Scoring tables
 ; use tsuu single player scoring values
 chain_table:
-    defw 0, 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
+    ;defw 0, 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
+    defw 0, 4, 8, 12, 16, 18, 20, 24, 28, 32, 36, 40, 45, 50, 100
 
 group_table:
     defb 0, 2, 3, 4, 5, 6, 7, 10

@@ -224,7 +224,7 @@ set_attr_block_row_loop:
 print_score:
     ld a,4                      ; init counter
     ld (graphics_counter),a
-    ld hl,test_score            ; save score address
+    ld hl,player_score_bcd      ; save score address
     push hl
     ld bc,SCORE_NUM             ; save current print address
     call get_pixel_address

@@ -1,40 +1,4 @@
 
-; ------------------------------------------------------------------
-; Main test driver
-; ------------------------------------------------------------------
-    call start_greets
-
-    jp main_init
-    jp inf_loop
-    call populate_coord_tab ; begin game setup
-    ;call init_title         ; load title screen
-    ;call start_theme_music  ; play title music
-    call init_background    ; load play area layout
-
-    ; test draw_curr_pair with input
-    ;call reset_board
-    ;call draw_curr_pair
-    ;call inf_loop
-
-    call gen_puyos
-    call draw_preview
-    call drop_floats
-    call connect_puyos
-    call refresh_board
-    call check_clears
-    call clear_puyos
-    call drop_floats
-    call draw_curr_pair
-    call refresh_board
-    ;call gameover
-    ;call write_pair_to_board
-
-inf_loop:                   ; infinite loop to not exit program
-    ;call play_check_input
-    ;ld c,PRESS_DELAY
-    ;call blink_delay
-    jp inf_loop
-
 
 ; ------------------------------------------------------------------
 ; Main Game Loop
@@ -42,11 +6,11 @@ inf_loop:                   ; infinite loop to not exit program
 
 main_init:
     call populate_coord_tab
-    ; call greets
+    call start_greets
 
 main_title:
-    ;call init_title
-    ;call start_theme_music
+    call init_title
+    call start_theme_music
     call init_background
 
 main_game_start:
@@ -95,9 +59,12 @@ main_loop_clear:
     call refresh_board
     call check_clears           ; mark the clears
     cp 0
-    jp z, main_reset_score_vars; nothing to clear, go spawn a new puyo
+    jp z, main_reset_score_vars ; nothing to clear, go spawn a new puyo
     call clear_puyos
     call update_score
+    ld hl, chain_count          ; increment the chain count everytime
+    inc (hl)                    ; we come here
+    call print_score
     jp main_loop_clear          ; keep chaining clears/settles
 
 main_reset_score_vars:
@@ -115,7 +82,6 @@ reset_game:                     ; reset all variables
     ld (player_score), a
     ld (player_score+1), a
     ld (player_score+2), a
-    ld (puyos_cleared), a
     ld (drop_timer), a
     ld (drops_spawned), a
     ld (curr_pair), a
