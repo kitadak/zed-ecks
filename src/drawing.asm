@@ -334,6 +334,7 @@ print_avatar_loop:
     push hl
     jp print_avatar_addr
 print_avatar_end:
+    pop bc
     ret
 
 ; ------------------------------------------------------------------
