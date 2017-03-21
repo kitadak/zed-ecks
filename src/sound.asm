@@ -1,9 +1,34 @@
+current_theme: defb 0
+
 ; ------------------------------------------------------------------
 ; Adapted from MM disassembly
 ; Play looping theme music
 ; ------------------------------------------------------------------
 start_theme_music:
+	ld hl,current_theme
+    inc (hl)
+    ld a,(hl)
+    cp 0
+    jr z, start_hmc_theme
+    cp 1
+    jr z, start_medley_theme
+    cp 2
+    jr z, start_hAndD_theme
+    cp 3
+    jr z, start_nightofnights_theme
+start_hmc_theme:
+	ld ix,hmc_music_data
+	jr play_theme_music
+start_medley_theme:
 	ld ix,medley_music_data
+	jr play_theme_music
+start_hAndD_theme:
+	ld ix,hAndD_music_data
+	jr play_theme_music
+start_nightofnights_theme:
+	ld ix,nightofnights_music_data
+	ld (hl),255
+	jr play_theme_music
 play_theme_music:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255
