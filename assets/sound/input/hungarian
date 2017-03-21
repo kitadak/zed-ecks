@@ -299,6 +299,7 @@ S C# 2
 Q D# 2
 R Q
 
+TEMPO 150
 T D# 2
 R SF
 T D# 2
@@ -310,6 +311,7 @@ T G# 2
 ED C 2
 S C# 2
 
+TEMPO 140
 T D# 2
 T G# 2
 ED D# 2
@@ -319,6 +321,7 @@ T G# 2
 ED E 2
 S D# 2
 
+TEMPO 130
 # P2L3
 T C# 2
 T G# 2
@@ -329,6 +332,7 @@ T G# 2
 ED C# 2
 S D# 2
 
+TEMPO 120
 T E 2
 T G# 2
 ED E 2
@@ -338,6 +342,7 @@ T G# 2
 ED F# 2
 S E 2
 
+TEMPO 100
 T D# 2
 T G# 2
 E D# 2
@@ -364,6 +369,7 @@ T D# 2
 T G# 2
 E D# 2
 
+TEMPO 160
 SD G# 2
 SD A 2
 S G# 2
@@ -617,22 +623,6 @@ E C 2
 
 T C# 1
 T G# 1
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
-T D# 2
-T C# 2
 T D# 2
 T C# 2
 T D# 2

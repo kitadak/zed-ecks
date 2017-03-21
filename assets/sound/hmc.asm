@@ -23,116 +23,14 @@ hmc_music_data:
 	defb 20,157
 	defb 240,166
 	defb 40,208
-	defb 40,139
-	defb 16,83
-	defb 16,69
-	defb 16,52
-	defb 16,41
-	defb 16,34
-	defb 40,34
-	defb 40,34
-	defb 80,104
-	defb 80,78
-	defb 80,66
-	defb 10,98
-	defb 10,78
-	defb 160,52
-	defb 254,5
-	defb 80,52
-	defb 10,104
-	defb 10,83
-	defb 80,58
-	defb 80,66
-	defb 80,69
-	defb 10,132
-	defb 10,104
-	defb 240,66
-	defb 254,120
-	defb 40,78
-	defb 40,66
-	defb 40,52
-	defb 10,78
-	defb 10,66
-	defb 160,39
-	defb 254,5
-	defb 80,39
-	defb 10,66
-	defb 10,58
-	defb 80,39
-	defb 80,43
-	defb 80,49
-	defb 10,87
-	defb 10,69
-	defb 120,43
-	defb 40,66
-	defb 40,69
-	defb 40,87
-	defb 40,104
-	defb 40,132
-	defb 40,104
-	defb 40,69
-	defb 40,52
-	defb 40,43
-	defb 160,34
-	defb 80,39
-	defb 80,43
-	defb 80,46
-	defb 80,43
-	defb 10,78
-	defb 10,69
-	defb 160,39
-	defb 80,43
-	defb 10,92
-	defb 10,87
-	defb 160,46
-	defb 80,52
-	defb 10,104
-	defb 10,87
-	defb 80,58
-	defb 80,66
-	defb 80,58
-	defb 10,104
-	defb 10,92
-	defb 10,78
-	defb 80,52
-	defb 80,58
-	defb 80,78
-	defb 10,139
-	defb 10,104
-	defb 160,69
-	defb 40,41
-	defb 40,52
-	defb 16,69
-	defb 16,83
-	defb 16,104
-	defb 16,139
+	defb 40,166
+	defb 16,208
 	defb 16,166
-	defb 40,139
-	defb 254,160
-	defb 80,157
-	defb 10,104
-	defb 10,78
-	defb 80,52
-	defb 10,104
-	defb 10,78
-	defb 80,52
-	defb 80,208
-	defb 10,104
-	defb 10,78
-	defb 80,52
-	defb 10,104
-	defb 10,78
-	defb 80,52
-	defb 10,208
-	defb 10,185
-	defb 10,166
-	defb 80,157
-	defb 10,104
-	defb 10,78
-	defb 80,52
-	defb 10,104
-	defb 10,78
-	defb 80,52
+	defb 16,139
+	defb 16,83
+	defb 16,69
+	defb 40,52
+	defb 40,52
 	defb 80,208
 	defb 80,157
 	defb 80,132
@@ -209,9 +107,6 @@ hmc_music_data:
 	defb 80,34
 	defb 80,78
 	defb 80,66
-	defb 10,104
-	defb 10,98
-	defb 10,78
 	defb 80,52
 	defb 80,78
 	defb 80,52
@@ -226,9 +121,6 @@ hmc_music_data:
 	defb 80,78
 	defb 80,66
 	defb 80,52
-	defb 10,78
-	defb 10,66
-	defb 10,52
 	defb 160,39
 	defb 254,5
 	defb 80,39
@@ -243,17 +135,11 @@ hmc_music_data:
 	defb 10,69
 	defb 10,52
 	defb 240,43
-	defb 10,139
-	defb 10,104
-	defb 10,87
 	defb 80,69
 	defb 80,52
 	defb 254,5
 	defb 80,43
 	defb 254,5
-	defb 10,69
-	defb 10,66
-	defb 10,52
 	defb 160,34
 	defb 160,39
 	defb 40,43
@@ -266,9 +152,6 @@ hmc_music_data:
 	defb 254,5
 	defb 160,39
 	defb 160,43
-	defb 10,92
-	defb 10,87
-	defb 10,69
 	defb 40,46
 	defb 254,5
 	defb 40,52
@@ -285,9 +168,6 @@ hmc_music_data:
 	defb 40,62
 	defb 254,5
 	defb 80,55
-	defb 10,104
-	defb 10,83
-	defb 10,69
 	defb 240,52
 	defb 254,160
 	defb 80,104
@@ -387,35 +267,20 @@ hmc_music_data:
 	defb 10,117
 	defb 80,78
 	defb 80,87
-	defb 10,185
-	defb 10,139
 	defb 80,92
 	defb 80,98
 	defb 80,92
-	defb 10,157
-	defb 10,124
-	defb 10,104
 	defb 80,78
 	defb 80,87
 	defb 80,92
-	defb 10,208
-	defb 10,185
-	defb 10,157
 	defb 80,104
 	defb 80,111
 	defb 80,104
 	defb 160,92
 	defb 80,69
-	defb 10,117
-	defb 10,98
-	defb 10,78
-	defb 10,69
 	defb 160,58
 	defb 80,66
 	defb 160,69
-	defb 10,157
-	defb 10,132
-	defb 10,104
 	defb 80,78
 	defb 42,83
 	defb 42,69

@@ -29,140 +29,14 @@ HD F#
 
 # M5
 E D
-E A
-1Q5 F# 1
-1Q5 A 1
-1Q5 D 2
-1Q5 F# 2
-1Q5 A 2
-E A 2
-E A 2
-
-Q D 1
-Q G 1
-Q Bb 1
-
-T Eb 1
-T G 1
-H D 2
-R SF
-Q D 2
-
-T D 1
-T F# 1
-Q C 2
-Q Bb 1
-Q A 1
-
-T Bb
-T D 1
-HD Bb 1
-
-# M10
-R QD
-E G 1
-E Bb 1
-E D 2
-T G 1
-T Bb 1
-
-H G 2
-R SF
-Q G 2
-
-T Bb 1
-T C 2
-Q G 2
-Q F 2
-Q Eb 2
-
-T F 1
-T A 1
-QD F 2
-E Bb 1
-E A 1
-E F 1
-
-E D 1
-E Bb
-E D 1
-E A 1
-E D 2
-E F 2
-
-H A 2
-Q G 2
-
-# M16
-Q F 2
-Q E 2
-Q F 2
-
-T G 1
-T A 1
-H G 2
-Q F 2
-
-T E 1
-T F 1
-H E 2
-Q D 2
-
-T D 1
-T F 1
-Q C 2
-Q Bb 1
-Q C 2
-
-T D 1
-T E 1
-T G 1
-Q D 2
-Q C 2
-Q G 1
-
-# M21
-T A
-T D 1
-H A 1
-
-E F# 2
-E D 2
-1Q5 A 1
-1Q5 F# 1
-1Q5 D 1
-1Q5 A
+E F#
+1Q5 D
 1Q5 F#
-E A
-R H
-
-# M24
-Q G
-T D 1
-T G 1
-Q D 2
-T D 1
-T G 1
-Q D 2
-
-Q D
-T D 1
-T G 1
-Q D 2
-T D 1
-T G 1
-Q D 2
-
-T D
-T E
-T F#
-Q G
-T D 1
-T G 1
-Q D 2
-T D 1
-T G 1
-Q D 2
+1Q5 A
+1Q5 F# 1
+1Q5 A 1
+E D 2
+E D 2
 
 Q D
 Q G
@@ -260,9 +134,6 @@ Q A 2
 Q G 1
 Q Bb 1
 
-T D 1
-T Eb 1
-T G 1
 Q D 2
 Q G 1
 Q D 2
@@ -282,9 +153,6 @@ Q Bb 1
 Q D 2
 
 # M48
-T G 1
-T Bb 1
-T D 2
 H G 2
 R SF
 Q G 2
@@ -302,18 +170,12 @@ T A 1
 T D 2
 HD F 2
 
-T A
-T D 1
-T F 1
 Q A 1
 Q D 2
 R SF
 Q F 2
 R SF
 
-T A 1
-T Bb 1
-T D 2
 H A 2
 
 H G 2
@@ -330,9 +192,6 @@ H G 2
 
 # M55
 H F 2
-T E 1
-T F 1
-T A 1
 E E 2
 R SF
 E D 2
@@ -352,9 +211,6 @@ E B 1
 R SF
 Q C# 2
 
-T D 1
-T F# 1
-T A 1
 HD D 2
 
 # M61
@@ -485,22 +341,14 @@ Q G 1
 Q F 1
 
 # M86
-T E
-T A
 Q E 1
 Q D# 1
 Q E 1
 
-T G
-T B
-T D 1
 Q G 1
 Q F 1
 Q E 1
 
-T D
-T E
-T G
 Q D 1
 Q C# 1
 Q D 1
@@ -508,17 +356,10 @@ Q D 1
 H E 1
 Q A 1
 
-T C 1
-T Eb 1
-T G 1
-T A 1
 H C 2
 Q Bb 1
 
 H A 1
-T G
-T Bb
-T D 1
 Q G 1
 
 # M92

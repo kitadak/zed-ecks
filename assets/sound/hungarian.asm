@@ -258,64 +258,64 @@ hungarian_music_data:
 	defb 40,55
 	defb 160,49
 	defb 254,160
-	defb 20,49
-	defb 254,10
-	defb 20,49
-	defb 254,10
-	defb 120,49
-	defb 40,74
-	defb 20,58
-	defb 20,37
-	defb 120,58
-	defb 40,55
-	defb 20,49
-	defb 20,37
-	defb 120,49
-	defb 40,41
-	defb 20,46
-	defb 20,37
-	defb 120,46
-	defb 40,49
-	defb 20,55
-	defb 20,37
-	defb 120,55
-	defb 40,74
-	defb 20,55
-	defb 20,37
-	defb 120,55
-	defb 40,49
-	defb 20,46
-	defb 20,37
-	defb 120,46
-	defb 40,37
-	defb 20,41
-	defb 20,37
-	defb 120,41
-	defb 40,46
-	defb 20,49
-	defb 20,37
-	defb 80,49
-	defb 20,74
-	defb 20,37
-	defb 80,74
-	defb 20,58
-	defb 20,37
-	defb 80,58
-	defb 20,55
-	defb 20,37
-	defb 80,55
-	defb 20,49
-	defb 20,37
-	defb 80,49
-	defb 20,41
-	defb 20,37
-	defb 80,41
-	defb 20,46
-	defb 20,37
-	defb 80,46
-	defb 20,49
-	defb 20,37
-	defb 80,49
+	defb 18,49
+	defb 254,9
+	defb 18,49
+	defb 254,9
+	defb 112,49
+	defb 37,74
+	defb 18,58
+	defb 18,37
+	defb 112,58
+	defb 37,55
+	defb 17,49
+	defb 17,37
+	defb 105,49
+	defb 35,41
+	defb 17,46
+	defb 17,37
+	defb 105,46
+	defb 35,49
+	defb 16,55
+	defb 16,37
+	defb 97,55
+	defb 32,74
+	defb 16,55
+	defb 16,37
+	defb 97,55
+	defb 32,49
+	defb 15,46
+	defb 15,37
+	defb 90,46
+	defb 30,37
+	defb 15,41
+	defb 15,37
+	defb 90,41
+	defb 30,46
+	defb 12,49
+	defb 12,37
+	defb 50,49
+	defb 12,74
+	defb 12,37
+	defb 50,74
+	defb 12,58
+	defb 12,37
+	defb 50,58
+	defb 12,55
+	defb 12,37
+	defb 50,55
+	defb 12,49
+	defb 12,37
+	defb 50,49
+	defb 12,41
+	defb 12,37
+	defb 50,41
+	defb 12,46
+	defb 12,37
+	defb 50,46
+	defb 12,49
+	defb 12,37
+	defb 50,49
 	defb 60,37
 	defb 60,34
 	defb 40,37
@@ -547,22 +547,6 @@ hungarian_music_data:
 	defb 80,58
 	defb 20,111
 	defb 20,74
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
-	defb 20,49
-	defb 20,55
 	defb 20,49
 	defb 20,55
 	defb 20,49
