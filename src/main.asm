@@ -6,9 +6,10 @@ main_init:
     call populate_coord_tab
     call start_greets
 
+    ld ix,medley_music_data
 main_title:
     call init_title
-    call start_theme_music
+    call play_theme_music
     call init_background
 
 main_game_start:
