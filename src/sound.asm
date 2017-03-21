@@ -1,9 +1,34 @@
+current_theme: defb 0
+
 ; ------------------------------------------------------------------
 ; Adapted from MM disassembly
 ; Play looping theme music
 ; ------------------------------------------------------------------
 start_theme_music:
+	ld hl,current_theme
+    inc (hl)
+    ld a,(hl)
+    cp 0
+    jr z, start_hmc_theme
+    cp 1
+    jr z, start_medley_theme
+    cp 2
+    jr z, start_hAndD_theme
+    cp 3
+    jr z, start_nightofnights_theme
+start_hmc_theme:
+	ld ix,hmc_music_data
+	jr play_theme_music
+start_medley_theme:
 	ld ix,medley_music_data
+	jr play_theme_music
+start_hAndD_theme:
+	ld ix,hAndD_music_data
+	jr play_theme_music
+start_nightofnights_theme:
+	ld ix,nightofnights_music_data
+	ld (hl),255
+	jr play_theme_music
 play_theme_music:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255
@@ -47,6 +72,13 @@ play_theme_music_skip2:
     cpl
     and 0x1
 	ret nz
+
+	; check keyboard input to go to next theme
+	ld a, 0xFD
+    in a, (0xFE)
+    cpl
+    and 0x1
+	jr nz,start_theme_music
 
 	inc ix
 	inc ix
@@ -110,7 +142,7 @@ play_se_skip2:
 ; Play a "beat" of music equal to max(beat,note_length)
 ; ------------------------------------------------------------------
 play_one_beat:
-	ld l,40
+	ld l,60
 play_one_note:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255

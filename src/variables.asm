@@ -1,3 +1,4 @@
+
 ; ==================================================================
 ; FILE: variables.asm
 ; ------------------------------------------------------------------
@@ -263,62 +264,3 @@ drop_table:
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
     defs 192,0xfb
-
-
-GREETS_MESSAGE:
-    defb 16,7
-    defb 'CSE 0175'
-    defb 13,13
-    defb 'Kenta Kitada'
-    defb 13
-    defb 'Thao Truong'
-    defb 13
-    defb 'Joshua Tang'
-    defb 13
-    defb 'Professor Hovav Shacham'
-    defb 13
-    defb 22,20,0
-    defb "Special thanks to:"
-    defb 13
-    defb "Adam Liu's perfect pitch."
-EOGREETS: equ $
-
-
-GREETS_MESSAGE_22:
-    defb 16,7
-    defb 'CSE'
-    defb 22,0,4
-    defb '0175'
-    defb 22,2,0
-    defb 'Kenta'
-    defb 22,2,6
-    defb 'Kitada'
-    defb 22,3,0
-    defb 'Thao'
-    defb 22,3,5
-    defb 'Truong'
-    defb 22,4,0
-    defb 'Joshua'
-    defb 22,4,7
-    defb 'Tang'
-    defb 22,5,0
-    defb 'Professor'
-    defb 22,5,10
-    defb 'Hovav'
-    defb 22,5,16
-    defb 'Shacham'
-    defb 22,20,0
-    defb 'Special'
-    defb 22,20,8
-    defb 'thanks'
-    defb 22,20,15
-    defb 'to:'
-    defb 22,21,0
-    defb 'Adam'
-    defb 22,21,5
-    defb "Liu's"
-    defb 22,21,11
-    defb 'perfect'
-    defb 22,21,19
-    defb 'pitch.'
-EOGREETS_22: equ $
