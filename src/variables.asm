@@ -191,12 +191,7 @@ player_board:
     defb 0xff,0xff
     defs 24,0xff
 
-;next_pair: defb %00100001
 next_pair: defb 0
-
-player_score: defs 3,0
-
-puyos_cleared: defb 0
 
 graphics_counter: defb 0
 
@@ -228,14 +223,28 @@ clear_stack_space: defs 254,0   ; space for stack, as stack goes upwards
 clear_stack: defs 2, 0
 
 ; Scoring Variables
+player_score: defs 3,0
+player_score_bcd: defs 4, 0
+
 cleared_colors: defb 0
 cleared_count: defb 0
 chain_count: defb 0
 
-; Chain power table
-; Used for scoring
+; Scoring tables
+; use tsuu single player scoring values
 chain_table:
-    defw 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
+    ;defw 0, 4, 20, 24, 32, 48, 96, 160, 240, 320, 480, 700, 800, 900, 999
+    defw 0, 4, 8, 12, 16, 18, 20, 24, 28, 32, 36, 40, 45, 50, 100
+
+group_table:
+    defb 0, 2, 3, 4, 5, 6, 7, 10
+
+color_table:
+    defb 0, 3, 6, 12, 24
+
+; number of set bits in a 4-bit value
+set_bits_table:
+    defb 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4
 
 ; Drop time table
 ; Defines number of frames before the puyo is dropped to the next half row

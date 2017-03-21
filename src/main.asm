@@ -1,13 +1,3 @@
-
-; ------------------------------------------------------------------
-; Main test driver
-; ------------------------------------------------------------------
-    jp main_init
-
-inf_loop:
-    jp inf_loop
-
-
 ; ------------------------------------------------------------------
 ; Main Game Loop
 ; ------------------------------------------------------------------
@@ -116,6 +106,8 @@ chain7_se:
 main_loop_clear_continue:
     call play_sound_effect
     call clear_puyos
+    call update_score
+    call print_score
     jp main_loop_clear          ; keep chaining clears/settles
 
 main_reset_score_vars:
@@ -132,7 +124,6 @@ reset_game:                     ; reset all variables
     ld (player_score), a
     ld (player_score+1), a
     ld (player_score+2), a
-    ld (puyos_cleared), a
     ld (drop_timer), a
     ld (drops_spawned), a
     ld (curr_pair), a
