@@ -1,3 +1,4 @@
+
 ; ==================================================================
 ; FILE: variables.asm
 ; ------------------------------------------------------------------
@@ -25,14 +26,19 @@ PREVIEW_COORDS_TOP      equ 0x18b0
 PREVIEW_COORDS_BOTTOM   equ 0x28b0
 LEVEL_LINE              equ 0x4098
 SCORE_NUM_LINE          equ 0x5098
-AVATAR_LINE             equ 0x6088
-AVATAR_LINE_2           equ 0x6888
 ;SCORE_LINE              equ 0x1888
+LEVEL_NUM               equ 0x40d0
+SCORE_NUM               equ 0x5098
+
+; Avatar
 AVABOX_TOPLEFT          equ 0x7098
 AVABOX_ROWS             equ 8
 AVABOX_COLUMNS          equ 8
-LEVEL_NUM               equ 0x40d0
-SCORE_NUM               equ 0x5098
+AVA_TOPLEFT             equ 0x78a0
+AVA_THIRD               equ 0x80a0
+;AVA_THIRD               equ 0x0000
+AVA_COLUMNS             equ 6
+AVA_ROWS                equ 6
 
 ; Address of character set in ROM starting from '0'
 ROM_CHAR_ZERO           equ 0x3d80
@@ -143,6 +149,7 @@ EMPTY_BOARD:
 BACKGROUND_ATTR     equ 3
 TITLE_BOTTOM_ATTR   equ 0x06
 TITLE_FLASH_ATTR    equ 0x86
+AVA_ATTR            equ %01001111
 
 PAUSED_ATTR         equ %00101001
 GAMEOVER_ATTR       equ %11110010
@@ -194,6 +201,8 @@ player_board:
 next_pair: defb 0
 
 graphics_counter: defb 0
+
+curr_avatar: defb 0
 
 ; Drop variables
 drop_timer: defb 0
@@ -256,6 +265,3 @@ drop_table:
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
     defs 192,0xfb
-
-; Test score variables
-test_score: defb 0x14, 0x67, 0x92, 0x00
