@@ -14,12 +14,17 @@ start_theme_music:
     cp 1
     jr z, start_medley_theme
     cp 2
+    jr z, start_hAndD_theme
+    cp 3
     jr z, start_hungarian_theme
 start_hmc_theme:
 	ld ix,hmc_music_data
 	jr play_theme_music
 start_medley_theme:
-	ld ix,medley_music_data
+	ld ix,medley_full_music_data
+	jr play_theme_music
+start_hAndD_theme:
+	ld ix,hAndD_full_music_data
 	jr play_theme_music
 start_hungarian_theme:
 	ld ix,hungarian_music_data

@@ -16,13 +16,18 @@ start_greets:
     cp 1
     jr z, greets_medley_theme
     cp 2
+    jr z, greets_hAndD_theme
+    cp 3
     jr z, greets_hungarian_theme
 greets_hmc_theme:
 	ld ix,hmc_music_data
 	jr greets_animated_print
 greets_medley_theme:
-	ld ix,medley_music_data
+	ld ix,medley_full_music_data
 	jr greets_animated_print
+greets_hAndD_theme:
+    ld ix,hAndD_full_music_data
+    jr greets_animated_print
 greets_hungarian_theme:
 	ld ix,hungarian_music_data
 	ld (hl),255
