@@ -74,7 +74,6 @@ init_title_dialog_end:
     ret
 
 ; ------------------------------------------------------------------
-; TODO: avatar
 ; init_background: Draw initial background with play area.
 ; ------------------------------------------------------------------
 ; Input: None
@@ -290,7 +289,6 @@ print_level:
     ret
 
 ; ------------------------------------------------------------------
-; TODO:
 ; print_avatar: display given avatar
 ; ------------------------------------------------------------------
 ; Input: hl - avatar pixel data to draw

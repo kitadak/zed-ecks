@@ -1,3 +1,4 @@
+
 ; ------------------------------------------------------------------
 ; Main Game Loop
 ; ------------------------------------------------------------------
@@ -109,6 +110,8 @@ main_loop_clear_continue:
     call clear_puyos
     call update_score
     call print_score
+    ;ld hl,avatar_happy          ; print happy avatar if possible
+    ;call print_avatar
     jp main_loop_clear          ; keep chaining clears/settles
 
 main_reset_score_vars:
@@ -152,3 +155,4 @@ reset_game:                     ; reset all variables
     inc a
     ld (current_level), a       ; current level starts at 1
     ret
+

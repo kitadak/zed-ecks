@@ -261,3 +261,4 @@ drop_table:
 ; Translation table from board position to pixel coordinates
 board_to_coord_tab:
     defs 192,0xfb
+

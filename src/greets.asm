@@ -1,3 +1,4 @@
+
 start_greets:
 	ld a,BACKGROUND_ATTR
 	ld (23693), a
@@ -193,3 +194,4 @@ GREETS_MESSAGE_22:
     defb "Rhapsody"
 
 EOGREETS_22: equ $
+

@@ -1,3 +1,4 @@
+
 current_theme: defb 0
 
 ; ------------------------------------------------------------------
@@ -39,7 +40,7 @@ play_theme_music:
 	ld h,e      ; store original e in h
 	ld a,$10
 	jr play_theme_music_produce_note
-	
+
 play_theme_music_rest:
 	ld b,0
 	ld c,(ix+1)
@@ -100,7 +101,7 @@ play_sound_effect:
 	ld h,e      ; store original e in h
 	ld a,$10
 	jr play_se_produce_note
-	
+
 play_se_rest:
 	ld b,0
 	ld c,(ix+1)
@@ -169,7 +170,7 @@ play_one_note_rest:
 	sub c
 	jp po,set_beat_zero_2
 	jr set_beat_zero_skip_2
-	
+
 set_beat_zero_2:
 	ld l,0
 
@@ -211,3 +212,4 @@ play_one_note_skip2:
 	cp 0
 	jr nz,play_one_note
 	ret
+
