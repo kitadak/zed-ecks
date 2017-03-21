@@ -15,17 +15,12 @@ start_greets:
     cp 1
     jr z, greets_medley_theme
     cp 2
-    jr z, greets_hAndD_theme
-    cp 3
     jr z, greets_hungarian_theme
 greets_hmc_theme:
 	ld ix,hmc_music_data
 	jr greets_animated_print
 greets_medley_theme:
 	ld ix,medley_music_data
-	jr greets_animated_print
-greets_hAndD_theme:
-	ld ix,hAndD_music_data
 	jr greets_animated_print
 greets_hungarian_theme:
 	ld ix,hungarian_music_data
@@ -39,6 +34,13 @@ greets_animated_print:
 	call play_one_beat
 	pop de
 	pop bc
+
+    ; check keyboard input here to stop music
+    ld a, 0xBF
+    in a, (0xFE)
+    cpl
+    and 0x1
+    ret nz
 
 greets_print_next_char:
 	; print next character
@@ -171,24 +173,23 @@ GREETS_MESSAGE_22:
     defb 'Moving'
     defb 22,11,20
     defb 'Castle'
+    defb 22,12,20
+    defb 'Theme'
 
-    defb 22,13,19
+    defb 22,14,19
     defb "Night"
-    defb 22,13,25
+    defb 22,14,25
     defb "of"
-    defb 22,14,20
+    defb 22,15,20
     defb "Nights"
+    defb 22,16,20
+    defb "Medley"
 
-    defb 22,16,19
-    defb "Hopes and"
-    defb 22,17,20
-    defb "Dreams"
-
-    defb 22,19,19
+    defb 22,18,19
     defb "and..."
-    defb 22,20,19
+    defb 22,19,19
     defb "Hungarian"
-    defb 22,21,20
+    defb 22,20,20
     defb "Rhapsody"
 
 EOGREETS_22: equ $

@@ -13,7 +13,7 @@ main_title:
     call init_background
 
 main_game_start:
-    ld hl,game_start_music_data
+    ld ix,game_start_music_data
     call play_sound_effect
 
 main_loop_spawn:
@@ -55,7 +55,7 @@ main_loop_clear_init:
     call write_pair_to_board
 main_loop_clear:
     call drop_floats            ; drop any floating puyos
-    ld hl,puyodrop_music_data
+    ld ix,puyodrop_music_data
     call play_sound_effect
     call connect_puyos
     call refresh_board
@@ -83,25 +83,25 @@ main_loop_clear:
     jr chain7_se
 
 chain1_se:
-    ld hl,rensa1_music_data
+    ld ix,rensa1_music_data
     jr main_loop_clear_continue
 chain2_se:
-    ld hl,rensa2_music_data
+    ld ix,rensa2_music_data
     jr main_loop_clear_continue
 chain3_se:
-    ld hl,rensa3_music_data
+    ld ix,rensa3_music_data
     jr main_loop_clear_continue
 chain4_se:
-    ld hl,rensa4_music_data
+    ld ix,rensa4_music_data
     jr main_loop_clear_continue
 chain5_se:
-    ld hl,rensa5_music_data
+    ld ix,rensa5_music_data
     jr main_loop_clear_continue
 chain6_se:
-    ld hl,rensa6_music_data
+    ld ix,rensa6_music_data
     jr main_loop_clear_continue
 chain7_se:
-    ld hl,rensa7_music_data
+    ld ix,rensa7_music_data
 
 main_loop_clear_continue:
     call play_sound_effect

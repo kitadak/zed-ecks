@@ -13,17 +13,12 @@ start_theme_music:
     cp 1
     jr z, start_medley_theme
     cp 2
-    jr z, start_hAndD_theme
-    cp 3
     jr z, start_hungarian_theme
 start_hmc_theme:
 	ld ix,hmc_music_data
 	jr play_theme_music
 start_medley_theme:
 	ld ix,medley_music_data
-	jr play_theme_music
-start_hAndD_theme:
-	ld ix,hAndD_music_data
 	jr play_theme_music
 start_hungarian_theme:
 	ld ix,hungarian_music_data
@@ -39,15 +34,18 @@ play_theme_music:
 	ld b,0
 	ld c,a
 	ld d,(ix+1)
-	ld e,(ix+2)
+	ld e,d
+	inc e
+	ld h,e      ; store original e in h
 	ld a,$10
 	jr play_theme_music_produce_note
 	
 play_theme_music_rest:
 	ld b,0
 	ld c,(ix+1)
-	ld d,(ix+1)
-	ld e,(ix+2)
+	ld d,c
+	ld e,c
+	ld h,e      ; store original e in h
 	ld a,$00
 
 play_theme_music_produce_note:
@@ -59,7 +57,7 @@ play_theme_music_produce_note:
 play_theme_music_skip1:
 	dec e
 	jr nz,play_theme_music_skip2
-	ld e,(ix+2)
+	ld e,h
 	xor 0x10
 play_theme_music_skip2:
 	djnz play_theme_music_produce_note
@@ -82,14 +80,13 @@ play_theme_music_skip2:
 
 	inc ix
 	inc ix
-	inc ix
 	jr play_theme_music
 
 ; ------------------------------------------------------------------
-; Play sound effect from data in hl
+; Play sound effect from data in ix
 ; ------------------------------------------------------------------
 play_sound_effect:
-	ld a,(hl)	; data in hl
+	ld a,(ix)	; data in ix
 	cp 255
 	ret z
 	cp 254
@@ -97,44 +94,39 @@ play_sound_effect:
 
 	ld b,0
 	ld c,a
-	inc hl
-	ld d,(hl)
-	inc hl
-	ld e,(hl)
-	dec hl
+	ld d,(ix+1)
+	ld e,d
+	inc e
+	ld h,e      ; store original e in h
 	ld a,$10
 	jr play_se_produce_note
 	
 play_se_rest:
 	ld b,0
-	inc hl
-	ld c,(hl)
-	ld d,(hl)
-	inc hl
-	ld e,(hl)
-	dec hl
+	ld c,(ix+1)
+	ld d,c
+	ld e,c
+	ld h,e      ; store original e in h
 	ld a,$00
 
 play_se_produce_note:
 	out ($fe),a
 	dec d
 	jr nz,play_se_skip1
-	ld d,(hl)
+	ld d,(ix+1)
 	xor 0x10
 play_se_skip1:
 	dec e
 	jr nz,play_se_skip2
-	inc hl
-	ld e,(hl)
-	dec hl
+	ld e,h
 	xor 0x10
 play_se_skip2:
 	djnz play_se_produce_note
 	dec c
 	jr nz,play_se_produce_note
 
-	inc hl
-	inc hl
+	inc ix
+	inc ix
 	jr play_sound_effect
 
 
@@ -163,7 +155,9 @@ set_beat_zero:
 
 set_beat_zero_skip:
 	ld d,(ix+1)
-	ld e,(ix+2)
+	ld e,d
+	inc e
+	ld h,e      ; store original e in h
 	ld a,$10
 	jr play_one_note_produce_note
 
@@ -181,7 +175,8 @@ set_beat_zero_2:
 
 set_beat_zero_skip_2:
 	ld d,(ix+1)
-	ld e,(ix+2)
+	ld e,d
+	ld h,e      ; store original e in h
 	ld a,$00
 
 play_one_note_produce_note:
@@ -193,7 +188,7 @@ play_one_note_produce_note:
 play_one_note_skip1:
 	dec e
 	jr nz,play_one_note_skip2
-	ld e,(ix+2)
+	ld e,h
 	xor 0x10
 play_one_note_skip2:
 
@@ -201,7 +196,13 @@ play_one_note_skip2:
 	dec c
 	jr nz,play_one_note_produce_note
 
-	inc ix
+	; check keyboard input here to stop music
+	ld a, 0xBF
+    in a, (0xFE)
+    cpl
+    and 0x1
+	ret nz
+
 	inc ix
 	inc ix
 

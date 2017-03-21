@@ -1,4 +1,4 @@
 
 puyorotate_music_data:
-	defb 20,208,209
+	defb 20,208
 	defb 255

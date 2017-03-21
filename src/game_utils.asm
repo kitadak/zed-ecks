@@ -640,7 +640,7 @@ get_puyo:
 ; Output: None
 ; ------------------------------------------------------------
 gameover:
-    ld hl,gameover_music_data
+    ld ix,gameover_music_data
     call play_sound_effect
     call display_gameover       ; show gameover popup
     ld d,GAMEOVER_DELAY         ; delay
@@ -1113,7 +1113,7 @@ rotate_cw_end:
     and 0x03
     ld (hl), a
     call draw_curr_pair             ; redraw
-    ld hl,puyorotate_music_data
+    ld ix,puyorotate_music_data
     call play_sound_effect
 	ret
 
@@ -1209,7 +1209,7 @@ rotate_ccw_end:
     and 0x03
     ld (hl), a
     call draw_curr_pair             ; redraw
-    ld hl,puyorotate_music_data
+    ld ix,puyorotate_music_data
     call play_sound_effect
 	ret
 

@@ -117,13 +117,13 @@ def write_music(f,o):
 			rem = time % CUTSIZE
 			for i in range(numpieces):
 				o.write("\tdefb " + "254," +
-					str(CUTSIZE) + "," + str(CUTSIZE) + "\n")
+					str(CUTSIZE) + "\n")
 			if rem != 0:
 				o.write("\tdefb " + "254," +
-					str(rem) + "," + str(rem) + "\n")
+					str(rem) + "\n")
 		else:
 			o.write("\tdefb " + "254," +
-				str(time) + "," + str(time) + "\n")
+				str(time) + "\n")
 	elif tokens[0] == TEMPO:
 		redo_timetable(int(tokens[1]))
 	elif tokens[0] == BREAK:
@@ -166,13 +166,13 @@ def write_music(f,o):
 			rem = time % CUTSIZE
 			for i in range(numpieces):
 				o.write("\tdefb " + str(CUTSIZE) + "," +
-					str(note) + "," + str(note+1) + "\n")
+					str(note) + "\n")
 			if rem != 0:
 				o.write("\tdefb " + str(rem) + "," +
-					str(note) + "," + str(note+1) + "\n")
+					str(note) + "\n")
 		else:
 			o.write("\tdefb " + str(time) + "," +
-				str(note) + "," + str(note+1) + "\n")
+				str(note) + "\n")
 
 
 # Main
