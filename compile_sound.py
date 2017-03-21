@@ -11,6 +11,9 @@ TWONOTES="2"
 TEMPO="TEMPO"
 BREAK="BREAK"
 
+CUT = False  # cut the music into small pieces?
+CUTSIZE = 20
+
 # W->Whole Note
 # H->Half Note
 # Q->Quarter Note
@@ -109,8 +112,18 @@ def write_music(f,o):
 	# R [TIME]
 	elif tokens[0] == REST:
 		time = int(TIMETABLE[tokens[1]])
-		o.write("\tdefb " + "254," +
-			str(time) + "," + str(time) + "\n")
+		if CUT and time > CUTSIZE:
+			numpieces = time / CUTSIZE
+			rem = time % CUTSIZE
+			for i in range(numpieces):
+				o.write("\tdefb " + "254," +
+					str(CUTSIZE) + "," + str(CUTSIZE) + "\n")
+			if rem != 0:
+				o.write("\tdefb " + "254," +
+					str(rem) + "," + str(rem) + "\n")
+		else:
+			o.write("\tdefb " + "254," +
+				str(time) + "," + str(time) + "\n")
 	elif tokens[0] == TEMPO:
 		redo_timetable(int(tokens[1]))
 	elif tokens[0] == BREAK:
@@ -148,16 +161,32 @@ def write_music(f,o):
 			octave = pow(2,int(tokens[2]))
 			note = note / octave
 
-		o.write("\tdefb " + str(time) + "," +
-			str(note) + "," + str(note+1) + "\n")
+		if CUT and time > CUTSIZE:
+			numpieces = time / CUTSIZE
+			rem = time % CUTSIZE
+			for i in range(numpieces):
+				o.write("\tdefb " + str(CUTSIZE) + "," +
+					str(note) + "," + str(note+1) + "\n")
+			if rem != 0:
+				o.write("\tdefb " + str(rem) + "," +
+					str(note) + "," + str(note+1) + "\n")
+		else:
+			o.write("\tdefb " + str(time) + "," +
+				str(note) + "," + str(note+1) + "\n")
 
 
 # Main
 if len(sys.argv) != 2:
-    print "Usage: ./compile_sound.py [theme name]"
-    exit(-1)
+	if len(sys.argv) == 4 and sys.argv[2] == "CUT":
+		CUT = True
+		CUTSIZE = int(sys.argv[3])
+	else:
+		print "Usage: ./compile_sound.py [theme name]"
+		exit(-1)
+
 INFILE = SOUND_PATH + "input/" + sys.argv[1]
 OUTFILE = SOUND_PATH + sys.argv[1] + ".asm"
+
 f = open(INFILE, 'r')
 o = open(OUTFILE, 'w')
 
