@@ -1,5 +1,6 @@
 
 hAndD_music_data:
+	defb 254,160,160
 	defb 160,175,176
 	defb 160,87,88
 	defb 160,117,118
@@ -899,4 +900,8 @@ hAndD_music_data:
 	defb 5,117,118
 	defb 160,62,63
 	defb 160,62,63
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
 	defb 255

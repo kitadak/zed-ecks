@@ -1,5 +1,6 @@
 
 nightofnights_music_data:
+	defb 254,160,160
 	defb 40,104,105
 	defb 40,69,70
 	defb 20,92,93
@@ -1006,4 +1007,8 @@ nightofnights_music_data:
 	defb 160,49,50
 	defb 160,49,50
 	defb 40,49,50
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
 	defb 255

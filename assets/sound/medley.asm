@@ -1736,4 +1736,8 @@ medley_music_data:
 	defb 3,234,235
 	defb 160,49,50
 	defb 160,49,50
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
+	defb 254,160,160
 	defb 255

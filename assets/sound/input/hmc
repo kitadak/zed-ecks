@@ -1,4 +1,5 @@
 TEMPO 80
+R H
 
 # M1
 E D 1
@@ -672,8 +673,6 @@ R E
 E D
 R E
 
-R H
-R H
 R H
 R H
 R H

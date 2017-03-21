@@ -5,10 +5,32 @@ start_greets:
 	ld a,2
 	call 5633
 
-	ld ix,hmc_music_data
-
 	ld de,GREETS_MESSAGE_22
 	ld bc,EOGREETS_22-GREETS_MESSAGE_22    ; subtract to get length of string
+
+	ld hl,current_theme
+	ld a,(hl)
+    cp 0
+    jr z, greets_hmc_theme
+    cp 1
+    jr z, greets_medley_theme
+    cp 2
+    jr z, greets_hAndD_theme
+    cp 3
+    jr z, greets_nightofnights_theme
+greets_hmc_theme:
+	ld ix,hmc_music_data
+	jr greets_animated_print
+greets_medley_theme:
+	ld ix,medley_music_data
+	jr greets_animated_print
+greets_hAndD_theme:
+	ld ix,hAndD_music_data
+	jr greets_animated_print
+greets_nightofnights_theme:
+	ld ix,nightofnights_music_data
+	ld (hl),255
+	jr greets_animated_print
 
 greets_animated_print:
 	; play next note
@@ -41,36 +63,112 @@ GREETS_MESSAGE_22:
     defb 'CSE'
     defb 22,0,4
     defb '0175'
+    defb 22,0,9
+    defb '-'
+    defb 22,0,11
+    defb 'Puyo'
+    defb 22,0,16
+    defb 'Puyo'
+
+    defb 22,1,0
+    defb 'Joshua'
+    defb 22,1,7
+    defb 'Tang'
+
     defb 22,2,0
     defb 'Kenta'
     defb 22,2,6
     defb 'Kitada'
+
     defb 22,3,0
     defb 'Thao'
     defb 22,3,5
     defb 'Truong'
+
     defb 22,4,0
-    defb 'Joshua'
-    defb 22,4,7
-    defb 'Tang'
-    defb 22,5,0
     defb 'Professor'
-    defb 22,5,10
+    defb 22,4,10
     defb 'Hovav'
-    defb 22,5,16
+    defb 22,4,16
     defb 'Shacham'
-    defb 22,20,0
+
+    defb 22,6,0
+    defb 'github.com'
+    defb 22,6,10
+    defb '/addtea'
+    defb 22,6,17
+    defb '/zed-ecks'
+
+    defb 22,8,0
     defb 'Special'
-    defb 22,20,8
-    defb 'thanks'
-    defb 22,20,15
-    defb 'to:'
-    defb 22,21,0
+    defb 22,8,8
+    defb 'Thanks:'
+
+    defb 22,9,1
     defb 'Adam'
-    defb 22,21,5
-    defb "Liu's"
-    defb 22,21,11
-    defb 'perfect'
-    defb 22,21,19
-    defb 'pitch.'
+    defb 22,9,6
+    defb "Liu"
+
+    defb 22,10,1
+    defb 'Arjun'
+
+    defb 22,11,1
+    defb 'cobbpg'
+
+    defb 22,12,1
+    defb 'Compile'
+
+    defb 22,13,1
+    defb 'ClrHome'
+
+    defb 22,14,1
+    defb 'Dean'
+    defb 22,14,6
+    defb 'Belfield'
+
+    defb 22,15,1
+    defb 'Puyo'
+    defb 22,15,6
+    defb 'Nexus'
+
+    defb 22,16,1
+    defb 'RetroTechie'
+
+    defb 22,17,1
+    defb 'SevenuP'
+
+    defb 22,18,1
+    defb 'skoolkid'
+
+    defb 22,19,1
+    defb 'Y&K'
+
+    defb 22,20,1
+    defb 'z80-Heaven'
+
+    defb 22,21,1
+    defb 'ZX-Paintbrush'
+
+    defb 22,8,18
+    defb 'Music:'
+
+    defb 22,9,19
+    defb "Howl's"
+    defb 22,10,20
+    defb 'Moving'
+    defb 22,11,20
+    defb 'Castle'
+
+    defb 22,13,19
+    defb "Night"
+    defb 22,13,25
+    defb "of"
+    defb 22,14,20
+    defb "Nights"
+
+    defb 22,16,19
+    defb "Hopes and"
+    defb 22,17,20
+    defb "Dreams"
+
 EOGREETS_22: equ $

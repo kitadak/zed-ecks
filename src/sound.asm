@@ -73,6 +73,13 @@ play_theme_music_skip2:
     and 0x1
 	ret nz
 
+	; check keyboard input to go to next theme
+	ld a, 0xFD
+    in a, (0xFE)
+    cpl
+    and 0x1
+	jr nz,start_theme_music
+
 	inc ix
 	inc ix
 	inc ix
@@ -135,7 +142,7 @@ play_se_skip2:
 ; Play a "beat" of music equal to max(beat,note_length)
 ; ------------------------------------------------------------------
 play_one_beat:
-	ld l,40
+	ld l,60
 play_one_note:
 	ld a,(ix)	; theme_music_data in ix
 	cp 255
